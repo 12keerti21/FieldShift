@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "description": "Soilborne pathogen and parasitic-weed table driving the rotation return-interval constraint. Each entry says how long the organism survives without a host and therefore how long a break the rotation must provide. Entries with rotation_effective=false are included ON PURPOSE: they document diseases that rotation does NOT control, so the tool never claims a benefit it cannot deliver.",
+  "units": {
+    "soil_persistence_years": "years the organism remains infective in soil in the absence of a susceptible host",
+    "recommended_return_interval_years": "years before the host crop should return to the same field; the constraint the optimiser enforces"
+  },
+  "fields": {
+    "host_crops": "crop ids from crops.json that are susceptible",
+    "host_families": "botanical families whose members are broadly susceptible; expanded against crops.json at load time",
+    "rotation_effective": "whether crop rotation is a meaningful control measure at all",
+    "rotation_efficacy": "strong | partial | weak | none - how much a correct interval actually achieves",
+    "inoculum": "the surviving structure, which is what determines persistence",
+    "presence": "widespread = assume present wherever the host is grown; regional = genuinely patchy, so the constraint is reported but must not block a rotation until a local source confirms it; quarantine = a regulated pest whose presence is a legal matter to be referred to the plant protection authority, not modelled."
+  },
+  "provenance": [
+    "Compendium series, American Phytopathological Society (host ranges and survival structures)",
+    "Agrios, Plant Pathology 5th ed. (survival and rotation principles)",
+    "ICAR / ICRISAT crop protection guides (subcontinent-specific wilt and nematode intervals)",
+    "EPPO and CABI datasheets (clubroot, potato cyst nematode, Verticillium persistence)",
+    "Striga and Orobanche: FAO parasitic weed management literature"
+  ],
+  "known_gaps": [
+    "Persistence is strongly site-dependent - soil texture, pH, temperature, moisture and the resident antagonist community all shift it. Values here are mid-range literature figures and can be wrong locally by a factor of two.",
+    "Local pathogen RACE/pathotype presence is unknown to us. A field may simply not have the organism, in which case the constraint is spurious and over-restrictive.",
+    "Resistant cultivars can shorten every interval below substantially. We do not model cultivar choice.",
+    "Volunteer plants and alternative weed hosts can sustain a pathogen through a nominally clean break year.",
+    "EVERY interval in this table is a candidate for local override by an extension pathologist. Treat them as screening defaults.",
+    "Presence is a coarse three-way tag, not a distribution map. Once a region is chosen, replace it with reported occurrence for that region - a 'regional' organism that is in fact endemic locally is currently under-weighted."
+  ],
+  "pathogens": [
+    {
+      "id": "fusarium_oxysporum_ciceris",
+      "name": "Chickpea Fusarium wilt",
+      "organism": "Fusarium oxysporum f. sp. ciceris",
+      "type": "soilborne_fungus",
+      "inoculum": "chlamydospores in soil and infected debris",
+      "host_crops": [
+        "chickpea"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 6,
+      "recommended_return_interval_years": 5,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Host-specific, so a non-chickpea break genuinely helps - but chlamydospores outlast most practical rotations, which is why rotation alone rarely eradicates it and resistant cultivars do the heavy lifting. The single most common reason an otherwise attractive chickpea-heavy rotation must be rejected.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "fusarium_udum",
+      "name": "Pigeonpea wilt",
+      "organism": "Fusarium udum",
+      "type": "soilborne_fungus",
+      "inoculum": "chlamydospores and infected root debris",
+      "host_crops": [
+        "pigeonpea"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 3,
+      "recommended_return_interval_years": 3,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Host-specific. A sorghum or millet break is the conventional recommendation; incidence rises steeply under continuous pigeonpea.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "macrophomina_phaseolina",
+      "name": "Charcoal rot / dry root rot",
+      "organism": "Macrophomina phaseolina",
+      "type": "soilborne_fungus",
+      "inoculum": "microsclerotia in soil and residue",
+      "host_crops": [
+        "soybean",
+        "groundnut",
+        "sorghum",
+        "maize",
+        "mungbean",
+        "cowpea",
+        "chickpea",
+        "sesame",
+        "cotton",
+        "sunflower"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 4,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "weak",
+      "notes": "Over 500 recorded hosts, so almost no practical rotation provides a true non-host break - this is the clearest case where the tool must say rotation will help only marginally. Disease expression is driven far more by heat and terminal drought stress than by rotation, which makes it a useful link between the climate layer and the disease layer: a rotation that reduces terminal water stress reduces charcoal rot indirectly.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "sclerotium_rolfsii",
+      "name": "Southern blight / stem rot",
+      "organism": "Athelia rolfsii (Sclerotium rolfsii)",
+      "type": "soilborne_fungus",
+      "inoculum": "sclerotia in the surface soil layer",
+      "host_crops": [
+        "groundnut",
+        "soybean",
+        "potato",
+        "cowpea",
+        "mungbean",
+        "chickpea",
+        "sunflower"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 4,
+      "recommended_return_interval_years": 3,
+      "rotation_effective": true,
+      "rotation_efficacy": "weak",
+      "notes": "Very broad host range limits rotation value. Sclerotia sit near the surface, so deep inversion tillage suppresses it - which puts it in direct conflict with the reduced-tillage practices the erosion and carbon layers will favour. Worth surfacing as an explicit trade-off rather than hiding it.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "sclerotinia_sclerotiorum",
+      "name": "Sclerotinia stem rot / white mould",
+      "organism": "Sclerotinia sclerotiorum",
+      "type": "soilborne_fungus",
+      "inoculum": "sclerotia, surviving years in soil",
+      "host_crops": [
+        "mustard",
+        "sunflower",
+        "soybean",
+        "potato",
+        "chickpea",
+        "lentil",
+        "berseem",
+        "alfalfa"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 7,
+      "recommended_return_interval_years": 4,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Cereals are true non-hosts, so a cereal break is effective - this is a case where rotation works well and the tool can say so with confidence. Favoured by dense canopies and extended leaf wetness, so the extreme-precipitation signal is a legitimate risk modifier.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "plasmodiophora_brassicae",
+      "name": "Clubroot",
+      "organism": "Plasmodiophora brassicae",
+      "type": "soilborne_protist",
+      "inoculum": "resting spores",
+      "host_crops": [],
+      "host_families": [
+        "Brassicaceae"
+      ],
+      "soil_persistence_years": 17,
+      "recommended_return_interval_years": 7,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Resting spores have been recorded surviving 15-20 years, far beyond any workable rotation - so once a field is infested, rotation manages rather than cures it. The longest persistence in this table and the reason mustard cannot be used freely as a biofumigant cover in a brassica-containing rotation. Acid soils worsen it; liming suppresses it.",
+      "confidence": "medium",
+      "presence": "regional"
+    },
+    {
+      "id": "verticillium_dahliae",
+      "name": "Verticillium wilt",
+      "organism": "Verticillium dahliae",
+      "type": "soilborne_fungus",
+      "inoculum": "microsclerotia",
+      "host_crops": [
+        "cotton",
+        "potato",
+        "sunflower",
+        "alfalfa"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 12,
+      "recommended_return_interval_years": 4,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Microsclerotia persist 10+ years and the host range spans several hundred species, so short rotations achieve little. Cereals and grasses are the reliable non-hosts. Directly constrains cotton-potato and cotton-sunflower sequences that would otherwise look attractive on water and margin grounds.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "ralstonia_solanacearum",
+      "name": "Bacterial wilt",
+      "organism": "Ralstonia solanacearum",
+      "type": "soilborne_bacterium",
+      "inoculum": "survives in soil, water and symptomless weed hosts",
+      "host_crops": [],
+      "host_families": [
+        "Solanaceae"
+      ],
+      "soil_persistence_years": 4,
+      "recommended_return_interval_years": 4,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Persists in soil water and on weed hosts, so a clean break requires weed control as well as a non-host crop - a rotation plan alone is not sufficient. Spreads in irrigation water, which makes it a field-boundary problem rather than a within-field one.",
+      "confidence": "low",
+      "presence": "regional"
+    },
+    {
+      "id": "globodera_potato_cyst",
+      "name": "Potato cyst nematode",
+      "organism": "Globodera rostochiensis / G. pallida",
+      "type": "nematode",
+      "inoculum": "cysts containing eggs, dormant for years",
+      "host_crops": [
+        "potato"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 20,
+      "recommended_return_interval_years": 6,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Eggs stay viable inside cysts for up to two decades with only a few percent hatching each year, so decline under rotation is real but slow. A regulated quarantine pest in many jurisdictions - if present, the constraint is legal, not merely agronomic, and must be flagged for official guidance rather than handled by the model.",
+      "confidence": "medium",
+      "presence": "quarantine"
+    },
+    {
+      "id": "meloidogyne_incognita",
+      "name": "Root-knot nematode",
+      "organism": "Meloidogyne incognita",
+      "type": "nematode",
+      "inoculum": "eggs and juveniles in soil and roots",
+      "host_crops": [
+        "cotton",
+        "potato",
+        "groundnut",
+        "soybean",
+        "cowpea",
+        "mungbean",
+        "sesame",
+        "maize"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 2,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Enormously broad host range, but unusually tractable because specific antagonistic crops actively suppress it rather than merely starve it - sunn hemp, sorghum-sudangrass and mustard biofumigation all reduce populations. One of the few places where the tool can recommend a cover crop for a disease reason, not just a soil reason.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "heterodera_cajani",
+      "name": "Pigeonpea cyst nematode",
+      "organism": "Heterodera cajani",
+      "type": "nematode",
+      "inoculum": "cysts in soil",
+      "host_crops": [
+        "pigeonpea",
+        "cowpea",
+        "mungbean"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 3,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Cereal breaks are effective. Relevant where pigeonpea and short pulses are stacked in consecutive seasons.",
+      "confidence": "low",
+      "presence": "regional"
+    },
+    {
+      "id": "heterodera_avenae",
+      "name": "Cereal cyst nematode",
+      "organism": "Heterodera avenae",
+      "type": "nematode",
+      "inoculum": "cysts in soil",
+      "host_crops": [
+        "wheat",
+        "barley"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 3,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "strong",
+      "notes": "A single broadleaf break year drops populations substantially. A concrete agronomic argument against continuous wheat-barley cereal sequences, independent of the nutrient argument.",
+      "confidence": "medium",
+      "presence": "regional"
+    },
+    {
+      "id": "gaeumannomyces_take_all",
+      "name": "Take-all",
+      "organism": "Gaeumannomyces tritici",
+      "type": "soilborne_fungus",
+      "inoculum": "mycelium in infected cereal root debris",
+      "host_crops": [
+        "wheat",
+        "barley"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 2,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "strong",
+      "notes": "Survives only on host debris, so one non-cereal year cuts inoculum sharply - rotation is genuinely effective here. Behaves non-monotonically under continuous cereals: severity peaks around the third or fourth consecutive crop then partially subsides as antagonistic microbes build ('take-all decline'). A simple monotonic build-up model would get this wrong, and the tool should not pretend otherwise.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "phytophthora_sojae",
+      "name": "Phytophthora root and stem rot",
+      "organism": "Phytophthora sojae",
+      "type": "soilborne_oomycete",
+      "inoculum": "oospores in soil",
+      "host_crops": [
+        "soybean"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 5,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "weak",
+      "notes": "Host-specific but oospores are long-lived, so rotation helps less than drainage does. Severity is driven by saturated soil, which ties it to the extreme-precipitation and waterlogging layer rather than to sequence choice.",
+      "confidence": "low",
+      "presence": "regional"
+    },
+    {
+      "id": "magnaporthe_oryzae",
+      "name": "Rice blast",
+      "organism": "Magnaporthe oryzae",
+      "type": "residue_borne_fungus",
+      "inoculum": "conidia on infected residue and seed; airborne spread within season",
+      "host_crops": [
+        "rice_lowland"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 1,
+      "recommended_return_interval_years": 1,
+      "rotation_effective": false,
+      "rotation_efficacy": "none",
+      "notes": "Spreads by airborne conidia within the season and carries over on residue and seed, so rotation is not a control. Listed to prevent the tool from crediting a rice-break rotation with blast reduction. Managed by resistant cultivars, nitrogen moderation and residue handling.",
+      "confidence": "medium",
+      "presence": "widespread"
+    },
+    {
+      "id": "puccinia_rusts",
+      "name": "Cereal rusts (stem, leaf, stripe)",
+      "organism": "Puccinia spp.",
+      "type": "airborne_fungus",
+      "inoculum": "urediniospores carried long distances on wind; no soil survival",
+      "host_crops": [
+        "wheat",
+        "barley"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 0,
+      "recommended_return_interval_years": 1,
+      "rotation_effective": false,
+      "rotation_efficacy": "none",
+      "notes": "Arrives on wind from outside the field, sometimes from hundreds of kilometres away, and does not survive in soil. Rotation has no effect whatsoever. Included specifically so the tool cannot claim a rust benefit from a cereal break - a common and discrediting overstatement. Control is resistant cultivars and timely fungicide, informed by temperature and humidity forecasts.",
+      "confidence": "high",
+      "presence": "widespread"
+    },
+    {
+      "id": "striga_asiatica",
+      "name": "Witchweed (Striga)",
+      "organism": "Striga asiatica / S. hermonthica",
+      "type": "parasitic_weed",
+      "inoculum": "dust-fine seed, dormant in soil for a decade or more",
+      "host_crops": [
+        "sorghum",
+        "pearl_millet",
+        "maize",
+        "finger_millet",
+        "rice_lowland"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 14,
+      "recommended_return_interval_years": 3,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Seeds persist 10-20 years, so eradication is not realistic. Rotation works through a specific mechanism worth explaining to farmers: legumes such as cowpea and sunn hemp stimulate Striga seed germination without supporting the parasite, so the seedling dies - a 'suicidal germination' trap crop that actively depletes the seed bank rather than merely starving it. Worsened by low soil nitrogen, so it couples to the N layer.",
+      "confidence": "medium",
+      "presence": "regional"
+    },
+    {
+      "id": "orobanche_crenata",
+      "name": "Broomrape (Orobanche)",
+      "organism": "Orobanche / Phelipanche spp.",
+      "type": "parasitic_weed",
+      "inoculum": "long-lived seed bank",
+      "host_crops": [
+        "mustard",
+        "chickpea",
+        "lentil",
+        "sunflower",
+        "potato"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 12,
+      "recommended_return_interval_years": 4,
+      "rotation_effective": true,
+      "rotation_efficacy": "partial",
+      "notes": "Cereals are non-hosts, so a cereal break is the practical tool. Seed bank longevity means intervals shorter than three to four years achieve little.",
+      "confidence": "low",
+      "presence": "regional"
+    },
+    {
+      "id": "alfalfa_autotoxicity",
+      "name": "Alfalfa autotoxicity",
+      "organism": "none - allelochemical, not a pathogen",
+      "type": "allelopathy",
+      "inoculum": "medicarpin and related saponins released from decaying alfalfa residue",
+      "host_crops": [
+        "alfalfa"
+      ],
+      "host_families": [],
+      "soil_persistence_years": 2,
+      "recommended_return_interval_years": 2,
+      "rotation_effective": true,
+      "rotation_efficacy": "strong",
+      "notes": "Not a disease at all, but it imposes a hard return interval: alfalfa seedlings are stunted by chemicals released from the previous alfalfa stand. Included because the rotation constraint is identical in form even though the mechanism is chemical, and omitting it would let the optimiser propose a sequence that fails in the field for reasons the disease table never mentions.",
+      "confidence": "high",
+      "presence": "widespread"
+    }
+  ]
+}
