@@ -18,7 +18,7 @@ No language model makes a decision; at most it narrates structured model output.
 | Layer | Contents | Status |
 |---|---|---|
 | Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
-| Physical models | FAO-56 ET0 **done**; dual-Kc water balance, RothC, RUSLE pending | in progress |
+| Physical models | FAO-56 ET0 and dual-Kc water balance **done**; RothC, RUSLE pending | in progress |
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
 | Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
@@ -87,6 +87,40 @@ knowing:
   not cost one day of accuracy - it corrupts every day after it. Non-finite values
   and out-of-range sentinels (`-9999`) are rejected here so they have to be handled
   in the adapter, where the fill method can be recorded.
+
+## Why the dual crop coefficient
+
+The water balance splits crop water use into transpiration through the canopy
+(Kcb) and evaporation straight off the soil surface (Ke). That split is the reason
+it is worth building rather than using a single Kc: **transpiration is water
+converted into crop growth, soil evaporation is water simply lost.** The resulting
+`evaporation_fraction` is the quantified cost of leaving ground uncovered, and it
+is invisible to a single-coefficient model.
+
+Illustrative output on synthetic semi-arid weather, 120 days from monsoon onset on
+a clay loam (`scripts/show_water_balance.py`):
+
+| | evaporated | run off | transpired |
+|---|---|---|---|
+| bare fallow | 206 mm | 213 mm | 0 mm |
+| mungbean | 116 mm | 126 mm | 198 mm |
+| sunn hemp | 54 mm | 84 mm | 327 mm |
+| sorghum-sudangrass | 52 mm | 75 mm | 355 mm |
+
+Water a cover crop uses is not water wasted - it is transpired through a canopy
+that is also building residue and holding soil. But it *is* water unavailable to
+the next crop, which is precisely why the rotation must be simulated as a sequence
+rather than scored crop by crop.
+
+Two engineering notes:
+
+- **Mass balance closure is computed, not assumed.** Every result carries a
+  `closure_residual_mm`; it holds below 1e-6 mm across crops, soils and irrigation
+  policies. A leaking water balance produces plausible-looking seasonal totals that
+  are quietly wrong.
+- **Stored soil water carries between seasons.** `run_water_balance` returns the
+  closing depletion so the rotation simulator can chain seasons: a crop that leaves
+  the profile dry is a cost to whatever follows it, and the model has to see that.
 
 ## Layout
 ```

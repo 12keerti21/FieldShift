@@ -89,6 +89,49 @@ reproduced line by line, because that needs the publication's intermediate value
 Close this when the resource list provides FAO-56 - it is the single strongest
 validation available for this module.
 
+## 2026-11-12 - Water balance, runoff and a synthetic weather generator
+268 tests.
+
+- **Dual crop coefficient, not single Kc.** The whole value of this model for
+  rotation design is separating transpiration from soil evaporation; a single Kc
+  cannot express the cost of bare ground.
+- **Mass balance closure is a computed output**, surfaced on every result. It
+  closes to ~1e-13 mm in practice and is asserted below 1e-6 across crops, soils
+  and irrigation policies.
+- **Curve number is adjusted for antecedent moisture**, not fixed. A fixed CN makes
+  the first storm after a dry spell generate the same runoff as one on an
+  already-wet profile, which is backwards, and would understate the benefit of a
+  crop that keeps the profile drawn down.
+- **Irrigation is reported gross, at the field gate.** Net-to-root understates what
+  a farmer actually has to find by the application efficiency.
+- **Seasons are run one crop occupancy at a time**, returning closing depletion, so
+  the rotation simulator chains them and stored water carries across the sequence.
+- **`subsoil_depletion_frac` is a named parameter, not a buried constant.** How
+  depleted newly-explored subsoil is assumed to be materially changes stress days
+  (tested), so it is exposed and flagged as an early target for calibration against
+  local soil moisture observations.
+- **A seeded synthetic weather generator** (`agro/synthetic.py`) exists so models
+  can be validated over multi-year runs now. Two couplings in it are deliberate:
+  wet days have a compressed diurnal temperature range and higher humidity, because
+  ET0 estimates radiation from diurnal range - a generator without that coupling
+  would produce heavy rain under cloudless skies and would flatter the water
+  balance. Archetype rainfall and annual ET0 were tuned to land in the ranges those
+  climates actually report. Every series is tagged `synthetic` in its provenance.
+- **Timing convention documented on the result:** coefficients are evaluated on
+  start-of-day soil state, depletions are recorded end-of-day. A test asserting
+  same-day consistency between the two failed for exactly this reason, which is why
+  it is now written down where consumers will read it.
+
+### Known simplifications, flagged for review
+- Flooded rice needs a percolation term the standard FAO-56 root-zone balance does
+  not provide; lowland rice results are not yet trustworthy.
+- The surface-layer balance omits the FAO-56 `Tew` term (transpiration drawn from
+  the surface layer).
+- `Ky` (FAO-33 yield response factor) is not in the crop table, so the stress index
+  is deliberately not converted into a yield number.
+- Kc_max falls back to FAO-56 reference wind and humidity when those are missing,
+  making peak soil evaporation approximate.
+
 ## Open decisions
 - [ ] Target region(s) — 2 to 3 contrasting zones, drives which datasets to pre-cache
 - [ ] Team composition / who owns which layer
