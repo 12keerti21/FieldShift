@@ -58,6 +58,37 @@ classifier, and derived FAO-56 water quantities. 106 tests.
   erodibility rather than the soil being treated as static - which is the whole
   point of simulating rotations over years.
 
+## 2026-11-12 - Weather contract and FAO-56 ET0
+Built before any dataset work, against the internal contract rather than a product.
+149 tests.
+
+- **A narrow internal data contract** (`agro/climate.py`) is what makes building
+  ahead of the resource list safe rather than a gamble. Models depend only on it;
+  adapters become thin translation layers.
+- **Penman-Monteith is used even when inputs must be estimated**, per FAO-56's own
+  recommendation, rather than silently switching to a simpler equation.
+  Hargreaves-Samani is kept as an *independent cross-check*, not a fallback - two
+  methods disagreeing is information, a silent fallback is not.
+- **Every substitution is recorded on the result** with the FAO-56 equation used,
+  and confidence degrades accordingly. Radiation weighs most: it drives the energy
+  term, so estimating it from diurnal temperature range costs more than assuming a
+  wind speed does.
+- **Rejected:** letting the models gap-fill. Filling belongs in the adapter where
+  the method can be recorded; a model that quietly interpolates produces a number
+  nobody can audit.
+
+### Validation status
+Verified against published reference values: saturation vapour pressure table
+(0-30 degC), the psychrometric constant at sea level, the slope of the vapour
+pressure curve, and extraterrestrial radiation against FAO-56 Annex 2 Table 2.6
+(equator and 20N in mid-January). Polar day/night, hemispheric symmetry including
+the orbital-eccentricity residual, and all sensitivity signs are covered.
+
+**Open gap:** the FAO-56 worked examples (Ch.4 Examples 17 and 18) are not
+reproduced line by line, because that needs the publication's intermediate values.
+Close this when the resource list provides FAO-56 - it is the single strongest
+validation available for this module.
+
 ## Open decisions
 - [ ] Target region(s) — 2 to 3 contrasting zones, drives which datasets to pre-cache
 - [ ] Team composition / who owns which layer

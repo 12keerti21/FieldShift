@@ -18,7 +18,7 @@ No language model makes a decision; at most it narrates structured model output.
 | Layer | Contents | Status |
 |---|---|---|
 | Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
-| Physical models | FAO-56 dual-Kc water balance, RothC soil carbon, RUSLE erosion | not started |
+| Physical models | FAO-56 ET0 **done**; dual-Kc water balance, RothC, RUSLE pending | in progress |
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
 | Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
@@ -70,6 +70,23 @@ Four design choices worth knowing before you edit these files:
 - **The rotation cycle is closed by default.** The checker wraps the last slot back
   to the first, which is the only way to catch a crop that returns too soon on the
   next pass.
+
+## The weather contract
+
+`src/rdss/agro/climate.py` is the seam between NASA data and the science. Models
+import from it and never touch a granule, a variable name or a product version, so
+when the dataset layer changes only the adapters move. Two consequences worth
+knowing:
+
+- **Required variables are only tmax, tmin and precipitation** - the three no
+  plausible source omits. Everything else is optional, because ET0 can be computed
+  with documented substitutions, and which substitutions were used is recorded on
+  the result rather than hidden.
+- **The series must be gap-free daily, and that is enforced.** A water balance
+  carries soil moisture from one day to the next, so a silently skipped day does
+  not cost one day of accuracy - it corrupts every day after it. Non-finite values
+  and out-of-range sentinels (`-9999`) are rejected here so they have to be handled
+  in the adapter, where the fill method can be recorded.
 
 ## Layout
 ```
