@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.env
+
+# Data: NASA granules and derived caches are large — never commit
+data/raw/
+data/interim/
+data/cache/
+*.nc
+*.nc4
+*.hdf
+*.h5
+*.tif
+*.tiff
+*.zip
+*.parquet
+
+# Node / frontend
+node_modules/
+dist/
+build/

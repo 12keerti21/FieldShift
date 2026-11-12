@@ -1,0 +1,13 @@
+# --- core numerics (pinned to what the venv was built with) ---
+numpy==2.4.6
+pandas==3.1.1
+scipy==1.17.1
+
+# --- dev ---
+pytest==9.2.0
+
+# --- added once the resource list is confirmed (do not install blind) ---
+# geospatial:   rasterio, rioxarray, xarray, geopandas, shapely, pyproj
+# NASA access:  earthaccess, requests, netCDF4, h5py
+# modeling:     scikit-learn, lightgbm
+# api/ui:       fastapi, uvicorn, pydantic
