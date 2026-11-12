@@ -17,7 +17,7 @@ No language model makes a decision; at most it narrates structured model output.
 
 | Layer | Contents | Status |
 |---|---|---|
-| Parameters | 27 crops, 19 soilborne pathogens, return-interval constraints | **done** (soil texture classes still to add) |
+| Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
 | Physical models | FAO-56 dual-Kc water balance, RothC soil carbon, RUSLE erosion | not started |
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
@@ -39,6 +39,14 @@ a RothC DPM/RPM ratio, erosion-relevant canopy cover, and trait scores.
 `src/rdss/data/pathogens.json` - 19 soilborne pathogens, nematodes, parasitic
 weeds and one allelopathy entry, each with its survival structure, persistence and
 the return interval it demands.
+
+`src/rdss/data/soils.json` - the 12 USDA texture classes with field capacity,
+wilting point, saturation, readily evaporable water, conductivity, bulk density and
+NRCS hydrologic group, plus derived FAO-56 quantities (TAW, RAW, TEW). The USDA
+texture triangle classifier in `soils.py` is the path gridded soil products take,
+since they give sand/silt/clay fractions rather than class names - and measured
+fractions are kept rather than replaced by the class centroid, because clay percent
+feeds the RothC carbon partition and the RUSLE K factor directly.
 
 Both tables are read through `rdss.data.load_registry()`, which validates them on
 load and raises rather than letting bad agronomy through silently. Review the

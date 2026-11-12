@@ -13,6 +13,7 @@ from functools import lru_cache
 from importlib import resources
 from typing import Iterable, Sequence
 
+from .soils import VALID_HYDROLOGIC_GROUPS, SoilTexture, classify_texture
 from .schema import (
     Crop,
     Economics,
@@ -77,6 +78,10 @@ def _crop(d: dict) -> Crop:
     )
 
 
+def _texture(d: dict) -> SoilTexture:
+    return SoilTexture(**{k: v for k, v in d.items()})
+
+
 def _pathogen(d: dict) -> Pathogen:
     return Pathogen(
         id=d["id"],
@@ -100,8 +105,10 @@ def _pathogen(d: dict) -> Pathogen:
 class Registry:
     crops: dict[str, Crop]
     pathogens: dict[str, Pathogen]
+    textures: dict[str, SoilTexture]
     crop_notes: dict  # provenance / known_gaps blocks, surfaced in evidence cards
     pathogen_notes: dict
+    soil_notes: dict
     c_fraction_of_dry_matter: float
 
     # ---------- lookups ----------
@@ -117,6 +124,30 @@ class Registry:
             return self.pathogens[pathogen_id]
         except KeyError:
             raise ParameterError(f"unknown pathogen id {pathogen_id!r}") from None
+
+    def texture(self, texture_id: str) -> SoilTexture:
+        try:
+            return self.textures[texture_id]
+        except KeyError:
+            raise ParameterError(f"unknown soil texture id {texture_id!r}") from None
+
+    def texture_from_fractions(
+        self, sand_pct: float, silt_pct: float, clay_pct: float
+    ) -> SoilTexture:
+        """Classify measured fractions, then keep them rather than the centroid.
+
+        This is the path gridded soil products take: SoilGrids and similar give
+        fractions, not class names.
+        """
+        from .soils import texture_with_measured_fractions
+
+        try:
+            tid = classify_texture(sand_pct, silt_pct, clay_pct)
+        except ValueError as exc:
+            raise ParameterError(str(exc)) from None
+        return texture_with_measured_fractions(
+            self.texture(tid), sand_pct, silt_pct, clay_pct
+        )
 
     def crops_in_family(self, family: str) -> list[Crop]:
         return [c for c in self.crops.values() if c.family == family]
@@ -414,6 +445,34 @@ def _validate(reg: Registry) -> None:
         if not reg.hosts(p):
             errs.append(f"{tag}: no hosts resolve")
 
+    for s in reg.textures.values():
+        tag = f"texture {s.id}"
+        total = s.sand_pct + s.silt_pct + s.clay_pct
+        if abs(total - 100.0) > 1.0:
+            errs.append(f"{tag}: fractions sum to {total:g}, expected 100")
+        if not s.theta_wp < s.theta_fc < s.theta_sat:
+            errs.append(
+                f"{tag}: water contents out of order "
+                f"(wp={s.theta_wp} fc={s.theta_fc} sat={s.theta_sat})"
+            )
+        if not 40.0 <= s.taw_mm_per_m <= 220.0:
+            errs.append(f"{tag}: TAW {s.taw_mm_per_m:.0f} mm/m outside plausible range")
+        if not 2.0 <= s.rew_mm <= 12.0:
+            errs.append(f"{tag}: REW {s.rew_mm} outside FAO-56 Table 19 range")
+        if s.ksat_mm_h <= 0:
+            errs.append(f"{tag}: non-positive Ksat")
+        if not 1.0 <= s.bulk_density_g_cm3 <= 1.8:
+            errs.append(f"{tag}: implausible bulk density {s.bulk_density_g_cm3}")
+        if s.hydrologic_group not in VALID_HYDROLOGIC_GROUPS:
+            errs.append(f"{tag}: hydrologic group {s.hydrologic_group!r} invalid")
+        if s.confidence not in VALID_CONFIDENCE:
+            errs.append(f"{tag}: confidence {s.confidence!r} invalid")
+        # A centroid that does not fall in its own class polygon means either the
+        # centroid or the classifier is wrong; both are silent, serious errors.
+        classified = classify_texture(s.sand_pct, s.silt_pct, s.clay_pct)
+        if classified != s.id:
+            errs.append(f"{tag}: centroid classifies as {classified!r}, not its own class")
+
     if errs:
         raise ParameterError("parameter table validation failed:\n  - " + "\n  - ".join(errs))
 
@@ -423,6 +482,7 @@ def load_registry() -> Registry:
     """The validated parameter tables. Cached; raises ParameterError on bad data."""
     crops_doc = _read("crops.json")
     path_doc = _read("pathogens.json")
+    soil_doc = _read("soils.json")
 
     crops = {}
     for d in crops_doc["crops"]:
@@ -436,9 +496,16 @@ def load_registry() -> Registry:
             raise ParameterError(f"duplicate pathogen id {d['id']!r}")
         pathogens[d["id"]] = _pathogen(d)
 
+    textures = {}
+    for d in soil_doc["textures"]:
+        if d["id"] in textures:
+            raise ParameterError(f"duplicate texture id {d['id']!r}")
+        textures[d["id"]] = _texture(d)
+
     reg = Registry(
         crops=crops,
         pathogens=pathogens,
+        textures=textures,
         crop_notes={
             "provenance": crops_doc["provenance"],
             "known_gaps": crops_doc["known_gaps"],
@@ -446,6 +513,10 @@ def load_registry() -> Registry:
         pathogen_notes={
             "provenance": path_doc["provenance"],
             "known_gaps": path_doc["known_gaps"],
+        },
+        soil_notes={
+            "provenance": soil_doc["provenance"],
+            "known_gaps": soil_doc["known_gaps"],
         },
         c_fraction_of_dry_matter=crops_doc["constants"]["c_fraction_of_dry_matter"],
     )

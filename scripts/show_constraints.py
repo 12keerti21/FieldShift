@@ -47,8 +47,22 @@ def main() -> int:
         for v in vs:
             print(f"         - {v.severity.upper()}: {v.describe()}")
 
+    print("\n=== Soil texture classes ===")
+    print(f"  {'class':20s} {'TAW':>8s} {'REW':>6s} {'Ksat':>8s}  grp  sand/silt/clay")
+    for s in sorted(reg.textures.values(), key=lambda s: -s.taw_mm_per_m):
+        print(
+            f"  {s.name:20s} {s.taw_mm_per_m:6.0f}mm/m {s.rew_mm:5.1f} "
+            f"{s.ksat_mm_h:7.1f}mm/h  {s.hydrologic_group}    "
+            f"{s.sand_pct:.0f}/{s.silt_pct:.0f}/{s.clay_pct:.0f}"
+        )
+
     print("\n=== Data gaps that need local review ===")
-    for note in reg.crop_notes["known_gaps"] + reg.pathogen_notes["known_gaps"]:
+    gaps = (
+        reg.crop_notes["known_gaps"]
+        + reg.pathogen_notes["known_gaps"]
+        + reg.soil_notes["known_gaps"]
+    )
+    for note in gaps:
         print(f"  - {note}")
     return 0
 

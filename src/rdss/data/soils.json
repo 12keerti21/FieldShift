@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "description": "USDA soil texture classes with the hydraulic and erosion properties the water balance and RUSLE modules need. Class centroids are PRIORS for when only a texture name is known; whenever measured sand/silt/clay fractions or local soil survey values are available they must override these.",
+  "units": {
+    "sand_pct / silt_pct / clay_pct": "percent by mass of the mineral fraction (<2mm), class centroid",
+    "theta_sat / theta_fc / theta_wp": "volumetric water content m3/m3 at saturation, field capacity (-33 kPa) and permanent wilting point (-1500 kPa)",
+    "rew_mm": "FAO-56 readily evaporable water: depth evaporable from the surface layer at the maximum rate before stage-2 drying begins",
+    "ksat_mm_h": "saturated hydraulic conductivity, mm/hour",
+    "bulk_density_g_cm3": "typical dry bulk density",
+    "hydrologic_group": "NRCS hydrologic soil group A-D, used for the SCS curve-number runoff term"
+  },
+  "provenance": [
+    "FAO Irrigation and Drainage Paper 56 (Allen et al., 1998) Table 19 - theta_fc, theta_wp and REW ranges by texture class",
+    "Rawls, Brakensiek & Saxton (1982) - saturated hydraulic conductivity and porosity by texture",
+    "Saxton & Rawls (2006) - water characteristic estimates from texture",
+    "USDA NRCS National Engineering Handbook Part 630 - hydrologic soil group assignment and curve numbers",
+    "USDA soil texture triangle (NRCS) - classification boundaries"
+  ],
+  "known_gaps": [
+    "These are class centroids. Within-class variation in theta_fc is wide (FAO-56 Table 19 quotes ranges, not points), so total available water from a texture NAME alone can be off by 30-40 percent. Measured fractions should always win.",
+    "Organic matter raises water holding capacity and lowers erodibility, and is not in this table - it enters through the RothC carbon state instead, which is the point: the simulator must let improving SOC feed back into water holding, not treat soil as static.",
+    "Stone content, hardpans, sodicity and shrink-swell cracking are all absent. Vertisols in particular crack and bypass-flow in ways a single-layer bucket model cannot represent.",
+    "Hydrologic group ignores depth to restrictive layer and water table, which NRCS uses alongside texture. A shallow soil over rock behaves like group D regardless of its texture.",
+    "theta_sat here is total porosity; effective saturation in the field is typically 85-95 percent of it because of entrapped air."
+  ],
+  "textures": [
+    {
+      "id": "sand",
+      "name": "Sand",
+      "sand_pct": 92, "silt_pct": 5, "clay_pct": 3,
+      "theta_sat": 0.43, "theta_fc": 0.12, "theta_wp": 0.045,
+      "rew_mm": 4.5, "ksat_mm_h": 210.0, "bulk_density_g_cm3": 1.60,
+      "hydrologic_group": "A",
+      "notes": "Very low water holding capacity: a crop here depends on rainfall frequency, not seasonal total, and a deep-rooted crop buys little because there is little water to reach. Drains too fast to waterlog but leaches nitrate readily.",
+      "confidence": "high"
+    },
+    {
+      "id": "loamy_sand",
+      "name": "Loamy sand",
+      "sand_pct": 82, "silt_pct": 12, "clay_pct": 6,
+      "theta_sat": 0.42, "theta_fc": 0.15, "theta_wp": 0.065,
+      "rew_mm": 6.0, "ksat_mm_h": 61.0, "bulk_density_g_cm3": 1.58,
+      "hydrologic_group": "A",
+      "notes": "Still droughty. Cover crop residue has a disproportionate effect here because surface mulch cuts the high soil evaporation these soils suffer.",
+      "confidence": "high"
+    },
+    {
+      "id": "sandy_loam",
+      "name": "Sandy loam",
+      "sand_pct": 65, "silt_pct": 25, "clay_pct": 10,
+      "theta_sat": 0.44, "theta_fc": 0.23, "theta_wp": 0.11,
+      "rew_mm": 8.0, "ksat_mm_h": 26.0, "bulk_density_g_cm3": 1.52,
+      "hydrologic_group": "A",
+      "notes": "Workable and well drained with moderate storage. Among the most erodible textures once bare, because particles detach easily and there is little clay to bind aggregates.",
+      "confidence": "high"
+    },
+    {
+      "id": "loam",
+      "name": "Loam",
+      "sand_pct": 42, "silt_pct": 40, "clay_pct": 18,
+      "theta_sat": 0.46, "theta_fc": 0.25, "theta_wp": 0.12,
+      "rew_mm": 9.0, "ksat_mm_h": 13.0, "bulk_density_g_cm3": 1.44,
+      "hydrologic_group": "B",
+      "notes": "The agronomic reference texture: good storage, good drainage, wide crop choice. Rotation changes show up here as yield and margin effects rather than as hard feasibility constraints.",
+      "confidence": "high"
+    },
+    {
+      "id": "silt_loam",
+      "name": "Silt loam",
+      "sand_pct": 20, "silt_pct": 65, "clay_pct": 15,
+      "theta_sat": 0.47, "theta_fc": 0.29, "theta_wp": 0.15,
+      "rew_mm": 9.5, "ksat_mm_h": 6.8, "bulk_density_g_cm3": 1.40,
+      "hydrologic_group": "B",
+      "notes": "High available water, but silt-dominated surfaces crust and seal under raindrop impact, so infiltration collapses mid-storm and runoff rises even on gentle slopes. One of the textures where keeping the surface covered matters most.",
+      "confidence": "high"
+    },
+    {
+      "id": "silt",
+      "name": "Silt",
+      "sand_pct": 7, "silt_pct": 87, "clay_pct": 6,
+      "theta_sat": 0.48, "theta_fc": 0.30, "theta_wp": 0.14,
+      "rew_mm": 9.5, "ksat_mm_h": 7.0, "bulk_density_g_cm3": 1.38,
+      "hydrologic_group": "B",
+      "notes": "Rare as a field texture. Highly erodible: almost no clay to stabilise aggregates and particles in the size range most easily detached and transported.",
+      "confidence": "medium"
+    },
+    {
+      "id": "sandy_clay_loam",
+      "name": "Sandy clay loam",
+      "sand_pct": 60, "silt_pct": 13, "clay_pct": 27,
+      "theta_sat": 0.42, "theta_fc": 0.26, "theta_wp": 0.16,
+      "rew_mm": 9.0, "ksat_mm_h": 4.3, "bulk_density_g_cm3": 1.50,
+      "hydrologic_group": "C",
+      "notes": "Enough clay to hold water and resist detachment, enough sand to stay workable. Prone to compaction and subsurface hardpans under machinery, which is where a deep-rooted crop such as pigeonpea earns its place.",
+      "confidence": "medium"
+    },
+    {
+      "id": "clay_loam",
+      "name": "Clay loam",
+      "sand_pct": 32, "silt_pct": 34, "clay_pct": 34,
+      "theta_sat": 0.46, "theta_fc": 0.32, "theta_wp": 0.20,
+      "rew_mm": 9.5, "ksat_mm_h": 2.3, "bulk_density_g_cm3": 1.42,
+      "hydrologic_group": "D",
+      "notes": "Good storage but slow intake, so high-intensity rainfall runs off rather than infiltrating. Narrow workable moisture window: sticky when wet, hard when dry, which is a real equipment and timing constraint for a farmer, not just a model parameter.",
+      "confidence": "high"
+    },
+    {
+      "id": "silty_clay_loam",
+      "name": "Silty clay loam",
+      "sand_pct": 10, "silt_pct": 56, "clay_pct": 34,
+      "theta_sat": 0.47, "theta_fc": 0.34, "theta_wp": 0.21,
+      "rew_mm": 9.5, "ksat_mm_h": 1.5, "bulk_density_g_cm3": 1.38,
+      "hydrologic_group": "D",
+      "notes": "High available water with poor intake. Combines silt crusting with clay's slow conductivity, so it both seals and drains slowly - waterlogging risk is real for sensitive crops.",
+      "confidence": "medium"
+    },
+    {
+      "id": "sandy_clay",
+      "name": "Sandy clay",
+      "sand_pct": 52, "silt_pct": 6, "clay_pct": 42,
+      "theta_sat": 0.43, "theta_fc": 0.30, "theta_wp": 0.21,
+      "rew_mm": 9.0, "ksat_mm_h": 1.2, "bulk_density_g_cm3": 1.48,
+      "hydrologic_group": "D",
+      "notes": "Uncommon. Clay-dominated behaviour with sand's low fertility retention.",
+      "confidence": "low"
+    },
+    {
+      "id": "silty_clay",
+      "name": "Silty clay",
+      "sand_pct": 7, "silt_pct": 47, "clay_pct": 46,
+      "theta_sat": 0.48, "theta_fc": 0.36, "theta_wp": 0.23,
+      "rew_mm": 10.0, "ksat_mm_h": 0.9, "bulk_density_g_cm3": 1.36,
+      "hydrologic_group": "D",
+      "notes": "Very slow intake and poor aeration. Rooting is often restricted by physical impedance well before water or nutrients become limiting.",
+      "confidence": "medium"
+    },
+    {
+      "id": "clay",
+      "name": "Clay",
+      "sand_pct": 22, "silt_pct": 20, "clay_pct": 58,
+      "theta_sat": 0.47, "theta_fc": 0.36, "theta_wp": 0.24,
+      "rew_mm": 10.0, "ksat_mm_h": 0.6, "bulk_density_g_cm3": 1.34,
+      "hydrologic_group": "D",
+      "notes": "Large total water store but a modest usable fraction, because much is held below wilting point. High clay also slows organic matter turnover, which RothC represents through the clay-dependent CO2 partition - so high-clay soils gain carbon more readily from the same residue input. Shrink-swell cracking creates bypass flow a single-layer bucket model cannot capture; flag this where Vertisols dominate.",
+      "confidence": "high"
+    }
+  ]
+}

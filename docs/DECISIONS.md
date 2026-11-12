@@ -37,6 +37,27 @@ Rejected alternative for the models: DSSAT/APSIM. Too heavy to calibrate inside 
 hackathon. Going with FAO-56 + RothC + RUSLE, which are published, auditable, and
 testable against reference values.
 
+## 2026-11-12 - Soil texture table added
+12 USDA classes with hydraulic and erosion properties, a texture-triangle
+classifier, and derived FAO-56 water quantities. 106 tests.
+
+- **Measured fractions override class centroids.** Clay percent drives both the
+  RothC CO2 partition and the RUSLE K factor, so discarding a measured value for a
+  centroid would corrupt two models at once. `measured_fractions` records which
+  source was used so an evidence card can state it.
+- **The classifier normalises near-100 sums.** Gridded soil products routinely sum
+  to 99 or 101 after their own rounding; rejecting those would throw away usable
+  data. Sums far from 100 still raise.
+- **Load-time self-check:** every class centroid must classify into its own class.
+  A mismatch means the centroid or the classifier is wrong, and both fail silently.
+- **Hydraulic properties stay at the centroid even when fractions are measured.**
+  Deriving them from texture needs a pedotransfer function (Saxton-Rawls or
+  similar), which is a separate decision and should not be smuggled in here.
+- **Organic matter is deliberately not a soil parameter.** It enters through the
+  RothC carbon state, so improving SOC can feed back into water holding and
+  erodibility rather than the soil being treated as static - which is the whole
+  point of simulating rotations over years.
+
 ## Open decisions
 - [ ] Target region(s) — 2 to 3 contrasting zones, drives which datasets to pre-cache
 - [ ] Team composition / who owns which layer
