@@ -1,6 +1,6 @@
 import pytest
 
-from rdss.data import load_registry
+from fieldshift.data import load_registry
 
 
 @pytest.fixture(scope="session")

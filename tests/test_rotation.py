@@ -14,9 +14,9 @@ import pathlib
 import numpy as np
 import pytest
 
-from rdss.agro.climate import Site
-from rdss.agro.et0 import et0_penman_monteith
-from rdss.agro.rotation import (
+from fieldshift.agro.climate import Site
+from fieldshift.agro.et0 import et0_penman_monteith
+from fieldshift.agro.rotation import (
     C4_CROPS,
     RESIDUE_DECAY_PER_MONTH,
     RotationError,
@@ -28,10 +28,10 @@ from rdss.agro.rotation import (
     residue_cover,
     simulate_rotation,
 )
-from rdss.agro.rothc import soc_from_organic_carbon_pct
-from rdss.agro.waterbalance import IrrigationPolicy
-from rdss.io.power import parse_power_daily
-from rdss.io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
+from fieldshift.agro.rothc import soc_from_organic_carbon_pct
+from fieldshift.agro.waterbalance import IrrigationPolicy
+from fieldshift.io.power import parse_power_daily
+from fieldshift.io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
 
 SITE = Site(38.03, -100.74, 858.0, "Finney County, Kansas")
 DATA = pathlib.Path(__file__).resolve().parents[1] / "data" / "raw"

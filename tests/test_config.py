@@ -13,7 +13,7 @@ import os
 
 import pytest
 
-from rdss import config
+from fieldshift import config
 
 
 @pytest.fixture

@@ -9,8 +9,8 @@ import dataclasses
 
 import pytest
 
-from rdss.data import ParameterError
-from rdss.data.registry import _validate
+from fieldshift.data import ParameterError
+from fieldshift.data.registry import _validate
 
 
 def test_table_loads_with_expected_shape(reg):

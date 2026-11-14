@@ -8,7 +8,7 @@ soil groups, not only the arithmetic.
 import numpy as np
 import pytest
 
-from rdss.agro.runoff import (
+from fieldshift.agro.runoff import (
     CN2_TABLE,
     cn_dry,
     cn_for_wetness,

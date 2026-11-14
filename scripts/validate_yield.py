@@ -25,13 +25,13 @@ import sys
 
 import numpy as np
 
-from rdss.agro.climate import Site
-from rdss.agro.et0 import et0_penman_monteith
-from rdss.agro.waterbalance import IrrigationPolicy, RAINFED, run_water_balance
-from rdss.config import api_key
-from rdss.data import load_registry
-from rdss.io.power import parse_power_daily
-from rdss.io.quickstats import (
+from fieldshift.agro.climate import Site
+from fieldshift.agro.et0 import et0_penman_monteith
+from fieldshift.agro.waterbalance import IrrigationPolicy, RAINFED, run_water_balance
+from fieldshift.config import api_key
+from fieldshift.data import load_registry
+from fieldshift.io.power import parse_power_daily
+from fieldshift.io.quickstats import (
     IRRIGATED,
     NON_IRRIGATED,
     NON_IRRIGATED_AFTER_FALLOW,
@@ -40,7 +40,7 @@ from rdss.io.quickstats import (
     fetch_yields,
     skill,
 )
-from rdss.io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
+from fieldshift.io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
 
 SITE = Site(38.03, -100.74, 858.0, "Finney County, Kansas")
 

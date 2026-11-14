@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sys
 
-from rdss.data import load_registry
+from fieldshift.data import load_registry
 
 CANDIDATE_ROTATIONS = [
     (["rice_lowland", "wheat"], 1, "the baseline it is usually worth challenging"),

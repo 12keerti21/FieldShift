@@ -14,7 +14,7 @@ carbon-building rotation soil-specific rather than universal.
 import numpy as np
 import pytest
 
-from rdss.agro.rothc import (
+from fieldshift.agro.rothc import (
     BARE_SOIL_TSMD_DIVISOR,
     COVERED_RATE_FACTOR,
     DPM_RPM_ARABLE,

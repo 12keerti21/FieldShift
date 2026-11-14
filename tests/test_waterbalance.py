@@ -17,10 +17,10 @@ import pathlib
 import numpy as np
 import pytest
 
-from rdss.agro.climate import DailyWeather, Site
-from rdss.agro.et0 import et0_penman_monteith
-from rdss.agro.synthetic import synthetic_weather
-from rdss.agro.waterbalance import (
+from fieldshift.agro.climate import DailyWeather, Site
+from fieldshift.agro.et0 import et0_penman_monteith
+from fieldshift.agro.synthetic import synthetic_weather
+from fieldshift.agro.waterbalance import (
     KC_MIN,
     IrrigationPolicy,
     RAINFED,
@@ -102,7 +102,7 @@ def test_the_dual_model_uses_basal_not_single_coefficients(reg):
 
     source = (
         pathlib.Path(__file__).resolve().parents[1]
-        / "src" / "rdss" / "agro" / "waterbalance.py"
+        / "src" / "fieldshift" / "agro" / "waterbalance.py"
     ).read_text()
     assert "crop.kc." not in source, (
         "the water balance must read crop.kcb, never crop.kc"

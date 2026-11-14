@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "rdss"
+name = "fieldshift"
 version = "0.0.1"
 description = "Rotation decision-support: simulate a field forward through observed NASA weather and report the bad years."
 requires-python = ">=3.11"

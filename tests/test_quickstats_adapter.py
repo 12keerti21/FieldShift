@@ -16,7 +16,7 @@ import pathlib
 import numpy as np
 import pytest
 
-from rdss.io.quickstats import (
+from fieldshift.io.quickstats import (
     NON_IRRIGATED,
     QuickStatsError,
     YieldSeries,

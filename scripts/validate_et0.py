@@ -16,10 +16,10 @@ from pathlib import Path
 
 import numpy as np
 
-from rdss.agro.climate import Site
-from rdss.agro.et0 import et0_penman_monteith
-from rdss.io.gridmet import dataset_scale_factor, parse_gridmet_csv
-from rdss.io.power import parse_power_daily
+from fieldshift.agro.climate import Site
+from fieldshift.agro.et0 import et0_penman_monteith
+from fieldshift.io.gridmet import dataset_scale_factor, parse_gridmet_csv
+from fieldshift.io.power import parse_power_daily
 
 SITE = Site(38.03, -100.74, 858.0, "Finney County, Kansas")
 POWER_CACHE = Path("data/raw/power_finney_ks_1981_2024.json")

@@ -11,8 +11,8 @@ import pathlib
 
 import pytest
 
-from rdss.data import load_registry
-from rdss.io.ssurgo import (
+from fieldshift.data import load_registry
+from fieldshift.io.ssurgo import (
     DEFAULT_SURFACE_DEPTH_CM,
     SsurgoError,
     parse_sda_tables,

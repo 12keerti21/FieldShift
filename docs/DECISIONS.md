@@ -230,7 +230,7 @@ that factor is 0.1, so an unguarded read yields 42 mm/day. That is physically
 impossible, but it is large enough to look like a credible "the model is biased"
 finding, and for one run it was reported as exactly that.
 
-- `rdss/io/gridmet.py` reads `scale_factor` and `add_offset` **from the dataset
+- `fieldshift/io/gridmet.py` reads `scale_factor` and `add_offset` **from the dataset
   metadata rather than hard-coding them**, so a repack upstream cannot silently
   rescale everything downstream.
 - It then **refuses values outside a physical range** per variable. A magnitude
@@ -245,7 +245,7 @@ finding, and for one run it was reported as exactly that.
 
 ## 2026-11-14 - SSURGO wired in; measured soil overrides centroids
 
-`rdss/io/ssurgo.py` fetches the dominant soil component at a point from USDA Soil
+`fieldshift/io/ssurgo.py` fetches the dominant soil component at a point from USDA Soil
 Data Access (SQL over REST, no credentials) and builds a `SoilTexture` backed by
 measurements.
 
@@ -282,7 +282,7 @@ proper, citable reference and the next validation to run.
 
 ## 2026-11-14 - RothC soil carbon
 
-`rdss/agro/rothc.py` implements RothC-26.3: five pools, monthly timestep, three
+`fieldshift/agro/rothc.py` implements RothC-26.3: five pools, monthly timestep, three
 rate modifiers. This is the model that makes rotation comparison worth doing -
 water stress and erosion are seasonal, but carbon is the state variable that
 remembers decades of management and that a farmer cannot see changing year to year.
@@ -323,7 +323,7 @@ soil building outright.
 
 ## 2026-11-14 - Headline validation: the model reproduces observed yield
 
-`rdss/io/quickstats.py` plus `scripts/validate_yield.py`. The model takes NASA
+`fieldshift/io/quickstats.py` plus `scripts/validate_yield.py`. The model takes NASA
 POWER weather, SSURGO soil and FAO-56 crop parameters, produces a relative
 transpiration deficit, and FAO-33's Ky maps that onto yield loss. Everything on the
 observed side comes from USDA NASS. **The model never sees a yield**, so this is an
@@ -380,7 +380,7 @@ fallow/continuous splits that CDL pixel labels do not.
 
 ## 2026-11-14 - Rotation simulator, validated against an observed rotation effect
 
-`rdss/agro/rotation.py` chains seasons so four things carry between crops: soil
+`fieldshift/agro/rotation.py` chains seasons so four things carry between crops: soil
 water, soil carbon (one continuous RothC run), surface residue, and crop history.
 Without that carry-over a rotation can only be scored crop by crop, which is the
 weighted-sum approach this project explicitly rejected.

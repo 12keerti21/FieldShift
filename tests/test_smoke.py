@@ -2,7 +2,7 @@
 Replace once the agro modules land."""
 
 def test_package_imports():
-    import rdss  # noqa: F401
+    import fieldshift  # noqa: F401
 
 
 def test_numerics_available():

@@ -1,7 +1,7 @@
 """Physical models: reference ET, water balance, soil carbon, erosion.
 
 Every model consumes the weather contract in `climate.py` and the parameter tables
-in `rdss.data`, and nothing here knows about a NASA product, a granule format or a
+in `fieldshift.data`, and nothing here knows about a NASA product, a granule format or a
 variable name. That seam is what lets the science be written and tested before the
 dataset layer exists.
 """

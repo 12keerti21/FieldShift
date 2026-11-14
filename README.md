@@ -1,7 +1,41 @@
-# rotation-dss  *(working name)*
+# FieldShift
 
-A crop-rotation decision-support tool for the NASA Space Apps challenge on
-soil health and farm resilience.
+### Rethink What Grows Next.
+
+A crop-rotation decision-support tool built on NASA Earth observations, for the
+NASA Space Apps challenge on soil health and farm resilience.
+
+---
+
+**What it does differently.** Most rotation tools score crops against a location.
+FieldShift simulates the *soil* forward - water, carbon, residue, pathogen history -
+through four decades of weather that actually happened, for every candidate
+sequence, and reports the bad years rather than the average one.
+
+**Why that matters.** A rotation effect cannot be scored crop by crop. It only
+exists across a sequence. So we tested against one that was independently observed:
+
+> USDA NASS reports dryland wheat yield separately for crops following summer
+> fallow (35.4 bu/ac) and continuous cropping (32.0 bu/ac) in our pilot county -
+> an observed advantage of **+10.8%** over 25 years.
+>
+> FieldShift, with nothing fitted to that number, produces **+15.0%**.
+
+The advantage is emergent. It comes from soil water banked through the fallow year
+and carried into the next crop. A tool that scored crops independently would show
+no difference between those two rotations at all.
+
+And the whole trade-off emerged with it, which matters more than the single number:
+
+| | wheat-fallow | continuous wheat |
+|---|---|---|
+| yield per crop | 2.72 t/ha | 2.36 t/ha |
+| **crops in 38 years** | **19** | **39** |
+| bare ground | 59.7% | 21.5% |
+| soil carbon | +0.07 t C/ha/yr | **+0.28** |
+| water lost to evaporation | 64% | 45% |
+
+Fallow wins per crop and loses on everything else. None of that was asserted.
 
 ## The spine
 
@@ -29,18 +63,18 @@ Build order and the cut line (what to drop if behind) live in `docs/DECISIONS.md
 
 ## Parameter tables (built)
 
-`src/rdss/data/crops.json` - 27 crops spanning cereals, grain legumes, oilseeds,
+`src/fieldshift/data/crops.json` - 27 crops spanning cereals, grain legumes, oilseeds,
 fibre, tuber, green manures, cover crops, perennial forage, plus an explicit bare
 fallow slot so the cost of a bare window can be quantified rather than assumed.
 Each crop carries FAO-56 Kc values and stage lengths, rooting depth and depletion
 fraction, thermal thresholds and GDD, N fixation and uptake, residue mass and C:N,
 a RothC DPM/RPM ratio, erosion-relevant canopy cover, and trait scores.
 
-`src/rdss/data/pathogens.json` - 19 soilborne pathogens, nematodes, parasitic
+`src/fieldshift/data/pathogens.json` - 19 soilborne pathogens, nematodes, parasitic
 weeds and one allelopathy entry, each with its survival structure, persistence and
 the return interval it demands.
 
-`src/rdss/data/soils.json` - the 12 USDA texture classes with field capacity,
+`src/fieldshift/data/soils.json` - the 12 USDA texture classes with field capacity,
 wilting point, saturation, readily evaporable water, conductivity, bulk density and
 NRCS hydrologic group, plus derived FAO-56 quantities (TAW, RAW, TEW). The USDA
 texture triangle classifier in `soils.py` is the path gridded soil products take,
@@ -48,7 +82,7 @@ since they give sand/silt/clay fractions rather than class names - and measured
 fractions are kept rather than replaced by the class centroid, because clay percent
 feeds the RothC carbon partition and the RUSLE K factor directly.
 
-Both tables are read through `rdss.data.load_registry()`, which validates them on
+Both tables are read through `fieldshift.data.load_registry()`, which validates them on
 load and raises rather than letting bad agronomy through silently. Review the
 derived constraints without reading code:
 
@@ -73,7 +107,7 @@ Four design choices worth knowing before you edit these files:
 
 ## The weather contract
 
-`src/rdss/agro/climate.py` is the seam between NASA data and the science. Models
+`src/fieldshift/agro/climate.py` is the seam between NASA data and the science. Models
 import from it and never touch a granule, a variable name or a product version, so
 when the dataset layer changes only the adapters move. Two consequences worth
 knowing:
@@ -170,7 +204,7 @@ showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
 
 ## Layout
 ```
-src/rdss/        engine package  (agro/ models, data/ parameter tables, io/ dataset readers)
+src/fieldshift/        engine package  (agro/ models, data/ parameter tables, io/ dataset readers)
 tests/           pytest, validated against published reference values where possible
 data/raw/        NASA granules — gitignored, never committed
 data/reference/  small committed lookup tables

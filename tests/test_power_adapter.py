@@ -17,8 +17,8 @@ import pathlib
 import numpy as np
 import pytest
 
-from rdss.agro.climate import Site
-from rdss.io.power import (
+from fieldshift.agro.climate import Site
+from fieldshift.io.power import (
     PARAMETER_MAP,
     PowerError,
     parse_power_daily,

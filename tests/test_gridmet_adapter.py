@@ -12,7 +12,7 @@ import pathlib
 import numpy as np
 import pytest
 
-from rdss.io.gridmet import (
+from fieldshift.io.gridmet import (
     PLAUSIBLE_RANGE,
     VARIABLES,
     GridmetError,

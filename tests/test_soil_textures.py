@@ -9,8 +9,8 @@ import dataclasses
 
 import pytest
 
-from rdss.data import ParameterError, classify_texture
-from rdss.data.registry import _validate
+from fieldshift.data import ParameterError, classify_texture
+from fieldshift.data.registry import _validate
 
 
 def test_all_twelve_usda_classes_present(reg):

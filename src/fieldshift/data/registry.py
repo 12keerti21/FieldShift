@@ -1,7 +1,7 @@
 """Loading, validation and derived queries over the parameter tables.
 
 Nothing here does agronomy arithmetic beyond the return-interval constraint; the
-physical models live in rdss.agro. The point of this module is that every number
+physical models live in fieldshift.agro. The point of this module is that every number
 the engine uses enters through one validated door.
 """
 
@@ -44,7 +44,7 @@ class ParameterError(ValueError):
 
 
 def _read(name: str) -> dict:
-    with resources.files("rdss.data").joinpath(name).open("r", encoding="utf-8") as fh:
+    with resources.files("fieldshift.data").joinpath(name).open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
 

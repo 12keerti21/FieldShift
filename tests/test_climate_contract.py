@@ -9,7 +9,7 @@ otherwise surface as a plausible-looking but wrong seasonal water deficit.
 import numpy as np
 import pytest
 
-from rdss.agro.climate import DailyWeather, Site, WeatherError
+from fieldshift.agro.climate import DailyWeather, Site, WeatherError
 
 
 def _dates(start: str, n: int) -> np.ndarray:

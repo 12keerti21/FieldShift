@@ -10,11 +10,11 @@ from __future__ import annotations
 
 import sys
 
-from rdss.agro.climate import Site
-from rdss.agro.et0 import et0_penman_monteith
-from rdss.agro.synthetic import annual_rainfall_mm, synthetic_weather
-from rdss.agro.waterbalance import IrrigationPolicy, run_water_balance
-from rdss.data import load_registry
+from fieldshift.agro.climate import Site
+from fieldshift.agro.et0 import et0_penman_monteith
+from fieldshift.agro.synthetic import annual_rainfall_mm, synthetic_weather
+from fieldshift.agro.waterbalance import IrrigationPolicy, run_water_balance
+from fieldshift.data import load_registry
 
 SITE = Site(17.4, 78.5, 500.0, "Deccan plateau (illustrative)")
 CLIMATE = "semi_arid_monsoon"
