@@ -252,6 +252,11 @@ have fetched or a citation we can point at. An earlier run attributed a residual
 a "+18% ET0 bias" on the strength of a *remembered* climatology figure; gridMET
 showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
 
+**For judges and reviewers:** `docs/SUBMISSION.md` is the project page with every
+claim and how to reproduce it. `docs/DEMO.md` is the spoken demo script.
+`docs/DECISIONS.md` is a dated log of every design decision, every alternative
+rejected, and every error we found in our own model.
+
 ## Running it
 
 ```bash
