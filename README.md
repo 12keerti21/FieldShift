@@ -160,6 +160,32 @@ Two engineering notes:
 
 All against independently observed data. The model never sees a yield.
 
+### It works away from the field it was built on
+
+Everything was developed and debugged at one point in Finney County, Kansas. The
+same engine, with **no per-site adjustment of any kind**, run at four contrasting
+sites against observed county yield:
+
+| site | rainfall | soil available water | dryland skill vs detrended yield |
+|---|---|---|---|
+| Finney, KS | 541 mm | 212 mm/m silt loam | corn **+0.50**, sorghum **+0.42**, wheat **+0.61** |
+| Sedgwick, KS | 841 mm | 200 mm/m silt loam | corn **+0.52**, sorghum **+0.70**, wheat +0.15 ns |
+| Holt, NE | 651 mm | **84 mm/m loamy sand** | corn **+0.70**, wheat **+0.57**, sorghum +0.06 ns |
+| Hale, TX | 503 mm | 178 mm/m clay loam | wheat **+0.51**, sorghum +0.18 ns |
+
+**11 of 11 dryland combinations show positive skill; 8 of 11 reach p<0.05.** Mean
+r = +0.447. The range matters more than the mean: it holds across a 2.5-fold
+difference in soil water-holding capacity, including a Sandhills loamy sand that
+holds 84 mm/m against the pilot field's 212.
+
+Three combinations are not significant and are named rather than explained away:
+sorghum at Holt and Hale, and wheat at Sedgwick. Irrigated combinations average
+r = +0.007 - **as expected**, since irrigation exists to decouple yield from
+weather.
+
+Dryland corn yield penalty, absolute magnitude across three sites: mean absolute
+error **6.0%** (observed 57-69%, predicted 45-67%).
+
 | Our output | Independent reference | Result |
 |---|---|---|
 | FAO-56 Penman-Monteith ET0 | gridMET published 4 km grass ETo | **-3.2%** over 40 yr, daily r = 0.966, RMSE 0.70 mm/d |
@@ -194,6 +220,7 @@ Reproduce any of it:
 ```bash
 PYTHONPATH=src ./.venv/bin/python scripts/validate_et0.py     # vs gridMET
 PYTHONPATH=src ./.venv/bin/python scripts/validate_yield.py   # vs NASS yields
+PYTHONPATH=src ./.venv/bin/python scripts/validate_multisite.py  # 4 sites
 PYTHONPATH=src ./.venv/bin/python scripts/show_carbon.py      # 41-yr RothC runs
 ```
 

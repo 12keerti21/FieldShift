@@ -688,6 +688,41 @@ only part of a rotation would penalise diversification for being diversified. Ei
 every price is given, or the economic objective stays physical production - which is
 the default, since the crop table will not invent market data.
 
+## 2026-11-14 - Multi-site validation: the model transfers
+
+The largest weakness in the project was that everything had been developed,
+debugged and validated at a single point. A model tuned at one location has no
+demonstrated right to be used anywhere else, and a rotation tool that works on one
+field is not a tool.
+
+The same engine, **no per-site adjustment of any kind** - soil from SSURGO at each
+point, weather from POWER, the same crop table - run at four contrasting sites:
+
+| site | rainfall | available water | dryland skill |
+|---|---|---|---|
+| Finney, KS | 541 mm | 212 mm/m silt loam | corn +0.50, sorghum +0.42, wheat +0.61 |
+| Sedgwick, KS | 841 mm | 200 mm/m silt loam | corn +0.52, sorghum +0.70, wheat +0.15 ns |
+| Holt, NE | 651 mm | 84 mm/m loamy sand | corn +0.70, wheat +0.57, sorghum +0.06 ns |
+| Hale, TX | 503 mm | 178 mm/m clay loam | wheat +0.51, sorghum +0.18 ns |
+
+**11 of 11 dryland combinations positive, 8 of 11 significant at p<0.05, mean
+r = +0.447.** The soil range matters more than the climate range: the Sandhills
+site holds 84 mm/m against the pilot field's 212, so this is not a model that only
+works on a silt loam.
+
+Irrigated combinations average r = +0.007. That is the expected result and was
+predicted before measuring: irrigation exists to decouple yield from weather.
+
+Absolute magnitude also transfers - dryland corn yield penalty across three sites
+has a mean absolute error of 6.0 percent (observed 57-69, predicted 45-67).
+
+Three combinations are not significant: sorghum at Holt and at Hale, wheat at
+Sedgwick. They are named rather than explained away. A tidy story was available
+(skill should fall where water is not binding) but it does not survive the data -
+mean skill by site is Finney 0.51, Sedgwick 0.46, Holt 0.44, Hale 0.34, and the
+driest site has the lowest skill, which is the opposite of that hypothesis. So no
+explanation is offered.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
