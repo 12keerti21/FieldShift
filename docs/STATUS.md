@@ -1,7 +1,7 @@
 # Project status — what is done, what is not
 
 Verified against the repository, not written from memory.
-**31 commits · 791 tests passing · 40 source modules · 31 test files · 17 API routes**
+**34 commits · 816 tests passing · 42 source modules · 33 test files · 19 API routes**
 
 ---
 
@@ -19,6 +19,7 @@ Verified against the repository, not written from memory.
 | Erosion | RUSLE water erosion + a wind exposure index | done |
 | Runoff | Curve number, adjusted for how wet the soil already is | done |
 | Rotation simulator | Chains crops so one season's leftover water and residue carry into the next | done |
+| **Climate stress test** | Replays the 41 years hotter and/or drier and re-simulates everything | done |
 
 ### The decision layer
 - Enumerates every rotation, removes duplicates, **explains every rejection**
@@ -28,7 +29,7 @@ Verified against the repository, not written from memory.
 - Guardrails screen each crop against the local record
 
 ### Data adapters (all working)
-NASA POWER · NASADEM · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET · **India-WRIS groundwater**
+NASA POWER · NASADEM · **NASA AppEEARS (MODIS NDVI)** · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET · India-WRIS groundwater
 
 ### Regions
 - **Tier 1 — US High Plains:** 4 fields (KS ×2, NE, TX), 8 rotation patterns, validated
@@ -51,7 +52,7 @@ NASA POWER · NASADEM · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET 
 **12 bugs found in our own model, all documented.**
 
 ### The product
-- **5 screens:** Analyse · Field · Rotations · Compare · Evidence · Validation
+- **7 screens:** Analyse · Field · Rotations · Compare · Evidence · **Climate stress** · Validation
 - Sidebar navigation, light/dark, flip cards, live chart, rotation calendar strips
 - Works down to phone width
 - **Live analysis of any point on Earth** — ~30 seconds for a US field
@@ -73,8 +74,8 @@ NASA POWER · NASADEM · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET 
 ### 🟡 Would meaningfully improve scoring
 | Item | Why | Effort |
 |---|---|---|
-| **Climate scenario mode** | Judges ask for it; the machinery already exists — perturb weather +2 °C / −20% rain and re-run | ~30 min |
-| **NDVI validation of bare ground** | Fixes two problems at once: validates the one measure we can't check anywhere, *and* adds a NASA dataset used as evidence rather than decoration | 2–3 hrs |
+| ~~Climate scenario mode~~ | ✅ **DONE** — 6 named stress tests, ~26 s each on a precomputed field | — |
+| ~~NDVI validation~~ | 🔄 **IN PROGRESS** — adapter and validation script built and tested; waiting on the NASA AppEEARS task to finish so the numbers can be produced | — |
 
 ### 🟢 Real gaps, honestly stated, not fixable today
 | Gap | Status |
@@ -84,7 +85,7 @@ NASA POWER · NASADEM · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET 
 | **India water off 5–13×** | Our model doesn't know canal irrigation exists. Needs a district water budget |
 | **No money** | No prices, subsidies, or markets. The crop table refuses to invent them |
 | **No methane** | Flooded rice emits it; we don't model it, so our carbon figure flatters rice |
-| **Only 2 NASA datasets** | POWER and NASADEM. Deep, but narrow next to teams listing six |
+| **3 NASA datasets** | POWER, NASADEM and MODIS NDVI via AppEEARS. Deeper than most, still narrower than teams listing six |
 | **OpenET blocked** | Returns HTTP 408, server-side credential error. Tried, logged, failed |
 | **Jobs are in-memory** | On-demand results vanish if the server restarts. Precomputed ones don't |
 | **SoilGrids rate-limits** | Global soil can be unavailable for long stretches; US falls back to SSURGO automatically |
@@ -93,13 +94,13 @@ NASA POWER · NASADEM · USDA SSURGO · ISRIC SoilGrids · USDA NASS · gridMET 
 
 ## If you have one hour
 
-1. **Record the 30-second video** — it's the only true zero on this list
-2. Build the **climate scenario mode** (~30 min) — turns a trap question into a live demo
+1. **Record the 30-second video** — it is now the only true zero on this list
+2. Finish the NDVI validation once the AppEEARS task lands (the code is ready)
 
 ## If you have one day
 
-3. **NDVI validation** — the highest-value technical work left
-4. Show it to **one actual farmer or agronomist** and write down what they say
+3. Show it to **one actual farmer or agronomist** and write down what they say
+4. Add a second non-US district, now that the groundwater adapter works
 
 ---
 

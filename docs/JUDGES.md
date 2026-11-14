@@ -12,10 +12,10 @@ checks, and judges do check. Each has a strong honest answer.
 
 | The question | The honest answer |
 |---|---|
-| *"Which NASA products — SMAP, ECOSTRESS, GPM, Landsat?"* | **We use NASA POWER and NASADEM. Not SMAP, not ECOSTRESS, not GPM, not Landsat.** Say so, then pivot to depth and validation (below). |
+| *"Which NASA products — SMAP, ECOSTRESS, GPM, Landsat?"* | **We use NASA POWER, NASADEM, and MODIS NDVI via AppEEARS. Not SMAP, not ECOSTRESS, not GPM, not Landsat.** Say so, then pivot to depth and validation (below). |
 | *"How does your AI translate anomalies into advice?"* | **It doesn't, deliberately.** No language model touches a recommendation at runtime. See Creativity Q2. |
-| *"What makes your What-If climate simulator interactive?"* | **We don't have a climate scenario simulator.** We have live priority re-ranking (10 ms) and an 18-perturbation sensitivity sweep. Say what we have. |
-| *"How do you handle cloud cover gaps?"* | **We have no cloud gaps, because we use no optical imagery.** POWER is reanalysis-based. This is a genuinely good answer — give it confidently. |
+| *"What makes your What-If climate simulator interactive?"* | ✅ **We have one now.** Six named stress tests, ~26 s each. But be precise: it is a **stress test, not a projection** — we replay the observed record with an offset. Say that before they ask. |
+| *"How do you handle cloud cover gaps?"* | **Two different answers, and both are good.** Our *driving* data is reanalysis, so no cloud gaps at all. Our *validation* data (MODIS NDVI) is optical, so we screen on the product's pixel reliability band — and a test proves ignoring it would report a never-bare field as 40% bare. |
 
 **Rule for the day: never name a dataset we do not load.** Our whole pitch is
 auditability. One invented citation destroys it.
@@ -108,7 +108,19 @@ Then we state the mismatch rather than implying 52 km data is field-scale.
 > deterministically from the model's own numbers, so you can trace any sentence
 > back to the physics that made it."
 
-### Instead of a climate simulator
+### Climate stress testing — what to say
+
+> "We replay the same forty-one years with every day two degrees hotter and ten
+> percent drier, and re-simulate everything. At our Kansas field that drops
+> current practice by 28% and degrades the soil twice as fast — but the number of
+> rotations that beat it goes **up**, from four to five. The case for changing
+> gets stronger under stress, not weaker."
+
+**Say the limit in the same breath:** *"It's a stress test, not a climate
+projection. We're replaying real weather with an offset — we don't have a climate
+model, and we don't pretend to."*
+
+### Also
 - **Live re-ranking:** physics precomputed (1 min), preferences applied in **10 ms**.
   Move a slider, the answer moves instantly.
 - **Sensitivity sweep:** 18 systematic perturbations; **18/18** leave the leading
@@ -134,11 +146,23 @@ Then we state the mismatch rather than implying 52 km data is field-scale.
 
 **NASADEM** — 30 m elevation → slope → RUSLE LS factor.
 
-### Data gaps — a strong answer
-> "We have no cloud gaps, because we use no optical imagery. POWER is
-> reanalysis-based. What we *do* enforce is a **gap-free daily record**: sentinel
-> values are rejected, and the model **refuses to gap-fill** — that belongs in an
-> adapter where it can be declared, not buried in physics."
+**MODIS MOD13Q1 NDVI**, via NASA AppEEARS — 16-day, 250 m, 2003–2024. Used as
+**evidence, not decoration**: it validates our bare-ground measure, which was the
+only one of our six that nothing else could check.
+
+### Data gaps — answer it in two halves
+
+> "Our *driving* data has no cloud gaps at all, because POWER is reanalysis, not
+> imagery. What we enforce there is a **gap-free daily record** — sentinels are
+> rejected and the model **refuses to gap-fill**, because that belongs in an
+> adapter where it can be declared, not buried in physics.
+>
+> Our *validation* data does face cloud, because MODIS is optical. We screen on
+> the product's own pixel reliability band and keep good and marginal pixels
+> only. That matters seasonally: in a monsoon climate the cloud arrives exactly
+> when the crop is densest, so keeping cloudy pixels would make the greenest
+> season read as bare ground. We have a test showing that ignoring it would
+> report a field that is **never** bare as **40% bare**."
 
 ### Established agronomic science — name them
 | Model | Published basis |
