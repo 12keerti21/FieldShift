@@ -46,12 +46,15 @@ pytestmark = pytest.mark.skipif(
 
 PATTERNS = (
     YearPattern("fallow", "fallow", ()),
-    YearPattern("wheat", "winter wheat", (SeasonPlan("wheat_winter", 274, 285),)),
-    YearPattern("sorghum", "grain sorghum", (SeasonPlan("sorghum", 152, 125),)),
+    YearPattern("wheat", "winter wheat",
+                (SeasonPlan("wheat_winter", 274, 285, fertiliser_n_kg_ha=70.0),)),
+    YearPattern("sorghum", "grain sorghum",
+                (SeasonPlan("sorghum", 152, 125, fertiliser_n_kg_ha=50.0),)),
     YearPattern("corn_irr", "corn (irr)",
-                (SeasonPlan("maize", 125, 150, irrigation=PIVOT),)),
+                (SeasonPlan("maize", 125, 150, irrigation=PIVOT,
+                            fertiliser_n_kg_ha=200.0),)),
     YearPattern("sorg_cover", "sorghum + rye",
-                (SeasonPlan("sorghum", 152, 125),
+                (SeasonPlan("sorghum", 152, 125, fertiliser_n_kg_ha=50.0),
                  SeasonPlan("cereal_rye_cover", 288, 70))),
 )
 

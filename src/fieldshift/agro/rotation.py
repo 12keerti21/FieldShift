@@ -6,8 +6,15 @@ is the point. Four things carry from one crop to the next:
     soil water      a crop that empties the profile is a cost to its successor,
                     and a fallow that conserves water is a gift to it
     soil carbon     one continuous RothC run across the whole sequence
+    soil nitrogen   straw locks it up, legumes leave a credit, fallow leaches it
     surface residue the previous crop's straw suppresses evaporation for the next
     crop history    return intervals only exist across a sequence
+
+Carbon and nitrogen advance month by month alongside the season loop rather than
+being aggregated afterwards, because nitrogen supply has to be known BEFORE a
+yield can be computed and a yield has to be known before its residue can be
+returned. Residue therefore enters the soil at harvest, not spread evenly across
+the season - which is both causally correct and what actually happens.
 
 Without that carry-over, a rotation can only be scored crop by crop, which is
 exactly the weighted-sum approach this project rejected. The test of whether the
@@ -26,11 +33,21 @@ from ..data.registry import Registry
 from ..data.schema import Crop
 from ..data.soils import SoilTexture
 from .climate import DailyWeather
+from .nitrogen import (
+    NitrogenFluxes,
+    NitrogenState,
+    fixation,
+    initial_nitrogen_pools,
+    nitrogen_step,
+    nitrogen_stress_factor,
+)
 from .rothc import (
     DPM_RPM_ARABLE,
+    CarbonFlows,
     RothCPools,
     RothCResult,
     initialise_from_measured_soc,
+    rothc_step_detailed,
     run_rothc,
 )
 from .waterbalance import (
@@ -78,6 +95,7 @@ class SeasonPlan:
     duration_days: int | None = None
     irrigation: IrrigationPolicy = RAINFED
     residue_removed_fraction: float = 0.0
+    fertiliser_n_kg_ha: float = 0.0
     year_offset: int = 0  # which year of the cycle this season sits in
 
     def __post_init__(self) -> None:
@@ -87,6 +105,8 @@ class SeasonPlan:
             raise RotationError("residue_removed_fraction must be in [0, 1]")
         if self.year_offset < 0:
             raise RotationError("year_offset cannot be negative")
+        if self.fertiliser_n_kg_ha < 0.0:
+            raise RotationError("fertiliser cannot be negative")
 
 
 @dataclass(frozen=True)
@@ -123,6 +143,7 @@ class FieldState:
     root_depletion_frac: float
     surface_depletion_frac: float
     carbon: RothCPools
+    nitrogen: NitrogenState | None = None
     surface_residue_t_ha: float = 0.0
 
     @property
@@ -147,10 +168,20 @@ class SeasonOutcome:
     residue_returned_t_ha: float
     carbon_input_t_ha: float
     is_fallow: bool
+    nitrogen_demand_kg_ha: float = 0.0
+    nitrogen_supplied_kg_ha: float = 0.0
+    nitrogen_fixed_kg_ha: float = 0.0
+    nitrogen_factor: float = 1.0
+    water_factor: float = 1.0
+    limiting_factor: str = "none"
 
     @property
     def yield_loss_fraction(self) -> float | None:
         return None if self.relative_yield is None else 1.0 - self.relative_yield
+
+    @property
+    def nitrogen_limited(self) -> bool:
+        return self.limiting_factor == "nitrogen"
 
 
 @dataclass(frozen=True)
@@ -163,6 +194,7 @@ class RotationOutcome:
     final_state: FieldState
     bare_days: int
     total_days: int
+    nitrogen_fluxes: tuple[NitrogenFluxes, ...] = field(default_factory=tuple)
     notes: tuple[str, ...] = field(default_factory=tuple)
 
     # ---- water ----
@@ -224,6 +256,24 @@ class RotationOutcome:
     # ---- carbon ----
 
     @property
+    def nitrogen_limited_seasons(self) -> int:
+        """Seasons where nitrogen, not water, capped the yield.
+
+        A rotation that is repeatedly nitrogen-limited is telling the farmer
+        something different from one that is water-limited, and the two call for
+        opposite responses.
+        """
+        return sum(1 for s in self.seasons if s.nitrogen_limited)
+
+    @property
+    def total_nitrogen_fixed_kg_ha(self) -> float:
+        return sum(s.nitrogen_fixed_kg_ha for s in self.seasons)
+
+    @property
+    def total_nitrogen_leached_kg_ha(self) -> float:
+        return sum(f.leached for f in self.nitrogen_fluxes)
+
+    @property
     def carbon_change_t_ha(self) -> float:
         return self.carbon.change_t_ha
 
@@ -241,6 +291,9 @@ class RotationOutcome:
             "runoff_mm": self.total_runoff_mm,
             "carbon_change_t_ha": self.carbon_change_t_ha,
             "carbon_change_t_ha_per_year": self.carbon_change_per_year(years),
+            "nitrogen_fixed_kg_ha": self.total_nitrogen_fixed_kg_ha,
+            "nitrogen_leached_kg_ha": self.total_nitrogen_leached_kg_ha,
+            "nitrogen_limited_seasons": float(self.nitrogen_limited_seasons),
         }
 
 
@@ -351,6 +404,7 @@ def simulate_rotation(
     initial_root_depletion_frac: float = 0.3,
     initial_surface_depletion_frac: float = 0.7,
     initial_residue_t_ha: float = 1.0,
+    initial_mineral_n_kg_ha: float = 25.0,
     bare_profile_depth_m: float = 1.5,
     initial_carbon_pools: RothCPools | None = None,
 ) -> RotationOutcome:
@@ -412,24 +466,84 @@ def simulate_rotation(
             "differences in their spin-up"
         )
 
-    # --- walk the timeline ---
+    # --- monthly axis for carbon and nitrogen ---
+    sim_months = np.unique(month_keys)
+    month_index = {m: i for i, m in enumerate(sim_months)}
+    n_months = len(sim_months)
+    m_temp = np.array([weather.tmean_c[month_keys == m].mean() for m in sim_months])
+    m_rain = np.array([weather.precip_mm[month_keys == m].sum() for m in sim_months])
+    m_et0 = np.array([et0_mm[month_keys == m].sum() for m in sim_months])
+    m_carbon = np.zeros(n_months)
+    m_irrigation = np.zeros(n_months)
+    m_covered = np.zeros(n_months, dtype=bool)
+    m_drainage = np.zeros(n_months)
+
+    nitrogen = NitrogenState(
+        initial_mineral_n_kg_ha, initial_nitrogen_pools(pools)
+    )
+    carbon_pools = pools
+    soc_trace = [pools.total]
+    co2_trace: list[float] = []
+    tsmd_trace: list[float] = []
+    rate_trace: list[float] = []
+    fluxes: list[NitrogenFluxes] = []
+    cursor_month = 0
+    total_carbon_in = 0.0
+    tsmd = 0.0
+
+    def advance_to(target_month: int, residue_cn: float) -> float:
+        """Step carbon and nitrogen forward, returning nitrogen taken up on the way."""
+        nonlocal carbon_pools, nitrogen, cursor_month, tsmd, total_carbon_in
+        uptake = 0.0
+        while cursor_month < min(target_month, n_months):
+            i = cursor_month
+            before = carbon_pools
+            carbon_pools, flows = rothc_step_detailed(
+                carbon_pools, clay_pct=soil.clay_pct, temp_c=float(m_temp[i]),
+                rain_mm=float(m_rain[i]), et0_mm=float(m_et0[i]),
+                covered=bool(m_covered[i]), carbon_input_t_ha=float(m_carbon[i]),
+                irrigation_mm=float(m_irrigation[i]),
+                dpm_rpm_ratio=DPM_RPM_ARABLE, previous_tsmd_mm=tsmd,
+            )
+            tsmd = flows.tsmd_mm
+            total_carbon_in += float(m_carbon[i])
+            nitrogen, flux = nitrogen_step(
+                nitrogen, flows, before, residue_cn=residue_cn,
+                fixed_kg_n_ha=float(m_fixation[i]),
+                fertiliser_kg_n_ha=float(m_fertiliser[i]),
+                demand_kg_n_ha=float(m_demand[i]),
+                deep_percolation_mm=float(m_drainage[i]),
+                rootzone_water_mm=max(soil.taw_mm(1.0), 1.0),
+                soil_is_wet=bool(m_drainage[i] > 5.0),
+            )
+            uptake += flux.taken_up
+            fluxes.append(flux)
+            soc_trace.append(carbon_pools.total)
+            co2_trace.append(flows.co2)
+            tsmd_trace.append(flows.tsmd_mm)
+            rate_trace.append(flows.rate_modifier)
+            cursor_month += 1
+        return uptake
+
+    m_demand = np.zeros(n_months)
+    m_fixation = np.zeros(n_months)
+    m_fertiliser = np.zeros(n_months)
+
     state = FieldState(
         root_depletion_frac=initial_root_depletion_frac,
         surface_depletion_frac=initial_surface_depletion_frac,
         carbon=pools,
+        nitrogen=nitrogen,
         surface_residue_t_ha=initial_residue_t_ha,
     )
     outcomes: list[SeasonOutcome] = []
     first_day, last_day = slots[0][2], slots[-1][2] + slots[-1][3]
-    daily_carbon = np.zeros(len(weather))
-    daily_covered = np.zeros(len(weather), dtype=bool)
-    daily_irrigation = np.zeros(len(weather))
     bare_days = 0
     cursor = first_day
     last_decomposition = "medium"
+    last_residue_cn = 60.0
 
     def run_window(crop: Crop, start: int, duration: int, season: SeasonPlan | None):
-        nonlocal state
         policy = season.irrigation if season else RAINFED
         return run_water_balance(
             crop, soil, weather, et0_mm,
@@ -440,7 +554,7 @@ def simulate_rotation(
             bare_profile_depth_m=bare_profile_depth_m,
         )
 
-    def advance(result: WaterBalanceResult, start: int, duration: int) -> None:
+    def carry_water(result: WaterBalanceResult, start: int, duration: int) -> None:
         nonlocal state
         taw_end = float(result.taw_mm[-1])
         tew = soil.tew_mm(0.10)
@@ -451,26 +565,36 @@ def simulate_rotation(
             surface_depletion_frac=float(np.clip(result.final_surface_depletion_mm / tew, 0, 1))
             if tew > 0 else state.surface_depletion_frac,
         )
-        daily_irrigation[start:start + duration] = result.irrigation_applied_mm
+        # Record the month-by-month water terms carbon and nitrogen need.
+        for day in range(start, min(start + duration, len(weather))):
+            i = month_index[month_keys[day]]
+            m_irrigation[i] += float(result.irrigation_applied_mm[day - start])
+            m_drainage[i] += float(result.deep_percolation_mm[day - start])
 
     for year, season, start, duration in slots:
         # Bare gap before this crop.
         if start > cursor:
             gap = start - cursor
             gap_result = run_window(fallow, cursor, gap, None)
-            advance(gap_result, cursor, gap)
+            carry_water(gap_result, cursor, gap)
+            for day in range(cursor, min(cursor + gap, len(weather))):
+                m_covered[month_index[month_keys[day]]] = False
+            advance_to(month_index[month_keys[min(start, len(weather) - 1)]],
+                       last_residue_cn)
             state = replace(
                 state,
                 surface_residue_t_ha=decay_residue(
                     state.surface_residue_t_ha, last_decomposition, gap / 30.4
                 ),
+                nitrogen=nitrogen,
             )
             bare_days += gap
             outcomes.append(
                 SeasonOutcome(
                     year=int(weather.year[cursor]), crop_id="fallow_bare",
                     crop_name=fallow.name, start_index=cursor, duration_days=gap,
-                    water=gap_result, residue_cover_at_sowing=state.residue_cover_fraction,
+                    water=gap_result,
+                    residue_cover_at_sowing=state.residue_cover_fraction,
                     relative_yield=None, yield_t_ha=None, above_ground_dm_t_ha=0.0,
                     residue_returned_t_ha=0.0, carbon_input_t_ha=0.0, is_fallow=True,
                 )
@@ -479,24 +603,78 @@ def simulate_rotation(
         crop = registry.crop(season.crop_id)
         cover_at_sowing = state.residue_cover_fraction
         result = run_window(crop, start, duration, season)
+        carry_water(result, start, duration)
+        for day in range(start, min(start + duration, len(weather))):
+            m_covered[month_index[month_keys[day]]] = True
+
+        attainable = crop.economics.yield_t_ha[2]  # FAO-33 Ym, water-unlimited
+        deficit = result.relative_transpiration_deficit
+        relative_transpiration = max(1.0 - deficit, 0.0)
+
+        # Nitrogen is settled on a SEASONAL balance, not month by month.
+        #
+        # Spreading demand across the months and capping uptake monthly rationed the
+        # crop against whatever happened to be mineralised in each individual month,
+        # discarding unmet demand instead of letting nitrogen accumulate. On a cold
+        # winter-wheat season that starved the crop: 11 kg N/ha supplied against 117
+        # demanded, an N factor of 0.10, and yields of 0.43 t/ha against an observed
+        # 2.4. A crop takes nitrogen up when it is there, so nitrogen accumulates
+        # through the season and uptake is settled at harvest.
+        demand = crop.nitrogen.n_uptake_kg_per_t_product * attainable
+        fixed_total = fixation(crop.nitrogen.bnf_mid, relative_transpiration)
+        season_months = sorted({
+            month_index[month_keys[d]]
+            for d in range(start, min(start + duration, len(weather)))
+        })
+        if season_months and fixed_total > 0.0:
+            for i in season_months:
+                m_fixation[i] += fixed_total / len(season_months)
+        # Fertiliser goes on at or near sowing, not averaged over the season.
+        if season_months and season.fertiliser_n_kg_ha > 0.0:
+            for i in season_months[: min(2, len(season_months))]:
+                m_fertiliser[i] += season.fertiliser_n_kg_ha / min(2, len(season_months))
+
+        harvest_month = season_months[-1] if season_months else cursor_month
+        advance_to(harvest_month + 1, last_residue_cn)
+        supplied = min(demand, nitrogen.mineral_n_kg_ha)
+        nitrogen = replace(nitrogen, mineral_n_kg_ha=nitrogen.mineral_n_kg_ha - supplied)
 
         ky = crop.ky
-        deficit = result.relative_transpiration_deficit
-        loss = ky.relative_yield_loss(deficit)
-        relative_yield = None if loss is None else 1.0 - loss
-        attainable = crop.economics.yield_t_ha[2]  # water-unlimited potential, FAO-33 Ym
-        yield_t_ha = None if relative_yield is None else relative_yield * attainable
+        water_factor = 1.0 - (ky.relative_yield_loss(deficit) or 0.0)
+        n_factor = nitrogen_stress_factor(supplied, demand)
+        if ky.is_known:
+            # Liebig: the binding constraint sets the ceiling. Multiplying would
+            # charge the crop twice for the same lost growth.
+            relative_yield = max(min(water_factor, n_factor), 0.0)
+            yield_t_ha = relative_yield * attainable
+            limiting = "nitrogen" if n_factor < water_factor - 1e-9 else "water"
+            if min(water_factor, n_factor) > 0.999:
+                limiting = "none"
+        else:
+            relative_yield = None
+            yield_t_ha = None
+            limiting = "none"
 
         dm = above_ground_dry_matter(crop, yield_t_ha, result.total_transpiration_mm)
         carbon, straw_left = carbon_input_from_crop(
             crop, dm, season.residue_removed_fraction
         )
-
-        daily_carbon[start:start + duration] = carbon / duration
-        daily_covered[start:start + duration] = True
-        advance(result, start, duration)
-        state = replace(state, surface_residue_t_ha=straw_left)
+        # Residue enters the month AFTER harvest. The harvest month itself has
+        # already been stepped - advancing through it is what made the nitrogen
+        # supply known - so writing carbon there would silently discard it. That
+        # bug showed as a carbon change identical whether straw was baled or
+        # retained, which is the symptom to watch for.
+        residue_month = harvest_month + 1
+        if 0 <= residue_month < n_months:
+            m_carbon[residue_month] += carbon
+        elif carbon > 0.0:
+            notes.append(
+                f"{crop.name} residue at the end of the record ({carbon:.2f} t C/ha) "
+                "falls outside the simulated window and is not credited"
+            )
+        last_residue_cn = crop.residue.cn_ratio or 60.0
         last_decomposition = crop.residue.decomposition
+        state = replace(state, surface_residue_t_ha=straw_left, nitrogen=nitrogen)
 
         outcomes.append(
             SeasonOutcome(
@@ -506,28 +684,29 @@ def simulate_rotation(
                 relative_yield=relative_yield, yield_t_ha=yield_t_ha,
                 above_ground_dm_t_ha=dm, residue_returned_t_ha=straw_left,
                 carbon_input_t_ha=carbon, is_fallow=False,
+                nitrogen_demand_kg_ha=demand, nitrogen_supplied_kg_ha=supplied,
+                nitrogen_fixed_kg_ha=fixed_total, nitrogen_factor=n_factor,
+                water_factor=water_factor, limiting_factor=limiting,
             )
         )
         cursor = start + duration
 
-    # --- one continuous carbon run over the simulated window ---
-    window = slice(first_day, last_day)
-    sim_keys = month_keys[window]
-    sim_months = np.unique(sim_keys)
-    carbon_monthly = np.array([daily_carbon[window][sim_keys == k].sum() for k in sim_months])
-    irrig_monthly = np.array([daily_irrigation[window][sim_keys == k].sum() for k in sim_months])
-    covered_monthly = np.array(
-        [daily_covered[window][sim_keys == k].mean() > 0.5 for k in sim_months]
-    )
-    temp_monthly = np.array([weather.tmean_c[window][sim_keys == k].mean() for k in sim_months])
-    rain_monthly = np.array([weather.precip_mm[window][sim_keys == k].sum() for k in sim_months])
-    et0_sim_monthly = np.array([et0_mm[window][sim_keys == k].sum() for k in sim_months])
+    # Finish the carbon and nitrogen run to the end of the simulated window.
+    end_month = month_index[month_keys[min(last_day, len(weather) - 1)]]
+    advance_to(end_month + 1, last_residue_cn)
 
-    carbon_result = run_rothc(
-        pools, clay_pct=soil.clay_pct, temp_c=temp_monthly, rain_mm=rain_monthly,
-        et0_mm=et0_sim_monthly, covered=covered_monthly,
-        carbon_input_t_ha=carbon_monthly, irrigation_mm=irrig_monthly,
-        dpm_rpm_ratio=DPM_RPM_ARABLE,
+    soc = np.array(soc_trace)
+    closure = float(
+        (soc[-1] - soc[0]) - (total_carbon_in - float(np.sum(co2_trace)))
+    )
+    carbon_result = RothCResult(
+        pools=(pools,),
+        soc_t_ha=soc,
+        co2_t_ha=np.array(co2_trace),
+        tsmd_mm=np.array(tsmd_trace),
+        rate_modifier=np.array(rate_trace),
+        carbon_input_t_ha=m_carbon,
+        closure_residual_t_ha=closure,
     )
 
     low_confidence = {s.crop_id for s in outcomes
@@ -538,13 +717,20 @@ def simulate_rotation(
             "from an analogue crop rather than FAO-33; treat those yields as "
             "indicative only"
         )
+    n_limited = sum(1 for s in outcomes if s.nitrogen_limited)
+    if n_limited:
+        notes.append(
+            f"{n_limited} season(s) were limited by nitrogen rather than water; "
+            "that calls for a different response than a water constraint does"
+        )
 
     return RotationOutcome(
         plan=plan,
         seasons=tuple(outcomes),
         carbon=carbon_result,
-        final_state=replace(state, carbon=carbon_result.pools[-1]),
+        final_state=replace(state, carbon=carbon_pools, nitrogen=nitrogen),
         bare_days=bare_days,
         total_days=last_day - first_day,
+        nitrogen_fluxes=tuple(fluxes),
         notes=tuple(notes),
     )

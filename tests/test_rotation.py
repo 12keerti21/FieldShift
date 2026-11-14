@@ -74,11 +74,21 @@ def _run(plan, reg, forcing, site_soil, cycles=None):
     )
 
 
+# Dryland winter wheat in western Kansas receives roughly 40-70 kg N/ha. Running
+# the model at zero fertiliser makes nitrogen the binding constraint in every
+# season, collapses yields to 0.43 t/ha against an observed 2.15, and inflates the
+# fallow advantage to +122 percent - because a fallow year's extra mineralisation
+# matters enormously to a starved crop and very little to a fed one. Fertiliser is
+# a management input and has to be stated.
+N_RATE = 70.0
+
 WHEAT_FALLOW = RotationPlan(
-    "winter wheat - summer fallow", (SeasonPlan("wheat_winter", OCT1, 285),), 2
+    "winter wheat - summer fallow",
+    (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=N_RATE),), 2,
 )
 CONTINUOUS = RotationPlan(
-    "continuous winter wheat", (SeasonPlan("wheat_winter", OCT1, 285),), 1
+    "continuous winter wheat",
+    (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=N_RATE),), 1,
 )
 
 
@@ -164,7 +174,8 @@ def test_residue_cover_at_sowing_comes_from_the_previous_crop(reg, forcing, site
 def test_removing_residue_reduces_carbon_input_and_cover(reg, forcing, site_soil):
     baled = RotationPlan(
         "continuous wheat, straw baled",
-        (SeasonPlan("wheat_winter", OCT1, 285, residue_removed_fraction=0.85),), 1,
+        (SeasonPlan("wheat_winter", OCT1, 285, residue_removed_fraction=0.85,
+                    fertiliser_n_kg_ha=N_RATE),), 1,
     )
     retained = _run(CONTINUOUS, reg, forcing, site_soil)
     removed = _run(baled, reg, forcing, site_soil)
@@ -177,7 +188,7 @@ def test_removing_residue_reduces_carbon_input_and_cover(reg, forcing, site_soil
 def test_irrigation_policy_is_honoured_per_season(reg, forcing, site_soil):
     irrigated = RotationPlan(
         "irrigated continuous wheat",
-        (SeasonPlan("wheat_winter", OCT1, 285,
+        (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=N_RATE,
                     irrigation=IrrigationPolicy("refill_on_stress", efficiency=0.85)),), 1,
     )
     dry = _run(CONTINUOUS, reg, forcing, site_soil)
@@ -196,8 +207,8 @@ def test_multi_season_rotation_runs_and_reports_each_crop(reg, forcing, site_soi
     """
     plan = RotationPlan(
         "wheat - fallow - sorghum",
-        (SeasonPlan("wheat_winter", OCT1, 285),
-         SeasonPlan("sorghum", 152, 125, year_offset=2)),
+        (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=N_RATE),
+         SeasonPlan("sorghum", 152, 125, year_offset=2, fertiliser_n_kg_ha=50.0)),
         cycle_years=3,
     )
     r = _run(plan, reg, forcing, site_soil, cycles=12)
@@ -347,9 +358,7 @@ def test_crop_sequence_is_exposed_for_the_pathogen_check(reg):
 
 def test_low_confidence_ky_is_flagged_in_the_notes(reg, forcing, site_soil):
     """A yield resting on an analogue Ky must say so."""
-    plan = RotationPlan(
-        "wheat - chickpea", (SeasonPlan("chickpea", OCT1, 110),), 1
-    )
+    plan = RotationPlan("chickpea", (SeasonPlan("chickpea", OCT1, 110),), 1)
     r = _run(plan, reg, forcing, site_soil, cycles=10)
     assert any("analogue" in n for n in r.notes)
 
@@ -357,3 +366,88 @@ def test_low_confidence_ky_is_flagged_in_the_notes(reg, forcing, site_soil):
 def test_carbon_initialisation_is_recorded(reg, forcing, site_soil):
     r = _run(CONTINUOUS, reg, forcing, site_soil)
     assert any("implied historic input" in n for n in r.notes)
+
+
+# --- nitrogen is now coupled into the yield ---------------------------------------
+
+
+def test_nitrogen_can_be_the_binding_constraint(reg, forcing, site_soil):
+    """Without fertiliser the crop starves, and the model says which limited it."""
+    starved = RotationPlan(
+        "unfertilised continuous wheat",
+        (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=0.0),), 1,
+    )
+    r = _run(starved, reg, forcing, site_soil)
+    crops = [s for s in r.seasons if not s.is_fallow]
+    assert all(s.limiting_factor in ("nitrogen", "water", "none") for s in crops)
+    assert r.nitrogen_limited_seasons > len(crops) / 2
+    assert any("limited by nitrogen" in n for n in r.notes)
+
+
+def test_adequate_fertiliser_shifts_the_limit_to_water(reg, forcing, site_soil):
+    """The correct dryland High Plains story: water binds, not nitrogen."""
+    fed = _run(CONTINUOUS, reg, forcing, site_soil)
+    crops = [s for s in fed.seasons if not s.is_fallow]
+    water_limited = sum(1 for s in crops if s.limiting_factor == "water")
+    assert water_limited > fed.nitrogen_limited_seasons
+
+
+def test_fertiliser_raises_yield_with_diminishing_returns(reg, forcing, site_soil):
+    yields = []
+    for rate in (0.0, 40.0, 70.0):
+        plan = RotationPlan(
+            f"wheat at {rate:.0f}N",
+            (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=rate),), 1,
+        )
+        yields.append(_run(plan, reg, forcing, site_soil).mean_yield("wheat_winter"))
+    assert yields[0] < yields[1] < yields[2]
+    # Water eventually caps it, so the second increment buys less than the first.
+    assert (yields[2] - yields[1]) < (yields[1] - yields[0])
+
+
+def test_yield_uses_the_binding_constraint_not_the_product(reg, forcing, site_soil):
+    """Liebig: multiplying water and nitrogen factors would charge twice."""
+    r = _run(CONTINUOUS, reg, forcing, site_soil)
+    for s in (x for x in r.seasons if not x.is_fallow):
+        if s.relative_yield is not None:
+            expected = min(s.water_factor, s.nitrogen_factor)
+            assert s.relative_yield == pytest.approx(max(expected, 0.0), abs=1e-9)
+            assert s.relative_yield >= s.water_factor * s.nitrogen_factor - 1e-9
+
+
+def test_a_legume_fixes_nitrogen_and_it_is_reported(reg, forcing, site_soil):
+    plan = RotationPlan("chickpea", (SeasonPlan("chickpea", OCT1, 110),), 1)
+    r = _run(plan, reg, forcing, site_soil, cycles=10)
+    assert r.total_nitrogen_fixed_kg_ha > 0.0
+    assert all(s.nitrogen_fixed_kg_ha > 0.0 for s in r.seasons if not s.is_fallow)
+
+
+def test_a_cereal_fixes_nothing(reg, forcing, site_soil):
+    r = _run(CONTINUOUS, reg, forcing, site_soil)
+    assert r.total_nitrogen_fixed_kg_ha == 0.0
+
+
+def test_nitrogen_fluxes_are_recorded_monthly(reg, forcing, site_soil):
+    r = _run(CONTINUOUS, reg, forcing, site_soil)
+    assert len(r.nitrogen_fluxes) > 400  # monthly over ~39 years
+    assert r.total_nitrogen_leached_kg_ha >= 0.0
+
+
+def test_negative_fertiliser_is_refused():
+    with pytest.raises(RotationError, match="fertiliser"):
+        SeasonPlan("maize", 125, fertiliser_n_kg_ha=-10.0)
+
+
+def test_residue_carbon_actually_reaches_the_pools(reg, forcing, site_soil):
+    """Regression guard: residue was being written to an already-stepped month.
+
+    The symptom was a carbon change identical whether straw was baled or retained.
+    """
+    retained = _run(CONTINUOUS, reg, forcing, site_soil)
+    baled = RotationPlan(
+        "baled", (SeasonPlan("wheat_winter", OCT1, 285, fertiliser_n_kg_ha=N_RATE,
+                             residue_removed_fraction=0.9),), 1,
+    )
+    stripped = _run(baled, reg, forcing, site_soil)
+    assert retained.carbon_change_t_ha != stripped.carbon_change_t_ha
+    assert retained.carbon_change_t_ha > stripped.carbon_change_t_ha
