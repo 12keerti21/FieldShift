@@ -75,11 +75,25 @@ def has_api_key(name: str) -> bool:
     return bool(load_env().get(name))
 
 
-def earthdata_ready() -> tuple[bool, str]:
-    """Whether ~/.netrc carries an Earthdata entry, and what to do if not.
+# Placeholders people paste verbatim from instructions. A file containing one of
+# these looks structurally valid and is useless, which is exactly the failure this
+# module exists to catch early.
+PLACEHOLDER_SECRETS = (
+    "YOUR_PASSWORD", "YOUR_USERNAME", "your_password", "changeme",
+    "PASSWORD", "xxxx", "<password>",
+)
 
-    Deliberately does not read or return the password - only whether the host
-    appears in the file.
+
+def earthdata_ready() -> tuple[bool, str]:
+    """Whether ~/.netrc carries a plausible Earthdata entry, and what to do if not.
+
+    Deliberately does not read or return the password. It does check for known
+    placeholder strings, because a netrc containing a literal 'YOUR_PASSWORD' is
+    structurally perfect and completely useless - an earlier version of this
+    function reported exactly that state as READY.
+
+    Structural validity is not authentication. Use `earthdata_authenticated()` for
+    that; it asks the server.
     """
     if not NETRC_FILE.exists():
         return False, (
@@ -97,14 +111,68 @@ def earthdata_ready() -> tuple[bool, str]:
             f"{NETRC_FILE} is mode {mode:o}; curl and earthaccess refuse a "
             f"world-readable netrc. Run: chmod 600 ~/.netrc"
         )
+    text = NETRC_FILE.read_text(encoding="utf-8")
+    for placeholder in PLACEHOLDER_SECRETS:
+        if placeholder in text:
+            return False, (
+                f"{NETRC_FILE} still contains the literal placeholder "
+                f"{placeholder!r}. The file is structurally valid but will not "
+                "authenticate. Replace it with the real value."
+            )
     return True, "Earthdata entry present in ~/.netrc, permissions correct."
+
+
+def earthdata_authenticated(timeout_s: float = 25.0) -> tuple[bool, str]:
+    """Ask Earthdata whether the stored credentials actually work.
+
+    The password is never read by this process: urllib's netrc-aware opener and
+    curl both read ~/.netrc directly. This is the only check that distinguishes
+    'the file looks right' from 'the credentials are valid', which matters because
+    the difference is invisible until a download fails hours later.
+    """
+    ok, message = earthdata_ready()
+    if not ok:
+        return False, message
+
+    import netrc
+    import urllib.error
+    import urllib.request
+
+    try:
+        auth = netrc.netrc(str(NETRC_FILE)).authenticators(EARTHDATA_HOST)
+    except (netrc.NetrcParseError, FileNotFoundError) as exc:
+        return False, f"could not parse {NETRC_FILE}: {exc}"
+    if not auth:
+        return False, f"no {EARTHDATA_HOST} entry in {NETRC_FILE}"
+    login, _, password = auth
+
+    manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    manager.add_password(None, f"https://{EARTHDATA_HOST}", login, password or "")
+    opener = urllib.request.build_opener(urllib.request.HTTPBasicAuthHandler(manager))
+    try:
+        with opener.open(
+            f"https://{EARTHDATA_HOST}/api/users/tokens", timeout=timeout_s
+        ) as response:
+            return True, (
+                f"authenticated with Earthdata as {login!r} (HTTP {response.status})"
+            )
+    except urllib.error.HTTPError as exc:
+        if exc.code in (401, 403):
+            return False, (
+                f"Earthdata rejected the credentials for {login!r} (HTTP {exc.code}). "
+                "Check the username at https://urs.earthdata.nasa.gov/profile - it is "
+                "a short handle, not your email address."
+            )
+        return False, f"Earthdata returned HTTP {exc.code}"
+    except urllib.error.URLError as exc:
+        return False, f"could not reach {EARTHDATA_HOST}: {exc.reason}"
 
 
 def status() -> str:
     """Human-readable credential inventory. Never prints a secret."""
     lines = ["Credential status", "-" * 46]
     ok, msg = earthdata_ready()
-    lines.append(f"  {'EARTHDATA (~/.netrc)':28s} {'READY' if ok else 'MISSING'}")
+    lines.append(f"  {'EARTHDATA (~/.netrc)':28s} {'present' if ok else 'MISSING'}")
     if not ok:
         lines.append(f"      {msg.splitlines()[0]}")
     for name in WHERE_TO_GET:
