@@ -146,13 +146,21 @@ def earthdata_authenticated(timeout_s: float = 25.0) -> tuple[bool, str]:
         return False, f"no {EARTHDATA_HOST} entry in {NETRC_FILE}"
     login, _, password = auth
 
-    manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-    manager.add_password(None, f"https://{EARTHDATA_HOST}", login, password or "")
-    opener = urllib.request.build_opener(urllib.request.HTTPBasicAuthHandler(manager))
+    # Basic auth must be sent PREEMPTIVELY. urllib's HTTPBasicAuthHandler only
+    # sends credentials after receiving a 401 with a recognised realm, and URS does
+    # not issue a standard challenge - so the handler never sends them and the 401
+    # is returned verbatim. An earlier version of this function used that handler
+    # and reported perfectly valid credentials as rejected, which is just as
+    # misleading as the placeholder bug it was written to catch.
+    import base64
+
+    token = base64.b64encode(f"{login}:{password or ''}".encode()).decode()
+    request = urllib.request.Request(
+        f"https://{EARTHDATA_HOST}/api/users/tokens",
+        headers={"Authorization": f"Basic {token}"},
+    )
     try:
-        with opener.open(
-            f"https://{EARTHDATA_HOST}/api/users/tokens", timeout=timeout_s
-        ) as response:
+        with urllib.request.urlopen(request, timeout=timeout_s) as response:
             return True, (
                 f"authenticated with Earthdata as {login!r} (HTTP {response.status})"
             )

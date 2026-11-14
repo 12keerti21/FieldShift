@@ -10,6 +10,7 @@ No test here reads or asserts on real secret material.
 """
 
 import os
+import pathlib
 
 import pytest
 
@@ -138,3 +139,21 @@ def test_status_never_prints_secret_material(monkeypatch, tmp_path):
     assert "SUPERSECRETVALUE" not in out
     assert "READY" in out  # it reports presence, not the value
     config.load_env.cache_clear()
+
+
+def test_auth_probe_sends_credentials_preemptively():
+    """urllib's auth handler waits for a 401 challenge; URS never issues one.
+
+    Using HTTPBasicAuthHandler made this function report valid credentials as
+    rejected - the mirror image of the placeholder bug. The Authorization header
+    must be built and attached before the request goes out.
+    """
+    source = (
+        pathlib.Path(config.__file__).read_text(encoding="utf-8")
+    )
+    # The handler must not be USED. It is still named in a comment explaining why,
+    # so match the call rather than any mention of it.
+    assert "urllib.request.HTTPBasicAuthHandler(" not in source
+    assert "HTTPPasswordMgrWithDefaultRealm" not in source
+    assert 'headers={"Authorization": f"Basic {token}"}' in source
+    assert "PREEMPTIVELY" in source
