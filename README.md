@@ -252,6 +252,38 @@ have fetched or a citation we can point at. An earlier run attributed a residual
 a "+18% ET0 bias" on the strength of a *remembered* climatology figure; gridMET
 showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
 
+## Running it
+
+```bash
+./scripts/serve.sh          # builds bundles if needed, then serves on :8000
+```
+
+Then open <http://127.0.0.1:8000>: a map of the precomputed fields, priority
+sliders, the ranked rotations, the full evidence card for any of them, and a
+printable one-page field plan.
+
+**The architecture point worth knowing.** Simulating one site - fetching 41 years
+of weather, reading the soil survey, running ~80 candidate rotations through every
+year - takes about a minute. Re-ranking that scored set against stated priorities
+takes **10 ms**. So the split is:
+
+| | what | cost |
+|---|---|---|
+| precomputed | weather, soil, simulation, scoring, guardrail screen | ~1 min per site |
+| **live** | ranking against priorities, Pareto front, sensitivity | **10 ms** |
+
+That is not only an optimisation. The expensive half is physics and does not depend
+on anyone's preferences; the cheap half is entirely preference and must be instant,
+because a farmer exploring trade-offs needs the answer to move with the slider.
+Precomputing the preferences instead would have been exactly the wrong way round.
+
+Endpoints: `/api/sites`, `/api/site/{id}`, `POST /api/rank`,
+`/api/site/{id}/rotation/{i}/evidence`, `.../tradeoff`, `.../fieldplan`,
+`/api/site/{id}/guardrails`. No endpoint returns a recommendation without the
+evidence behind it - ranking carries the weight-sensitivity report, rotation detail
+carries the full evidence card, the crop screen carries the frequency behind every
+verdict.
+
 ## The honesty layer
 
 Two components, because a recommendation a farmer cannot interrogate is an

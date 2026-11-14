@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FieldShift</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --ink:#16191c; --muted:#5d666f; --line:#dfe3e7; --bg:#f6f7f8; --panel:#fff;
+  --good:#1d6f42; --bad:#a3301f; --warn:#8a5a00; --accent:#0f4c75;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+     color:var(--ink);background:var(--bg)}
+header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;
+       align-items:baseline;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px;letter-spacing:-.3px}
+header .tag{font-style:italic;opacity:.75;font-size:13px}
+header .meta{margin-left:auto;font-size:12px;opacity:.7}
+main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(380px,520px);
+     gap:0;min-height:calc(100vh - 52px)}
+#map{min-height:380px;height:100%}
+.panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;
+       max-height:calc(100vh - 52px);padding:18px 20px 40px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);
+   margin:22px 0 10px;border-bottom:1px solid var(--line);padding-bottom:5px}
+h2:first-child{margin-top:0}
+.site-name{font-size:17px;font-weight:600;margin:0 0 4px}
+.site-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px}
+.facts div span{color:var(--muted)}
+.finding{border:1px solid var(--line);border-left:3px solid var(--accent);
+         padding:10px 12px;margin:14px 0;background:#f8fafb;font-size:13px}
+.finding strong{color:var(--accent)}
+.slider{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;
+        margin-bottom:9px}
+.slider label{font-size:12.5px}
+.slider .hint{grid-column:1/-1;font-size:11.5px;color:var(--muted);margin-top:-4px}
+input[type=range]{width:100%}
+.val{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);min-width:22px;
+     text-align:right}
+.rot{border:1px solid var(--line);border-radius:5px;padding:10px 12px;margin-bottom:8px;
+     cursor:pointer;background:#fff}
+.rot:hover{border-color:var(--accent)}
+.rot.sel{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.rot.existing{background:#fffdf5;border-color:#e4d8b4}
+.rot .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.rot .nm{font-weight:600;font-size:13.5px}
+.rot .sc{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
+.rot .nums{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:6px;font-size:11.5px;
+           color:var(--muted)}
+.rot .nums b{color:var(--ink);font-weight:600}
+.badge{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;
+       padding:1px 5px;border-radius:3px;background:#eef1f3;color:var(--muted);
+       margin-left:6px;vertical-align:1px}
+.badge.yours{background:#f3e9c8;color:#6b5000}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+td,th{padding:4px 6px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+td.n{font-variant-numeric:tabular-nums;text-align:right}
+.better{color:var(--good);font-weight:600}
+.worse{color:var(--bad);font-weight:600}
+.warnbox{border:1px solid #e8dcc0;background:#fffcf3;padding:9px 11px;font-size:12.5px;
+         margin:12px 0;border-radius:4px}
+.warnbox strong{color:var(--warn)}
+pre{white-space:pre-wrap;font:11.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:#fafbfc;border:1px solid var(--line);padding:11px;max-height:340px;
+    overflow:auto;border-radius:4px}
+button{font:inherit;padding:7px 13px;border:1px solid var(--ink);background:var(--ink);
+       color:#fff;border-radius:4px;cursor:pointer}
+button.ghost{background:#fff;color:var(--ink)}
+button:hover{opacity:.88}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+footer{padding:12px 20px;font-size:12px;color:var(--muted);background:#fff;
+       border-top:1px solid var(--line)}
+.loading{color:var(--muted);font-style:italic;padding:12px 0}
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  #map{height:300px}
+  .panel{max-height:none;border-left:0;border-top:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>FieldShift</h1>
+  <span class="tag">Rethink What Grows Next.</span>
+  <span class="meta" id="hdr-meta"></span>
+</header>
+
+<main>
+  <div id="map"></div>
+  <div class="panel" id="panel"><div class="loading">Loading sites&hellip;</div></div>
+</main>
+
+<footer>
+  FieldShift supports a decision; it does not make one. Nothing here replaces local
+  agronomic judgement. Weather: NASA POWER &middot; soil: USDA SSURGO &middot;
+  terrain: NASADEM &middot; validation: USDA NASS, gridMET.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const KEYS = ["production","downside","irrigation","carbon","wind_exposure","bare_ground"];
+const state = {sites:[], siteId:null, bundle:null, weights:{}, selected:null};
+KEYS.forEach(k => state.weights[k] = 1);
+
+const $ = s => document.querySelector(s);
+const fmt = (v,d=2) => (v===null||v===undefined||isNaN(v)) ? "–" : Number(v).toFixed(d);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const map = L.map("map", {scrollWheelZoom:true}).setView([38.5,-99.5], 5);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom:14, attribution:"&copy; OpenStreetMap"
+}).addTo(map);
+
+async function get(url, opts){
+  const r = await fetch(url, opts);
+  if(!r.ok){ throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail); }
+  return r.json();
+}
+
+async function boot(){
+  try{
+    const data = await get("/api/sites");
+    state.sites = data.sites;
+    $("#hdr-meta").textContent = state.sites.length + " precomputed fields";
+    const group = [];
+    state.sites.forEach(s => {
+      const m = L.marker([s.latitude, s.longitude]).addTo(map)
+        .bindTooltip(s.name, {direction:"top"});
+      m.on("click", () => selectSite(s.id));
+      group.push([s.latitude, s.longitude]);
+    });
+    if(group.length) map.fitBounds(group, {padding:[50,50]});
+    selectSite(state.sites[0].id);
+  }catch(e){
+    $("#panel").innerHTML = `<div class="warnbox"><strong>No precomputed sites.</strong><br>
+      ${esc(e.message)}</div>`;
+  }
+}
+
+async function selectSite(id){
+  state.siteId = id; state.selected = null;
+  $("#panel").innerHTML = '<div class="loading">Loading field&hellip;</div>';
+  state.bundle = await get("/api/site/" + id);
+  await refresh();
+}
+
+function sliders(){
+  const labels = {};
+  state.bundle.objectives.forEach(o => labels[o.key] = o);
+  return KEYS.filter(k => labels[k]).map(k => {
+    const o = labels[k];
+    return `<div class="slider">
+      <label for="w-${k}">${esc(o.label)} <span style="color:var(--muted)">
+        (${o.maximise ? "more is better" : "less is better"})</span></label>
+      <span class="val" id="v-${k}">${state.weights[k]}</span>
+      <input type="range" id="w-${k}" min="0" max="5" step="1" value="${state.weights[k]}"
+             oninput="setWeight('${k}', this.value)">
+      <div class="hint">${esc(o.note)}</div>
+    </div>`;
+  }).join("");
+}
+
+let debounce;
+function setWeight(k, v){
+  state.weights[k] = Number(v);
+  $("#v-"+k).textContent = v;
+  clearTimeout(debounce);
+  debounce = setTimeout(refresh, 90);
+}
+
+async function refresh(){
+  const b = state.bundle, s = b.site;
+  const rank = await get("/api/rank", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({site_id: state.siteId, priorities: state.weights, limit: 8})
+  });
+
+  const beaten = rank.beaten_by.length;
+  const finding = beaten
+    ? `<strong>${beaten} of the rotations examined beat your current one on every
+       single measure.</strong> Not a trade-off &mdash; nothing is given up.`
+    : `Your current rotation is not beaten outright on every measure. The options
+       below involve genuine trade-offs.`;
+
+  const sens = rank.sensitivity.all_stable
+    ? `The top choice holds even if you move any one priority by half.`
+    : `<strong>The top choice changes</strong> if you shift
+       ${rank.sensitivity.deciding_priorities.map(esc).join(", ")}. That means the
+       answer is being decided by those priorities rather than by a clear winner.`;
+
+  $("#panel").innerHTML = `
+    <p class="site-name">${esc(s.name)}</p>
+    <p class="site-note">${esc(s.note)}</p>
+    <div class="facts">
+      <div><span>Soil</span><br>${esc(s.soil.component)} ${esc(s.soil.texture.toLowerCase())}</div>
+      <div><span>Plant-available water</span><br>${fmt(s.soil.available_water_mm_per_m,0)} mm/m
+           ${s.soil.measured ? "(measured)" : "(estimated)"}</div>
+      <div><span>Rainfall</span><br>${fmt(s.rainfall_mm_yr,0)} mm/yr</div>
+      <div><span>Weather record</span><br>${s.weather.years} yr
+           (${s.weather.first_year}&ndash;${s.weather.last_year})</div>
+      <div><span>Slope</span><br>${s.terrain.slope_percent===null ? "no DEM" : fmt(s.terrain.slope_percent,2)+"%"}</div>
+      <div><span>Reference ET confidence</span><br>${esc(s.weather.et0_confidence)}</div>
+    </div>
+
+    <div class="finding">${finding}</div>
+
+    <h2>What matters to you</h2>
+    ${sliders()}
+    <div class="warnbox" style="margin-top:4px">${sens}</div>
+
+    <h2>Rotations, best first</h2>
+    <div id="list">${rank.ranked.map(card).join("")}
+      ${rank.existing && !rank.ranked.some(r=>r.is_existing) ? card(rank.existing) : ""}</div>
+
+    <h2>How the options were found</h2>
+    <table>
+      <tr><td>rotation cycles examined</td><td class="n">${b.search.examined}</td></tr>
+      <tr><td>physically feasible</td><td class="n">${b.search.feasible}</td></tr>
+      <tr><td>simulated through ${s.weather.years} years</td><td class="n">${b.search.simulated}</td></tr>
+      <tr><td>not beaten on every measure</td><td class="n">${b.search.on_front}</td></tr>
+    </table>
+    <table style="margin-top:8px">
+      <tr><th>rejected because</th><th>count</th></tr>
+      ${Object.entries(b.search.rejections).map(([k,v]) =>
+        `<tr><td>${esc(k)}</td><td class="n">${v}</td></tr>`).join("")}
+    </table>
+
+    <div id="detail"></div>`;
+
+  if(state.selected !== null) openDetail(state.selected);
+}
+
+function card(r){
+  const o = r.objectives;
+  return `<div class="rot ${r.is_existing?"existing":""} ${state.selected===r.index?"sel":""}"
+            onclick="openDetail(${r.index})">
+    <div class="top">
+      <span class="nm">${esc(r.name.replace(/^EXISTING: /,""))}
+        ${r.is_existing?'<span class="badge yours">your rotation</span>':""}
+        ${r.on_front?'<span class="badge">not beaten</span>':""}</span>
+      <span class="sc">${fmt(r.score,3)}</span>
+    </div>
+    <div class="nums">
+      <span>production <b>${fmt(o.production)}</b> t/ha/yr</span>
+      <span>irrigation <b>${fmt(o.irrigation,0)}</b> mm/yr</span>
+      <span>carbon <b>${o.carbon>0?"+":""}${fmt(o.carbon,3)}</b></span>
+      <span>bare <b>${fmt(o.bare_ground*100,0)}%</b></span>
+      <span>crops/decade <b>${fmt(r.detail.crops_per_decade,1)}</b></span>
+    </div></div>`;
+}
+
+async function openDetail(index){
+  state.selected = index;
+  document.querySelectorAll(".rot").forEach(e => e.classList.remove("sel"));
+  $("#detail").innerHTML = '<div class="loading">Loading evidence&hellip;</div>';
+  const [tradeoff, ev] = await Promise.all([
+    get(`/api/site/${state.siteId}/rotation/${index}/tradeoff`).catch(()=>null),
+    get(`/api/site/${state.siteId}/rotation/${index}/evidence`)
+  ]);
+  const rot = state.bundle.rotations.find(r => r.index===index);
+  const tr = tradeoff && (tradeoff.better.length||tradeoff.worse.length) ? `
+    <h2>Against your current rotation</h2>
+    <table>
+      <tr><th>measure</th><th>change</th></tr>
+      ${tradeoff.better.map(i=>`<tr><td>${esc(i.label)}</td>
+        <td class="n better">${i.change>0?"+":""}${fmt(i.change,3)} ${esc(i.units)}</td></tr>`).join("")}
+      ${tradeoff.worse.map(i=>`<tr><td>${esc(i.label)}</td>
+        <td class="n worse">${i.change>0?"+":""}${fmt(i.change,3)} ${esc(i.units)}</td></tr>`).join("")}
+    </table>
+    ${tradeoff.worse.length===0 ? '<div class="finding">Nothing is given up.</div>' : ""}` : "";
+
+  $("#detail").innerHTML = `
+    <h2>${esc(rot.name.replace(/^EXISTING: /,""))}</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 8px">
+      ${rot.cycle_years}-year cycle &middot; ${esc(rot.crops.join(" → "))}</p>
+    ${tr}
+    <div class="row">
+      <button onclick="window.open('/api/site/${state.siteId}/rotation/${index}/fieldplan','_blank')">
+        Printable field plan</button>
+      <button class="ghost" onclick="$('#card').scrollIntoView({behavior:'smooth'})">
+        Jump to evidence</button>
+    </div>
+    <h2 id="card">Evidence &mdash; confidence ${esc(ev.card.confidence)}</h2>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 6px">
+      Capped by ${ev.card.limiting_sources.map(esc).join(", ")}.
+      Coarsest input covers ${fmt(Math.max(...ev.card.sources.map(x=>x.mismatch_ratio||0)),0)}×
+      this field's area.</p>
+    <pre>${esc(ev.rendered)}</pre>`;
+  document.querySelectorAll(".rot").forEach(e => {
+    if(e.getAttribute("onclick").includes(`(${index})`)) e.classList.add("sel");
+  });
+}
+
+boot();
+</script>
+</body>
+</html>

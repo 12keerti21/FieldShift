@@ -3,7 +3,15 @@ numpy==2.4.6
 pandas==3.1.1
 scipy==1.17.1
 
+# --- api and delivery ---
+fastapi
+uvicorn[standard]
+
+# --- geospatial (terrain reads .hgt directly; pyproj for projections) ---
+pyproj
+
 # --- dev ---
+httpx2  # required by starlette's TestClient
 pytest==9.2.0
 
 # --- added once the resource list is confirmed (do not install blind) ---

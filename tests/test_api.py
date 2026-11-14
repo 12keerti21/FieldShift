@@ -1,0 +1,311 @@
+"""The HTTP API and the printable field plan.
+
+The design rule under test: no endpoint returns a recommendation without the
+evidence behind it. Ranking carries the weight-sensitivity report, rotation detail
+carries the full evidence card, the crop screen carries the frequency behind every
+verdict. An endpoint returning a bare ranking would be the thing this project set
+out not to build.
+
+Also pinned here is the split that makes the tool usable at all. Simulating a site
+takes about a minute, so it is precomputed; re-ranking against stated priorities is
+milliseconds, so it is live. A farmer moving a priority slider has to see the answer
+move, and precomputing the preferences instead would have been the wrong way round.
+"""
+
+import pathlib
+
+import pytest
+from fastapi.testclient import TestClient
+
+from fieldshift.api.bundle import BUNDLE_DIR, SITES, available_sites
+from fieldshift.api.main import app
+
+BUNDLES = pathlib.Path(BUNDLE_DIR)
+
+pytestmark = pytest.mark.skipif(
+    not list(BUNDLES.glob("*.json")),
+    reason="no precomputed bundles; build with python -m fieldshift.api.bundle",
+)
+
+
+@pytest.fixture(scope="module")
+def client():
+    return TestClient(app)
+
+
+@pytest.fixture(scope="module")
+def site_id():
+    return available_sites()[0]["id"]
+
+
+# --- the bundle index cannot go stale --------------------------------------------
+
+
+def test_every_bundle_on_disk_is_offered(client):
+    """A written index dropped the pilot field when a subset was rebuilt.
+
+    The site list is now derived from the files that exist, so it cannot drift away
+    from them.
+    """
+    on_disk = {p.stem for p in BUNDLES.glob("*.json") if p.stem != "index"}
+    offered = {s["id"] for s in client.get("/api/sites").json()["sites"]}
+    assert offered == on_disk
+
+
+def test_the_pilot_field_leads_the_list(client):
+    sites = client.get("/api/sites").json()["sites"]
+    if len(sites) > 1:
+        assert sites[0]["id"] == SITES[0].id
+
+
+def test_health_reports_what_is_available(client):
+    body = client.get("/api/health").json()
+    assert body["status"] == "ok"
+    assert body["sites"] >= 1
+    assert body["hint"] is None
+
+
+# --- site detail -----------------------------------------------------------------
+
+
+def test_site_detail_carries_soil_weather_and_search_accounting(client, site_id):
+    body = client.get(f"/api/site/{site_id}").json()
+    site = body["site"]
+    assert site["soil"]["available_water_mm_per_m"] > 50.0
+    assert site["weather"]["years"] >= 35
+    assert site["weather"]["et0_confidence"] in {"high", "medium", "low"}
+    search = body["search"]
+    assert search["examined"] > search["feasible"] >= search["on_front"] >= 1
+    assert search["rejections"], "rejections must be explained, not hidden"
+    assert body["rotations"] and body["front"]
+
+
+def test_the_soil_says_whether_it_was_measured(client, site_id):
+    soil = client.get(f"/api/site/{site_id}").json()["site"]["soil"]
+    assert soil["measured"] is True
+    assert "SSURGO" in soil["source"]
+
+
+def test_a_missing_site_is_a_clear_404(client):
+    response = client.get("/api/site/atlantis")
+    assert response.status_code == 404
+    assert "bundle" in response.json()["detail"]
+
+
+# --- the live, interactive part --------------------------------------------------
+
+
+def test_ranking_responds_to_stated_priorities(client, site_id):
+    """The whole point of the precompute/live split: preferences must be cheap."""
+    water = client.post("/api/rank", json={
+        "site_id": site_id,
+        "priorities": {"production": 1, "downside": 1, "irrigation": 5,
+                       "carbon": 1, "wind_exposure": 1, "bare_ground": 1},
+    }).json()
+    carbon = client.post("/api/rank", json={
+        "site_id": site_id,
+        "priorities": {"production": 1, "downside": 1, "irrigation": 1,
+                       "carbon": 5, "wind_exposure": 1, "bare_ground": 1},
+    }).json()
+    assert water["ranked"] and carbon["ranked"]
+    water_top = water["ranked"][0]
+    carbon_top = carbon["ranked"][0]
+    # Prioritising water should not select a thirstier option than prioritising carbon.
+    assert water_top["objectives"]["irrigation"] <= carbon_top["objectives"]["irrigation"]
+
+
+def test_scores_are_ordered_best_first(client, site_id):
+    ranked = client.post("/api/rank", json={"site_id": site_id}).json()["ranked"]
+    scores = [r["score"] for r in ranked]
+    assert scores == sorted(scores, reverse=True)
+
+
+def test_the_farmers_own_rotation_is_always_returned(client, site_id):
+    """Even when it is dominated, they need to see where it sits."""
+    body = client.post("/api/rank", json={"site_id": site_id,
+                                          "front_only": True}).json()
+    assert body["existing"] is not None
+    assert body["existing"]["name"].startswith("EXISTING")
+
+
+def test_every_ranking_carries_its_weight_sensitivity(client, site_id):
+    """A recommendation that flips on one priority is an artefact of the weighting."""
+    body = client.post("/api/rank", json={"site_id": site_id}).json()
+    sens = body["sensitivity"]
+    assert set(sens["stable"]) == {
+        "production", "downside", "irrigation", "carbon",
+        "wind_exposure", "bare_ground",
+    }
+    assert isinstance(sens["all_stable"], bool)
+    if not sens["all_stable"]:
+        assert sens["deciding_priorities"]
+
+
+def test_every_ranking_carries_the_standing_caveat(client, site_id):
+    body = client.post("/api/rank", json={"site_id": site_id}).json()
+    assert "does not make one" in body["caveat"]
+
+
+def test_what_beats_the_existing_rotation_is_reported(client, site_id):
+    body = client.post("/api/rank", json={"site_id": site_id}).json()
+    assert isinstance(body["beaten_by"], list)
+
+
+def test_all_zero_priorities_are_refused(client, site_id):
+    response = client.post("/api/rank", json={
+        "site_id": site_id,
+        "priorities": {k: 0 for k in
+                       ("production", "downside", "irrigation", "carbon",
+                        "wind_exposure", "bare_ground")},
+    })
+    assert response.status_code == 422
+
+
+def test_out_of_range_priorities_are_refused(client, site_id):
+    response = client.post("/api/rank", json={
+        "site_id": site_id, "priorities": {"production": 99},
+    })
+    assert response.status_code == 422
+
+
+def test_the_limit_is_respected(client, site_id):
+    body = client.post("/api/rank", json={"site_id": site_id, "limit": 3}).json()
+    assert len(body["ranked"]) <= 3
+
+
+# --- trade-offs -------------------------------------------------------------------
+
+
+def test_a_trade_off_splits_better_from_worse(client, site_id):
+    front = client.get(f"/api/site/{site_id}").json()["front"]
+    body = client.get(
+        f"/api/site/{site_id}/rotation/{front[0]}/tradeoff"
+    ).json()
+    assert "better" in body and "worse" in body
+    for item in body["better"] + body["worse"]:
+        assert item["units"]
+        assert item["label"]
+    assert body["summary"]
+
+
+# --- the honesty layer travels with the recommendation ---------------------------
+
+
+def test_evidence_carries_confidence_and_the_limiting_input(client, site_id):
+    body = client.get(f"/api/site/{site_id}/rotation/0/evidence").json()
+    card = body["card"]
+    assert card["confidence"] in {"high", "medium", "low"}
+    if card["confidence"] != "high":
+        assert card["limiting_sources"], "say which input caps it"
+    assert card["sources"] and card["models"]
+    assert card["unknowns"] and card["needs_local_review"]
+
+
+def test_evidence_states_the_resolution_mismatch_as_a_number(client, site_id):
+    card = client.get(f"/api/site/{site_id}/rotation/0/evidence").json()["card"]
+    ratios = [s["mismatch_ratio"] for s in card["sources"] if s["mismatch_ratio"]]
+    assert ratios and max(ratios) > 1000.0
+    rendered = client.get(
+        f"/api/site/{site_id}/rotation/0/evidence"
+    ).json()["rendered"]
+    assert "the field area" in rendered
+    # Coarseness may be named, but never without the number beside it - "coarse"
+    # on its own conveys nothing, which is the whole reason the ratio is computed.
+    for line in rendered.splitlines():
+        if "coarse" in line.lower():
+            assert "the field area" in line, line
+
+
+def test_evidence_always_names_the_wind_erosion_gap(client, site_id):
+    rendered = client.get(
+        f"/api/site/{site_id}/rotation/0/evidence"
+    ).json()["rendered"]
+    assert "wind erosion" in rendered
+    assert "does not make one" in rendered
+
+
+def test_the_crop_screen_reports_frequencies(client, site_id):
+    body = client.get(f"/api/site/{site_id}/guardrails").json()
+    assert body["crops"]
+    for entry in body["crops"].values():
+        assert "refused" in entry
+        for verdict in entry["verdicts"]:
+            assert verdict["level"] in {"pass", "warn", "refuse"}
+    assert "warning rather than a refusal" in body["note"]
+
+
+# --- the printable plan -----------------------------------------------------------
+
+
+def test_the_field_plan_is_printable_html(client, site_id):
+    response = client.get(f"/api/site/{site_id}/rotation/0/fieldplan")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    page = response.text
+    assert "@page" in page and "size: A4" in page
+    assert "<script" not in page, "it must print identically with no JavaScript"
+
+
+def test_the_field_plan_carries_the_rotation_calendar(client, site_id):
+    page = client.get(f"/api/site/{site_id}/rotation/0/fieldplan").text
+    assert 'class="cal"' in page
+    assert "Year 1" in page
+    assert "Shaded = crop in the ground" in page
+
+
+def test_the_field_plan_shows_risks_and_open_questions(client, site_id):
+    page = client.get(f"/api/site/{site_id}/rotation/0/fieldplan").text
+    assert "Risks, counted from" in page
+    assert "Questions only you or your agronomist can answer" in page
+    assert "does not make one" in page
+
+
+def test_the_field_plan_states_the_resolution_caveat(client, site_id):
+    page = client.get(f"/api/site/{site_id}/rotation/0/fieldplan").text
+    assert "times this field" in page
+    assert "comparison between rotations" in page
+
+
+def test_crop_labels_are_readable_not_truncated(client, site_id):
+    """Truncating the crop name gave "Winte" for winter wheat."""
+    page = client.get(f"/api/site/{site_id}/rotation/0/fieldplan").text
+    assert "Winte<" not in page
+
+
+# --- a point with no bundle -------------------------------------------------------
+
+
+def test_an_unknown_point_is_declined_with_the_reason(client):
+    body = client.post(
+        "/api/analyse", json={"latitude": 39.1, "longitude": -101.3}
+    ).json()
+    assert body["accepted"] is False
+    assert "minute" in body["reason"]
+    assert body["nearest_precomputed"]["id"]
+    assert body["what_would_be_needed"]
+
+
+def test_impossible_coordinates_are_refused(client):
+    response = client.post(
+        "/api/analyse", json={"latitude": 200.0, "longitude": 0.0}
+    )
+    assert response.status_code == 422
+
+
+# --- the web app is served --------------------------------------------------------
+
+
+def test_the_interface_is_served_at_the_root(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    page = response.text
+    assert "FieldShift" in page
+    assert "Rethink What Grows Next" in page
+    assert "leaflet" in page.lower()
+
+
+def test_the_interface_shows_the_caveat_without_interaction(client):
+    """It must be visible in the markup, not only after a request succeeds."""
+    page = client.get("/").text
+    assert "does not make one" in page
+    assert "NASA POWER" in page

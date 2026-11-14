@@ -22,3 +22,7 @@ data/cache/
 node_modules/
 dist/
 build/
+
+# Precomputed site bundles are derived from data/raw; rebuild with
+#   PYTHONPATH=src python -m fieldshift.api.bundle
+data/bundles/

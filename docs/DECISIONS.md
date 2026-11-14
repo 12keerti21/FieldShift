@@ -838,6 +838,62 @@ results and unknowns.
 - Every card ends with the same line: FieldShift supports a decision, it does not
   make one.
 
+## 2026-11-14 - Delivery: API, map interface, printable field plan
+
+### The architectural decision that shaped everything else
+Simulating one site - fetching 41 years of weather, reading the soil survey, running
+about 80 candidate rotations through every year - takes roughly a minute.
+Re-ranking that scored set against stated priorities takes **10 ms**, measured.
+
+So the split is:
+
+| | what | cost |
+|---|---|---|
+| precomputed | weather, soil, simulation, scoring, guardrail screen | ~1 min/site |
+| live | ranking against priorities, Pareto front, weight sensitivity | 10 ms |
+
+This is not only an optimisation. **The expensive half is physics and does not
+depend on anyone's preferences; the cheap half is entirely preference and has to be
+instant**, because a farmer exploring trade-offs needs the answer to move with the
+slider. Precomputing the preferences and computing the physics live would have been
+exactly the wrong way round - and it is the obvious way to build it if you treat the
+whole pipeline as one request.
+
+Four sites are precomputed: Finney KS, Sedgwick KS, Holt NE, Hale TX. A point
+without a bundle gets an honest refusal from `/api/analyse` that states what a run
+would cost and what data it would need, rather than blocking a request for a minute
+and timing out somewhere unhelpful.
+
+### A stale-index bug worth recording
+`available_sites` originally read a written `index.json`. Building a subset of three
+bundles rewrote that index and **silently dropped the pilot field from the API while
+its bundle sat on disk**. The list is now derived by scanning the bundle directory,
+so it cannot drift from what actually exists, and a test asserts the offered set
+equals the files present.
+
+### The rule applied across every endpoint
+No endpoint returns a recommendation without the evidence behind it. Ranking carries
+the weight-sensitivity report; rotation detail carries the full evidence card; the
+crop screen carries the frequency behind every verdict. Tests enforce each of those
+rather than trusting the convention.
+
+### The printable field plan
+`report/fieldplan.py`. The artefact that survives everything else: a dashboard needs
+a laptop, a signal and someone to drive it, while a sheet of paper goes in the cab
+and comes out at the co-op.
+
+Plain HTML with print CSS and **no JavaScript**, so it prints identically from any
+browser and survives being emailed, saved or photographed - a test asserts there is
+no `<script>` in it. It carries a month-by-month rotation calendar showing exactly
+when the field is bare, the handful of numbers that change against the current
+rotation, risks counted from the record, the questions only a local person can
+answer, and the resolution caveat.
+
+One small fix worth noting: calendar cells originally truncated the crop name,
+rendering winter wheat as "Winte", which is worse than useless on a sheet someone
+reads in a tractor cab. Short labels are now explicit, and a test checks for that
+exact string.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
