@@ -132,8 +132,61 @@ validation available for this module.
 - Kc_max falls back to FAO-56 reference wind and humidity when those are missing,
   making peak soil evaporation approximate.
 
+## 2026-11-14 - Resources received; direction locked
+
+Resource list assessed in RESOURCES.md. The decisive finding: **13 of the 24
+offered datasets are United States only**, which turns geography from a preference
+into a data-availability consequence.
+
+### Locked decisions
+
+**1. Scope: US primary (Tier 1) + one Indian district (Tier 2).**
+Southern High Plains / Ogallala as Tier 1, because it is the only place the
+validation loop closes - CDL, SSURGO, OpenET, QuickStats, NWIS, PRISM, CoCoRaHS and
+AMS Market News all available - *and* because the live question there (declining
+aquifer vs cotton/sorghum/wheat/fallow rotations) is exactly what this tool answers.
+Tier 2 runs the same engine on global-only inputs with the confidence downgrade
+stated explicitly. Rejected "global/region-adaptive": it means validated nowhere.
+
+**2. Ranking: simulate state forward and replay observed years.** MCDA is used only
+to aggregate *simulated outputs* against farmer priorities at the final step, never
+as the engine. A weighted sum over static crop attributes cannot represent sequence
+effects (a legume's N credit to the next crop, a thirsty crop leaving the profile
+dry, carbon accumulating over six years) and cannot produce a downside distribution.
+
+**3. Cut line: protect validation and physics.** If behind, keep the simulator, the
+20-year replay, the bare-window finding and three honest skill scores. Cut
+within-field zoning, SMAP downscaling, voice, and the LLM narrator (static templates
+instead).
+
+### Revisions to the plan that the resource list forces
+- **PRISM outranks POWER for Tier 1 forcing** - 4 km and topography-aware against
+  POWER's ~0.5 degree (~55 km). A 13x linear resolution gain on the variable that
+  drives everything downstream. POWER becomes the global/Tier 2 fallback.
+- **CDL is reclassified from input layer to labelled validation set.** It is ground
+  truth for the hardest claim in the architecture - rotation history inferred from
+  NDVI phenology - which turns an unverifiable demo trick into a confusion matrix.
+- **RUSLE R factor gets the proper EI30 path.** IMERG half-hourly supplies real
+  rainfall intensity, so Modified Fournier Index is demoted from necessity to
+  fallback.
+- **NWIS becomes the primary groundwater-decline constraint**, GRACE the regional
+  corroboration. GRACE is named in the challenge text but absent from the Resources
+  tab; for a US field, in situ well records at the aquifer the farmer actually pumps
+  from are the better instrument than ~300 km mascons.
+- **Effort reallocated**: data integration 25 -> 30 percent (order latency is the
+  real risk), validation 0 -> 15 percent, dashboard 15 -> 7, LLM 10 -> 3.
+- **Cut from the stack**: Google Earth Engine (account approval is a dependency that
+  can fail on the weekend, and direct adapters already work) and PostgreSQL/PostGIS
+  (parquet is sufficient for one region; a database is hours of infrastructure for
+  no demo value).
+
+### Still missing, and all three are local-expertise items
+Sowing windows / crop calendars; `Ky` FAO-33 yield response factors (check GAEZ);
+local pathogen presence to escalate the `regional` constraints we report but do not
+enforce.
+
 ## Open decisions
-- [ ] Target region(s) — 2 to 3 contrasting zones, drives which datasets to pre-cache
+- [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
 - [ ] Product name (repo is `rotation-dss`, placeholder)
 - [ ] Frontend stack (deferred until engine API shape is known)
