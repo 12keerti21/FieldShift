@@ -18,7 +18,7 @@ No language model makes a decision; at most it narrates structured model output.
 | Layer | Contents | Status |
 |---|---|---|
 | Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
-| Physical models | FAO-56 ET0 (**validated, -3.2% vs gridMET**) and dual-Kc water balance done; RothC, RUSLE pending | in progress |
+| Physical models | ET0, dual-Kc water balance, **RothC carbon** done; RUSLE pending | in progress |
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
 | Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
@@ -124,17 +124,43 @@ Two engineering notes:
 
 ## Validation status
 
+All against independently observed data. The model never sees a yield.
+
 | Our output | Independent reference | Result |
 |---|---|---|
 | FAO-56 Penman-Monteith ET0 | gridMET published 4 km grass ETo | **-3.2%** over 40 yr, daily r = 0.966, RMSE 0.70 mm/d |
+| Stress index, **dryland corn** | NASS county yield, detrended | **r = +0.51, p = 0.026**, n = 19 |
+| Stress index, **dryland wheat** | NASS county yield, detrended | **r = +0.50, p = 0.008**, n = 27 |
+| Stress index, **dryland sorghum** | NASS county yield, detrended | **r = +0.41, p = 0.046**, n = 24 |
+| Stress index, irrigated corn | NASS county yield, detrended | r = -0.13, ns - *as expected, see below* |
+| **Dryland corn yield penalty** | NASS irrigated vs non-irrigated | observed 69.3%, **predicted 65.9%** (error -3.3 pp) |
+| Dryland sorghum yield penalty | NASS irrigated vs non-irrigated | observed 45.8%, predicted 34.3% (error -11.5 pp) |
 | Worst dryland maize seasons | documented US High Plains droughts | recovers 2012, 2011, 2002, 1988, 2022 unprompted |
 | Soil texture class at pilot point | SSURGO (Richfield silt loam) | class correct; **our centroid AWC understated by 52%** |
-| Seasonal crop ET | *pending* a cited source | earlier comparison used a remembered figure - withdrawn |
+| RothC carbon gain, irrigated no-till | published western Kansas range | 0.38 t C/ha/yr vs 0.2-0.5 reported |
 
-Reproduce the first one:
+The *absence* of skill on irrigated crops is a result, not a failure: irrigation
+exists to break the link between weather and yield, so there is little variance
+left for a water-stress index to explain. A strong correlation there would be
+suspicious rather than reassuring - and it was predicted in the validation script
+before being measured.
+
+The yield-penalty rows are the harder test. Correlation only shows co-variation;
+those compare **absolute magnitude** against 19-24 years of USDA observation, and
+for corn the model lands within 3.3 percentage points.
+
+**Open target.** NASS reports dryland wheat yield separately for crops following
+summer fallow (35.4 bu/ac) and continuous cropping (32.0 bu/ac) - an *observed*
+rotation effect of **+10.8%** over 25 years. Reproducing that requires simulating
+rotations as sequences with soil water carried across the fallow year, which is the
+next component to build. It is recorded as the number to hit.
+
+Reproduce any of it:
 
 ```bash
-PYTHONPATH=src ./.venv/bin/python scripts/validate_et0.py
+PYTHONPATH=src ./.venv/bin/python scripts/validate_et0.py     # vs gridMET
+PYTHONPATH=src ./.venv/bin/python scripts/validate_yield.py   # vs NASS yields
+PYTHONPATH=src ./.venv/bin/python scripts/show_carbon.py      # 41-yr RothC runs
 ```
 
 **A process rule, learned the hard way:** a validation target must be a dataset we

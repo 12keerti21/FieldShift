@@ -321,6 +321,63 @@ starting stock 25.7 t C/ha): a 30.1 t C/ha spread between the best and worst
 rotation. Baling maize stover reduces carbon gain to -0.02 t C/ha/yr - it stops
 soil building outright.
 
+## 2026-11-14 - Headline validation: the model reproduces observed yield
+
+`rdss/io/quickstats.py` plus `scripts/validate_yield.py`. The model takes NASA
+POWER weather, SSURGO soil and FAO-56 crop parameters, produces a relative
+transpiration deficit, and FAO-33's Ky maps that onto yield loss. Everything on the
+observed side comes from USDA NASS. **The model never sees a yield**, so this is an
+out-of-sample test rather than a fit.
+
+Year-to-year skill against DETRENDED county yield, Finney County:
+
+| crop / regime | r | p | n |
+|---|---|---|---|
+| dryland corn | +0.508 | 0.026 | 19 |
+| dryland wheat | +0.499 | 0.008 | 27 |
+| dryland sorghum | +0.411 | 0.046 | 24 |
+| irrigated corn | -0.134 | 0.54 | 23 |
+| irrigated sorghum | +0.066 | 0.76 | 24 |
+
+Level test on absolute magnitude, which is harder than correlation:
+
+- dryland corn yield penalty: observed **69.3%**, predicted **65.9%** (-3.3 pp)
+- dryland sorghum yield penalty: observed 45.8%, predicted 34.3% (-11.5 pp)
+
+**The null results on irrigated crops are the expected pattern and were predicted
+in the script before measurement.** Irrigation exists precisely to decouple yield
+from weather, so a water-stress index should explain little of the remaining
+variance. Had the irrigated correlations been strong, that would have indicated a
+spurious common trend rather than physical skill.
+
+Two methodological choices are load-bearing and are enforced in the adapter, not
+left to the caller:
+
+1. **Detrending is mandatory.** County yields carry a large technology trend
+   (+2.42 bu/ac/yr for irrigated corn) with no weather content. Correlating against
+   raw yield would largely measure the trend and would flatter any model.
+2. **Units are never mixed.** A single QuickStats response for one crop carries
+   BU / ACRE, BU / NET PLANTED ACRE and TONS / ACRE together.
+
+`skill()` refuses to report a correlation on fewer than five paired years, and
+always returns n and a p-value alongside r.
+
+### The next target, already measured
+NASS reports dryland wheat yield separately for crops following summer fallow
+(35.4 bu/ac) versus continuous cropping (32.0 bu/ac) - an **observed rotation
+effect of +10.8% over 25 years**. This is the ideal validation target for a
+rotation tool, because it is a rotation effect rather than a weather effect. Our
+model cannot yet reproduce it, since that requires simulating sequences with soil
+water carried across the fallow year. Recorded as the number the sequence simulator
+must hit.
+
+### CDL deferred, with reason
+CropScape's point service (`nassgeodata.gmu.edu`) timed out repeatedly over both
+HTTP and HTTPS; the service appears down. Albers coordinate conversion is solved
+(pyproj, EPSG:5070) so the blocker is purely availability. QuickStats turned out to
+be the better validation channel anyway - it carries the irrigated/dryland and
+fallow/continuous splits that CDL pixel labels do not.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
