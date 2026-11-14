@@ -495,6 +495,62 @@ channel - not the field length, and not derivable from a DEM point. It is a prim
 candidate for local correction and should never be silently defaulted in a result
 shown to a farmer.
 
+## 2026-11-14 - Nitrogen balance, coupled to carbon flows
+
+`fieldshift/agro/nitrogen.py`. Nitrogen is computed from exactly the carbon flows
+RothC produced - `rothc_step_detailed` now exposes them - rather than from a
+parallel decomposition model, so the two budgets cannot drift apart.
+
+Three canonical rotation behaviours emerge from the arithmetic rather than being
+asserted. Measured over 12 months after a single 3 t C/ha residue addition,
+relative to adding nothing:
+
+| residue | C:N | net effect |
+|---|---|---|
+| wheat straw | 90 | **-11.7 kg N/ha** (locks up) |
+| maize stover | 65 | -1.5 |
+| legume residue | 25 | +56.9 |
+| green manure | 18 | +93.8 |
+
+And the timing is right: straw shows **-3.4 kg N/ha in month 2**, the month it
+begins decomposing, then recovers. Month 1 shows nothing, correctly - the residue
+has not decomposed yet. Magnitudes match reported ranges for straw immobilisation
+(tens of kg N/ha) and legume cover credits (50-100).
+
+### A real defect found and fixed
+The first version took a single assumed residue C:N and applied it to every pool,
+including carbon already in the soil. That meant changing the incoming residue also
+changed the assumed composition of the existing humus, and it produced a baseline
+gross mineralisation of **251 kg N/ha/month** - physically absurd, and large enough
+to swamp the effect being measured.
+
+Nitrogen is now held **per pool**, mirroring RothCPools. Each pool's C:N is a
+consequence of its own history rather than a parameter anyone chooses. Baseline
+mineralisation is now 36 kg N/ha/month on a 25 t C/ha soil, and whole-soil C:N
+comes out at 12.4 - both in the right range for a cultivated topsoil.
+
+### Other decisions
+- **Immobilisation outcompetes the crop.** Microbes are in direct contact with the
+  residue they decompose; the crop is not. So immobilisation is subtracted before
+  uptake, and a nitrogen shortfall appears as unmet demand rather than a negative
+  pool - which is what lets the simulator report that a rotation left its successor
+  short.
+- **Fixation is scaled by relative transpiration.** It is energy-expensive and
+  collapses under water stress faster than growth does, so crediting the full table
+  value would overstate the rotation benefit in exactly the dry years that matter.
+- **Water and nitrogen stress combine by MINIMUM, not product** (Liebig). A crop
+  capped by nitrogen is not additionally penalised for also lacking water; the
+  binding constraint already determines what it can build. Multiplying would
+  double-count the same lost growth.
+- **Leaching uses a mixing model** - draining water carries the root zone's own
+  nitrate concentration. Crude, but it captures the point that banking water under a
+  fallow and banking nitrogen are not the same thing.
+- **Nitrogen balance closure is asserted** over a 24-month run with inputs, uptake,
+  leaching and denitrification all active.
+- **Denitrification is deliberately crude** (a flat monthly fraction when wet),
+  because its dominant control is anaerobic microsites a field-scale model cannot
+  resolve. Flagged rather than dressed up.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer

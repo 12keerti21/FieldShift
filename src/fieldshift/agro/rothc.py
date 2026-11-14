@@ -192,10 +192,33 @@ def iom_from_soc(soc_t_ha: float) -> float:
     return 0.049 * soc_t_ha**1.139
 
 
+@dataclass(frozen=True)
+class CarbonFlows:
+    """Where carbon moved in one month, t C/ha.
+
+    Exposed because nitrogen mineralisation is not a separate process - it is the
+    same decomposition seen from the nitrogen side. Computing N from anything other
+    than these exact flows would let the two budgets drift apart.
+    """
+
+    decomposed: dict[str, float]
+    to_bio: float
+    to_hum: float
+    co2: float
+    input_to_dpm: float
+    input_to_rpm: float
+    rate_modifier: float
+    tsmd_mm: float
+
+    @property
+    def total_decomposed(self) -> float:
+        return sum(self.decomposed.values())
+
+
 # ---------------------------------------------------------------- the step
 
 
-def rothc_step(
+def rothc_step_detailed(
     pools: RothCPools,
     *,
     clay_pct: float,
@@ -209,8 +232,8 @@ def rothc_step(
     fym_input_t_ha: float = 0.0,
     previous_tsmd_mm: float = 0.0,
     depth_cm: float = 23.0,
-) -> tuple[RothCPools, float, float, float]:
-    """Advance one month. Returns (pools, TSMD, rate modifier, CO2 released).
+) -> tuple[RothCPools, CarbonFlows]:
+    """Advance one month, returning the new pools and the carbon flows behind them.
 
     RothC's moisture term uses rainfall minus 0.75 x open-pan evaporation. Since
     FAO-56 reference ET is itself about 0.75 of open-pan evaporation, ET0 is passed
@@ -268,7 +291,26 @@ def rothc_step(
         hum=remaining["hum"] + total_decomposed * to_hum + fym_input_t_ha * FYM_HUM,
         iom=pools.iom,
     )
-    return new, tsmd, rate, co2
+    flows = CarbonFlows(
+        decomposed=decomposed,
+        to_bio=total_decomposed * to_bio,
+        to_hum=total_decomposed * to_hum,
+        co2=co2,
+        input_to_dpm=carbon_input_t_ha * dpm_share + fym_input_t_ha * FYM_DPM,
+        input_to_rpm=carbon_input_t_ha * (1.0 - dpm_share) + fym_input_t_ha * FYM_RPM,
+        rate_modifier=rate,
+        tsmd_mm=tsmd,
+    )
+    return new, flows
+
+
+def rothc_step(pools: RothCPools, **kw) -> tuple[RothCPools, float, float, float]:
+    """Advance one month. Returns (pools, TSMD, rate modifier, CO2 released).
+
+    A thin view over `rothc_step_detailed` for callers that do not need the flows.
+    """
+    new, flows = rothc_step_detailed(pools, **kw)
+    return new, flows.tsmd_mm, flows.rate_modifier, flows.co2
 
 
 # ---------------------------------------------------------------- multi-month run

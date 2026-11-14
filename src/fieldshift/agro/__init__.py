@@ -8,6 +8,13 @@ dataset layer exists.
 
 from .climate import DailyWeather, MonthlyWeather, Site, WeatherError
 from .et0 import ET0Method, ET0Result, et0, et0_hargreaves, et0_penman_monteith
+from .nitrogen import (
+    NitrogenPools,
+    NitrogenState,
+    initial_nitrogen_pools,
+    nitrogen_step,
+    nitrogen_stress_factor,
+)
 from .rothc import (
     RothCPools,
     RothCResult,
@@ -33,6 +40,8 @@ __all__ = [
     "ET0Result",
     "IrrigationPolicy",
     "MonthlyWeather",
+    "NitrogenPools",
+    "NitrogenState",
     "RAINFED",
     "RothCPools",
     "RothCResult",
@@ -45,6 +54,9 @@ __all__ = [
     "et0_hargreaves",
     "et0_penman_monteith",
     "initialise_from_measured_soc",
+    "initial_nitrogen_pools",
+    "nitrogen_step",
+    "nitrogen_stress_factor",
     "run_rothc",
     "run_water_balance",
     "soc_from_organic_carbon_pct",
