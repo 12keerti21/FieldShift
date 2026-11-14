@@ -279,9 +279,18 @@ one.**
 |---|---|
 | **NASA POWER** | 41 years of daily temperature, humidity, wind, solar radiation and corrected precipitation at four sites — drives every water, carbon and nitrogen calculation. All six contract variables present, so evapotranspiration runs at full Penman-Monteith with no substitutions. |
 | **NASADEM** (SRTM) | 1-arc-second elevation for slope and slope length in the erosion model, read directly from `.hgt`. |
+| **MODIS MOD13Q1 NDVI**, via **NASA AppEEARS** | 16-day 250 m vegetation index, 2003-2024, at all five fields. Used as **evidence rather than decoration**: it validates our bare-ground measure, which was the only one of six that nothing else could check. A county yield statistic says nothing about when the soil was covered; a satellite does. |
 
 Catalogued and assessed but not ingested, with reasons recorded: SMAP, GPM/IMERG,
-ECOSTRESS, Landsat, MODIS/VIIRS, GEDI.
+ECOSTRESS, Landsat, GEDI.
+
+A note on cloud, because it cuts both ways here. Our *driving* data is reanalysis
+and has no cloud gaps at all. Our *validation* data is optical and does, so we
+screen on MOD13Q1's own pixel reliability band and keep good and marginal pixels
+only. That matters seasonally rather than randomly: in a monsoon climate the
+cloud arrives exactly when the crop is densest, so keeping cloudy pixels would
+make the greenest part of the year read as bare ground. A test demonstrates that
+ignoring the band would report a field that is never bare as 40 percent bare.
 
 ## Space agency partner and other data
 
