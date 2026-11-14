@@ -1,0 +1,167 @@
+{
+ "_comment": [
+  "Every validation result FieldShift will display, in one place, so the interface",
+  "cannot drift from what was actually measured. Each entry names the dataset it",
+  "was checked against and the script that reproduces it.",
+  "",
+  "STANDING RULE, adopted after a retraction: a validation target must be a dataset",
+  "we fetched or a citation we can point at - never a remembered number. An earlier",
+  "claim of a '+18% ET0 bias' came from a remembered climatology figure; gridMET,",
+  "once actually fetched, showed -3.2%. The claim was withdrawn. Nothing goes in",
+  "this file without a reproducing command."
+ ],
+ "tiers": {
+  "1": {
+   "name": "Validated",
+   "summary": "Checked against independent observations at field and county scale.",
+   "regions": ["us_high_plains"]
+  },
+  "2": {
+   "name": "Transferred",
+   "summary": "Same engine, global-only inputs, no local observations to check against.",
+   "regions": ["in_punjab"]
+  }
+ },
+ "checks": [
+  {
+   "id": "et0_gridmet",
+   "title": "Reference evapotranspiration against gridMET",
+   "question": "Is our FAO-56 reference ET right?",
+   "against": "gridMET 4 km gridded reference ET, 1984-2024",
+   "result": "-3.2% mean bias, r = 0.966 on daily values over 40 years",
+   "verdict": "pass",
+   "detail": "gridMET is an independent published product at 4 km. Our ET0 is computed from NASA POWER at 52 km with FAO-56 Penman-Monteith. A 3.2% bias at that resolution gap is better than we expected.",
+   "reproduce": "python scripts/validate_et0.py",
+   "tier": 1
+  },
+  {
+   "id": "yield_stress",
+   "title": "Modelled water stress against observed yield",
+   "question": "When the model says the crop was stressed, did the yield actually fall?",
+   "against": "USDA NASS county yields, detrended, 1984-2024",
+   "result": "11 of 11 correlations positive, 8 of 11 significant at p<0.05, mean r = +0.447",
+   "verdict": "pass",
+   "detail": "Four counties across three states, spanning soils from 84 to 212 mm/m of available water. Detrended to remove the genetic and agronomic yield trend, so what remains is year-to-year weather. Every single correlation came out with the right sign.",
+   "reproduce": "python scripts/validate_multisite.py",
+   "tier": 1
+  },
+  {
+   "id": "dryland_penalty",
+   "title": "Dryland versus irrigated corn penalty",
+   "question": "Does the model get the size of the irrigation benefit right?",
+   "against": "USDA NASS, irrigated and non-irrigated corn reported separately",
+   "result": "mean absolute error 6.0% on the yield penalty",
+   "verdict": "pass",
+   "detail": "A harder test than correlation, because it checks the magnitude rather than the direction. NASS reports both practices for the same county and year, which gives a direct observed penalty to compare against.",
+   "reproduce": "python scripts/validate_yield.py",
+   "tier": 1
+  },
+  {
+   "id": "rotation_effect",
+   "title": "The rotation effect itself",
+   "question": "Does the model get the benefit of wheat-fallow over continuous wheat right?",
+   "against": "USDA NASS county yields, fallow versus continuous wheat",
+   "result": "observed +10.8%, modelled +18.0% - we over-predict by 7 points",
+   "verdict": "partial",
+   "detail": "This is the check that matters most, because the rotation effect is what the tool exists to estimate, and it is the one we do not fully pass. The sensitivity sweep then showed the fallow advantage ranges +14.7% to +23.5% across 18 parameter perturbations and never reaches +10.8%, so the over-prediction is structural rather than a mis-set parameter. Most likely the model credits fallow with water it banks but does not charge it for the weeds that use some of that water. We did not add a weed parameter to close the gap, because tuning an unvalidated parameter until the answer matched would have destroyed the meaning of the agreement.",
+   "reproduce": "python scripts/sensitivity.py",
+   "tier": 1
+  },
+  {
+   "id": "sensitivity",
+   "title": "Does the ranking survive being wrong?",
+   "question": "If our parameters are off, does the recommendation change?",
+   "against": "18 systematic perturbations of soil water, crop coefficients, Ky and policy",
+   "result": "18 of 18 perturbations leave the leading recommendation in place",
+   "verdict": "pass",
+   "detail": "A recommendation that flips when one parameter moves is an artefact of that parameter. This sweeps each major input across a plausible range and checks whether the top choice holds. The live sensitivity readout in the interface does the same thing for the farmer's own priority weights.",
+   "reproduce": "python scripts/sensitivity.py",
+   "tier": 1
+  },
+  {
+   "id": "drought_recall",
+   "title": "Did it find the droughts without being told?",
+   "question": "Does the model independently identify the known drought years?",
+   "against": "the simulated stress series, compared with the historical record",
+   "result": "2012, 2011, 2002, 1988 and 2022 recovered as the most stressed years",
+   "verdict": "pass",
+   "detail": "Nothing in the model knows which years were droughts. These came out as the most water-stressed years in the simulation, in that order, from weather data alone.",
+   "reproduce": "python scripts/validate_yield.py",
+   "tier": 1
+  },
+  {
+   "id": "mass_balance",
+   "title": "Water and carbon conservation",
+   "question": "Does the bookkeeping close?",
+   "against": "the model's own conservation laws",
+   "result": "water balance closes to 1e-13 mm; a residual is treated as a bug, not a tolerance",
+   "verdict": "pass",
+   "detail": "Every water balance computes its own closure residual and reports it. This caught a real error in the paddy model: the pond was debited for crop water use it could not supply, because the saturated profile was an untracked store that always had water.",
+   "reproduce": "python -m pytest tests/test_paddy.py tests/test_waterbalance.py",
+   "tier": 1
+  },
+  {
+   "id": "punjab_unvalidated",
+   "title": "The Punjab transfer has no yield validation",
+   "question": "Is the Indian tier validated?",
+   "against": "nothing - no district yield series was obtained",
+   "result": "not validated, and the interface says so on every card",
+   "verdict": "fail",
+   "detail": "The US sites were checked against 41 years of county yields. We obtained nothing equivalent for Sangrur, so the Punjab numbers are the engine's output rather than a validated prediction. The one partial check available is that our Penman-Monteith ET0 sits +6.4% above Hargreaves-Samani there, against +16.9% at Finney County where Penman-Monteith is independently confirmed good to -3.2% - so the Indian ET0 is not anomalously high relative to the site we can actually check. That is weak evidence and it is offered as weak evidence.",
+   "reproduce": "python -m pytest tests/test_regions.py",
+   "tier": 2
+  }
+ ],
+ "bugs_found": [
+  {
+   "title": "Single crop coefficients used as basal ones",
+   "effect": "double-counted soil evaporation across every crop",
+   "how": "FAO-56 Table 12 Kc was read where Table 17 Kcb was needed. Fixed by adding a separate kcb block, a load-time guard that kcb cannot exceed kc, and a test asserting the dual-Kc balance never reads crop.kc."
+  },
+  {
+   "title": "Irrigation triggered on the instantaneous root zone",
+   "effect": "irrigated a bare seedbed from day three in all 40 seasons",
+   "how": "Three days after sowing, roots occupy ~15 cm holding ~20 mm, so any sensible depletion threshold is crossed immediately. Real irrigators schedule against the design root zone, so scheduling now uses a management depth."
+  },
+  {
+   "title": "Missing FAO-56 mulch suppression",
+   "effect": "hid roughly 700 m3/ha/yr of residue water dividend",
+   "how": "Residue cover reduces soil evaporation by about 5% per 10% of surface covered. Without it, the mechanism by which one crop's residue saves water for the next was invisible - which is a rotation benefit the model exists to see."
+  },
+  {
+   "title": "RothC ignored irrigation water",
+   "effect": "overstated soil carbon gain by about a third, in the flattering direction",
+   "how": "The moisture term used rainfall only, so an irrigated field decomposed as if it were dry. Irrigation now enters the moisture deficit calculation."
+  },
+  {
+   "title": "gridMET packed integers left unscaled",
+   "effect": "reported 42 mm/day of reference ET",
+   "how": "The NetCDF scale_factor of 0.1 was not applied. A plausibility guard now rejects physically impossible values rather than passing them through."
+  },
+  {
+   "title": "DEM slope noise inflated erosion 17-fold",
+   "effect": "5.77% slope where the true value is 0.25%",
+   "how": "On near-flat ground the vertical noise in a 30 m DEM is comparable to the real gradient, so a 3x3 Horn gradient measures noise. Slope is now a least-squares planar fit over about 300 m, verified to preserve genuine slopes."
+  },
+  {
+   "title": "Williams erosion K factor unit error",
+   "effect": "7.6x too high",
+   "how": "0.3526 against a published range of 0.03-0.045. The US-to-SI conversion factor of 0.1317 was missing, and a range guard now catches it."
+  },
+  {
+   "title": "Nitrogen rationed monthly instead of seasonally",
+   "effect": "yields of 0.43 t/ha against 2.15 observed",
+   "how": "11 kg of nitrogen supplied against 117 demanded, because a crop was only allowed the current month's mineralisation. Nitrogen is now balanced over the season."
+  },
+  {
+   "title": "Production summed across crops of different water content",
+   "effect": "made a maize-potato rotation look 2.5x more productive than rice-wheat",
+   "how": "Found when the Punjab region introduced potato. 25 t/ha of fresh tubers against 4 t/ha of grain is a six-fold difference in sale weight but only about 1.5-fold in dry matter. The production objective now sums dry matter. On the US sites every crop was grain, so this was latent."
+  },
+  {
+   "title": "Puddling water spilled the bund on day one",
+   "effect": "80 mm of a 180 mm paddy establishment application booked as runoff",
+   "how": "Found by a test. Puddling water wets and saturates the profile before anything stands on the surface; it was being routed straight into the pond."
+  }
+ ]
+}

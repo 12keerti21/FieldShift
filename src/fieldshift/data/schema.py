@@ -136,10 +136,26 @@ class YieldResponse:
 class Economics:
     yield_t_ha: tuple[float, float, float]
     price_local_required: bool
+    # Dry matter as a fraction of the MARKETED yield, which is how the crop is
+    # weighed and sold: grain near 13 percent moisture, potato near 79, fresh
+    # forage higher still.
+    #
+    # It exists because summing marketed tonnes across crops is only meaningful
+    # when they carry comparable water. Potato at 25 t/ha of fresh tubers against
+    # wheat at 4 t/ha of grain is a six-fold difference in sale weight and
+    # roughly a 1.5-fold difference in dry matter; a production objective that
+    # added them raw made a maize-potato rotation look 2.5x more productive than
+    # rice-wheat purely through tuber water. On the US sites every crop was grain,
+    # so this was latent until the Punjab region introduced potato.
+    dry_matter_frac: float = 1.0
 
     @property
     def yield_typical(self) -> float:
         return self.yield_t_ha[1]
+
+    @property
+    def dry_matter_typical(self) -> float:
+        return self.yield_typical * self.dry_matter_frac
 
 
 @dataclass(frozen=True)

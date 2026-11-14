@@ -104,8 +104,11 @@ def score_rotation(
     if years <= 0:
         raise ObjectiveError("simulated period has no length")
 
+    # Marketed yield is what prices apply to; dry matter is what can be summed
+    # across crops. Both are needed, for different objectives.
     by_crop = outcome.yields_by_crop()
-    total = float(sum(v.sum() for v in by_crop.values()))
+    by_crop_dm = outcome.dry_matter_yields_by_crop()
+    total = float(sum(v.sum() for v in by_crop_dm.values()))
     production = total / years  # already spans the whole window, fallow years included
 
     # Downside: the worst years of total annual production.
@@ -119,8 +122,8 @@ def score_rotation(
     last = max(s.year for s in outcome.seasons)
     annual = {year: 0.0 for year in range(first, last + 1)}
     for season in outcome.seasons:
-        if season.yield_t_ha is not None:
-            annual[season.year] = annual.get(season.year, 0.0) + season.yield_t_ha
+        if season.yield_dm_t_ha is not None:
+            annual[season.year] = annual.get(season.year, 0.0) + season.yield_dm_t_ha
     series = np.array([annual[y] for y in sorted(annual)])
     downside = float(np.percentile(series, downside_percentile)) if series.size else 0.0
 
@@ -178,12 +181,14 @@ def score_rotation(
 
 OBJECTIVES: tuple[Objective, ...] = (
     Objective(
-        "production", "marketable production", "t/ha/yr", True,
+        "production", "production (dry matter)", "t DM/ha/yr", True,
         lambda s: s.production_t_ha_yr,
-        "physical output; becomes margin when local prices are supplied",
+        "summed as dry matter, because marketed weight cannot be added across "
+        "crops holding different amounts of water - 25 t/ha of potato is about "
+        "5 t/ha of dry matter. Becomes margin when local prices are supplied.",
     ),
     Objective(
-        "downside", "production in a bad year", "t/ha/yr", True,
+        "downside", "production in a bad year", "t DM/ha/yr", True,
         lambda s: s.downside_production_t_ha_yr,
         "tenth percentile across simulated years for THIS FIELD, including years it "
         "produces nothing. A farmer staggering the rotation across several fields "

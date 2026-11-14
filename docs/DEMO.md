@@ -57,10 +57,10 @@ Have ready, in case someone asks: `docs/DECISIONS.md` and `python -m pytest`.
 
 **[click the top rotation]**
 
-> "Against continuous wheat: production roughly doubles, from 1.03 to 2.29 tonnes a
-> hectare a year. And look at carbon — his field is currently **losing** it, minus
-> 0.05 a year. This builds it, plus 0.27. Bare ground drops from sixty percent of
-> the time to twenty-one."
+> "Against continuous wheat: production roughly doubles, from 0.90 to 1.99 tonnes of
+> dry matter a hectare a year. And look at carbon — his field is currently
+> **losing** it, minus 0.05 a year. This builds it, plus 0.27. Bare ground drops
+> from sixty percent of the time to twenty-one."
 
 **[drag the irrigation slider]**
 

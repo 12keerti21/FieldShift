@@ -163,7 +163,11 @@ class SeasonOutcome:
     water: WaterBalanceResult
     residue_cover_at_sowing: float
     relative_yield: float | None
-    yield_t_ha: float | None
+    yield_t_ha: float | None  # marketed weight, how the crop is sold
+    # The same yield as dry matter. Both are kept because they answer different
+    # questions: a farmer sells the marketed weight, but only dry matter can be
+    # summed across crops that carry different amounts of water.
+    yield_dm_t_ha: float | None
     above_ground_dm_t_ha: float
     residue_returned_t_ha: float
     carbon_input_t_ha: float
@@ -234,10 +238,23 @@ class RotationOutcome:
     # ---- yield, per crop ----
 
     def yields_by_crop(self) -> dict[str, np.ndarray]:
+        """Marketed yield per crop, t/ha - the weight a farmer sells."""
         out: dict[str, list[float]] = {}
         for s in self.seasons:
             if s.yield_t_ha is not None:
                 out.setdefault(s.crop_id, []).append(s.yield_t_ha)
+        return {k: np.array(v) for k, v in out.items()}
+
+    def dry_matter_yields_by_crop(self) -> dict[str, np.ndarray]:
+        """Yield per crop as dry matter, t DM/ha.
+
+        This is what the production objective sums, because adding marketed
+        weight across crops with different water content is not a quantity.
+        """
+        out: dict[str, list[float]] = {}
+        for s in self.seasons:
+            if s.yield_dm_t_ha is not None:
+                out.setdefault(s.crop_id, []).append(s.yield_dm_t_ha)
         return {k: np.array(v) for k, v in out.items()}
 
     def mean_yield(self, crop_id: str) -> float:
@@ -595,7 +612,8 @@ def simulate_rotation(
                     crop_name=fallow.name, start_index=cursor, duration_days=gap,
                     water=gap_result,
                     residue_cover_at_sowing=state.residue_cover_fraction,
-                    relative_yield=None, yield_t_ha=None, above_ground_dm_t_ha=0.0,
+                    relative_yield=None, yield_t_ha=None, yield_dm_t_ha=None,
+                    above_ground_dm_t_ha=0.0,
                     residue_returned_t_ha=0.0, carbon_input_t_ha=0.0, is_fallow=True,
                 )
             )
@@ -655,6 +673,10 @@ def simulate_rotation(
             yield_t_ha = None
             limiting = "none"
 
+        yield_dm = (
+            None if yield_t_ha is None
+            else yield_t_ha * crop.economics.dry_matter_frac
+        )
         dm = above_ground_dry_matter(crop, yield_t_ha, result.total_transpiration_mm)
         carbon, straw_left = carbon_input_from_crop(
             crop, dm, season.residue_removed_fraction
@@ -682,6 +704,7 @@ def simulate_rotation(
                 duration_days=duration, water=result,
                 residue_cover_at_sowing=cover_at_sowing,
                 relative_yield=relative_yield, yield_t_ha=yield_t_ha,
+                yield_dm_t_ha=yield_dm,
                 above_ground_dm_t_ha=dm, residue_returned_t_ha=straw_left,
                 carbon_input_t_ha=carbon, is_fallow=False,
                 nitrogen_demand_kg_ha=demand, nitrogen_supplied_kg_ha=supplied,

@@ -189,7 +189,7 @@ def test_trade_off_splits_gains_from_losses_with_direction():
     # Both deltas are positive here and both are labelled "up" - correctly, since
     # more production is better and more irrigation is worse. The direction word
     # describes the number's movement; BETTER/WORSE carries the judgement.
-    assert "marketable production up" in text
+    assert "production (dry matter) up" in text
     assert "irrigation demand up" in text
 
 

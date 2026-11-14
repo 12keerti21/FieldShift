@@ -11,6 +11,7 @@ project set out not to build.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -18,18 +19,11 @@ from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from ..data import load_registry
-from ..decide.evidence import (
-    CROP_TABLE,
-    GRIDMET,
-    NASADEM,
-    POWER,
-    QUICKSTATS,
-    SSURGO,
-    build_card,
-)
+from ..decide.evidence import NASADEM, build_card
 from ..decide.guardrails import Level, Verdict
 from ..report.fieldplan import render_field_plan
 from .bundle import SITES_BY_ID, available_sites, load_bundle
+from .regions import region
 from .schemas import (
     AnalyseRequest,
     RankRequest,
@@ -217,13 +211,27 @@ def evidence(site_id: str, index: int) -> dict:
             numbers.append((label, f"{value:.3g} {units}"))
     numbers.append(("crops harvested per decade", f"{row['detail']['crops_per_decade']:.1f}"))
 
-    sources = [POWER, SSURGO, CROP_TABLE, QUICKSTATS, GRIDMET]
-    if site["terrain"]["slope_percent"] is not None:
-        sources.append(NASADEM)
+    # Sources come from the region, not from this endpoint. Hardcoding them here
+    # claimed SSURGO and NASS county yields for every site, which on a site
+    # outside the United States would have been a false citation on the one
+    # artefact whose whole job is to be checkable.
+    region_spec = region(data.get("region", {}).get("id", "us_high_plains"))
+    sources = [
+        s for s in region_spec.sources
+        if s is not NASADEM or site["terrain"]["slope_percent"] is not None
+    ]
 
     extra = []
     if site["terrain"]["slope_percent"] is None:
         extra.append(site["terrain"]["note"])
+    if not region_spec.is_validated:
+        extra.append(
+            f"This is a {region_spec.name} site and nothing here has been checked "
+            "against observed yields. The engine is the same one validated on the "
+            "US High Plains; the inputs are coarser and unverified. Treat the "
+            "ranking as a hypothesis to test locally, not a prediction."
+        )
+    extra.extend(region_spec.review_first)
     if row["detail"]["nitrogen_limited_seasons"]:
         extra.append(
             f"{int(row['detail']['nitrogen_limited_seasons'])} simulated seasons were "
@@ -241,6 +249,20 @@ def evidence(site_id: str, index: int) -> dict:
         extra_unknowns=tuple(extra),
     )
     return {"card": card.to_dict(), "rendered": card.render()}
+
+
+@app.get("/api/validation")
+def validation() -> dict:
+    """Every validation result, from one file.
+
+    Served rather than written into the interface so the page and the record
+    cannot drift apart. The file carries the reproducing command for each check,
+    which is the only reason any of these numbers are worth showing.
+    """
+    path = Path("data/validation.json")
+    if not path.exists():
+        raise HTTPException(404, "validation record not found")
+    return json.loads(path.read_text())
 
 
 @app.get("/api/site/{site_id}/guardrails")

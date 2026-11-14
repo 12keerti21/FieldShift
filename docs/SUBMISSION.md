@@ -56,11 +56,19 @@ them.** Against continuous winter wheat:
 
 | | current | suggested |
 |---|---|---|
-| production | 1.03 t/ha/yr | **2.29** |
+| production | 0.90 t DM/ha/yr | **1.99** |
 | soil carbon | **-0.050 t C/ha/yr (losing)** | **+0.270 (building)** |
 | bare ground | 59.8% of the time | 21.5% |
 | wind erosion exposure | 774 index | 391 |
 | crops harvested per decade | 5.2 | 10.1 |
+
+Production is summed as **dry matter**, not as sale weight. That distinction was
+forced on us by the Indian tier and it is worth stating: adding marketed tonnes
+across crops holding different amounts of water is not a quantity. Potato at 25 t/ha
+of fresh tubers against wheat at 4 t/ha of grain is a six-fold difference in sale
+weight and about 1.5-fold in dry matter, and before this was fixed a maize-potato
+rotation looked 2.5x more productive than rice-wheat purely through tuber water. On
+the US sites every crop is a grain, so the error was latent there.
 
 Nothing is given up. The trade-off panel prints **"WORSE: nothing."**
 
@@ -186,6 +194,62 @@ Three external services we planned to use were unavailable: **OpenET** returns a
 server-side error on every request, the **USGS groundwater endpoint** has been
 retired, and **CropScape** timed out. Each is documented with the exact failure.
 
+### Does it transfer? One district in Indian Punjab says yes, with a caveat
+
+The engine is deliberately split from the region. A **region** supplies three things
+and nothing else: which year patterns are agronomically real and on what dates,
+where the soil comes from, and what independent data exists to check the answer
+against. The physics below that does not know where it is.
+
+So we ran it on **Sangrur district, Punjab** — rice–wheat over a falling water table,
+which is the same shape of problem as the Ogallala: a profitable monoculture mining a
+finite aquifer. Inputs are global only: NASA POWER (worldwide already) and **ISRIC
+SoilGrids** instead of SSURGO. On a 2.5 ha holding, the result:
+
+| | rice–wheat now | best alternative |
+|---|---|---|
+| production | 5.72 t DM/ha/yr | **5.92–7.45** |
+| irrigation | 1,996 mm/yr | **1,511** (−24%) |
+| soil carbon | −0.002 t C/ha/yr | **+0.107 to +0.301** |
+
+Seven rotations beat rice–wheat on every objective. The cheapest in water replaces
+**one rice year in three with a rainfed kharif legume** (groundnut), cutting
+irrigation by 485 mm/yr while producing slightly more dry matter.
+
+**Rice needed its own water balance, not a parameter.** Under standing water the
+dual-Kc machinery describes nothing real: Ke, Kr, TEW and REW parameterise a surface
+that wets and dries, Ks exists to express depletion that a submerged field does not
+have, and percolation is a driven flux through the plough pan rather than the
+overflow of a full profile. So `run_ponded_balance` is a separate model that uses
+FAO-56 **Table 12** single coefficients — the opposite of the rest of the engine, and
+correct here, because Table 12's paddy Kc already includes evaporation off the water
+surface. Its mass balance closes to 1e-13 mm.
+
+**And it is not validated, which the tool says on every card.** There is no district
+yield series we could obtain, so the Punjab region declares a low-confidence source
+named *"no district yield series"* — and because a card takes its confidence from its
+weakest input, no amount of good physics can lift a Punjab card above **low**. A
+test enforces that a tier-2 region cannot even *claim* validation. The downgrade is
+structural, not a disclaimer somebody remembered to write.
+
+What we found along the way, all recorded rather than smoothed over:
+
+- SoilGrids answers **HTTP 200 with every value null** when it is throttling. Eight
+  of ten test points did this on a first pass and succeeded on retry. An adapter
+  that trusted the first 200 would report most of the world as having no soil.
+- SoilGrids predicts **1.3% topsoil organic carbon** at Sangrur, roughly twice what
+  the region's cropped alluvium is normally reported to hold. That initialises the
+  RothC pools, so we report the number the global product gives and name the
+  discrepancy rather than quietly substituting a literature value.
+- SoilGrids has **no hydrologic group at all**, so runoff falls back to the texture
+  class, which puts this point in group D. That likely overstates monsoon runoff and
+  penalises the rainfed options against the ponded ones. It is the first thing we
+  ask a local agronomist to check.
+- The one check available is weak and offered as weak: our Penman-Monteith ET0 sits
+  **+6.4% above Hargreaves-Samani** at Sangrur against **+16.9%** at Finney County,
+  where Penman-Monteith is independently confirmed good to −3.2%. So the Indian ET0
+  is not anomalously high relative to the site we *can* check.
+
 ### Architecture
 
 Simulating one site takes about a minute. Re-ranking that scored set against a
@@ -194,7 +258,7 @@ live — because the expensive half does not depend on anyone's preferences, and
 cheap half is entirely preference and has to move the instant a slider does.
 
 Python engine (no heavy geospatial stack — NASADEM `.hgt` is read directly as raw
-int16), FastAPI, Leaflet, no build step. **708 tests.**
+int16), FastAPI, Leaflet, no build step. **773 tests.**
 
 ### What a farmer takes away
 
@@ -225,6 +289,9 @@ ECOSTRESS, Landsat, MODIS/VIIRS, GEDI.
   *independent check* on our own, not as an input
 - **USDA SSURGO** — field-scale soil texture, available water capacity, organic
   matter, bulk density
+- **ISRIC SoilGrids v2.0** — the global soil source that lets the engine leave the
+  United States at all, since soil surveys are national where weather is not. Used
+  for the Punjab tier, and never presented as equivalent to a survey
 - **USDA NASS QuickStats** — county yields 1984–, split by irrigation practice and,
   critically, by rotation (after fallow vs continuous), which is what made validating
   a *rotation* effect possible

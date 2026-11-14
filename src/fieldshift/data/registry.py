@@ -75,6 +75,7 @@ def _crop(d: dict) -> Crop:
         economics=Economics(
             yield_t_ha=tuple(d["economics"]["yield_t_ha"]),
             price_local_required=bool(d["economics"]["price_local_required"]),
+            dry_matter_frac=float(d["economics"]["dry_matter_frac"]),
         ),
         ky=YieldResponse(
             value=d["ky"]["value"],
@@ -452,6 +453,22 @@ def _validate(reg: Registry) -> None:
             c.economics.yield_t_ha[0] <= c.economics.yield_t_ha[1] <= c.economics.yield_t_ha[2]
         ):
             errs.append(f"{tag}: yield range not ascending")
+        if not 0.0 < c.economics.dry_matter_frac <= 1.0:
+            errs.append(
+                f"{tag}: dry_matter_frac={c.economics.dry_matter_frac} outside (0, 1]"
+            )
+        # A marketed crop needs a real composition figure, because the production
+        # objective sums dry matter across crops and a placeholder 1.0 on a
+        # high-moisture crop would silently restore the very bug this field was
+        # added to fix: potato's tuber water counted as if it were grain.
+        if (
+            c.economics.yield_typical > 0.0
+            and c.economics.dry_matter_frac == 1.0
+        ):
+            errs.append(
+                f"{tag}: has a marketable yield but dry_matter_frac is still the "
+                "not-applicable placeholder of 1.0"
+            )
 
     known_families = {c.family for c in reg.crops.values()}
     for p in reg.pathogens.values():

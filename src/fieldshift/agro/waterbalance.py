@@ -58,9 +58,13 @@ class IrrigationPolicy:
     needless early irrigation and ~170 mm of soil evaporation in the Finney County
     run, roughly half the total overestimate. Real irrigators schedule against the
     design root zone and let the first pass fall in late June.
+
+    ``mode="ponded"`` is a different model rather than a different setting, and it
+    is dispatched to ``run_ponded_balance``. The ponded fields below apply only
+    there and are ignored otherwise.
     """
 
-    mode: str = "rainfed"  # "rainfed" | "refill_on_stress"
+    mode: str = "rainfed"  # "rainfed" | "refill_on_stress" | "ponded"
     trigger_depletion_frac: float = 1.0
     refill_to_depletion_frac: float = 0.0  # 0 = refill to field capacity
     max_application_mm: float = 60.0
@@ -69,9 +73,30 @@ class IrrigationPolicy:
     wetted_fraction: float = 1.0
     management_depth_m: float | None = None
 
+    # ---- ponded (transplanted paddy) only ----
+    percolation_mm_day: float = 4.0
+    establishment_mm: float = 150.0
+    target_ponding_mm: float = 50.0
+    min_ponding_mm: float = 20.0
+    bund_height_mm: float = 100.0
+
     def __post_init__(self) -> None:
-        if self.mode not in ("rainfed", "refill_on_stress"):
+        if self.mode not in ("rainfed", "refill_on_stress", "ponded"):
             raise WaterBalanceError(f"unknown irrigation mode {self.mode!r}")
+        if self.mode == "ponded":
+            if self.percolation_mm_day < 0.0:
+                raise WaterBalanceError("percolation_mm_day cannot be negative")
+            if self.establishment_mm < 0.0:
+                raise WaterBalanceError("establishment_mm cannot be negative")
+            if not 0.0 <= self.min_ponding_mm <= self.target_ponding_mm:
+                raise WaterBalanceError(
+                    "min_ponding_mm must be between 0 and target_ponding_mm"
+                )
+            if self.bund_height_mm < self.target_ponding_mm:
+                raise WaterBalanceError(
+                    "bund_height_mm must be at least target_ponding_mm, or the "
+                    "field cannot hold the water it is told to apply"
+                )
         if not 0.0 < self.efficiency <= 1.0:
             raise WaterBalanceError("irrigation efficiency must be in (0, 1]")
         if not 0.0 < self.wetted_fraction <= 1.0:
@@ -249,11 +274,11 @@ class WaterBalanceResult:
 # ---------------------------------------------------------------- curves
 
 
-def kcb_curve(crop: Crop, n_days: int) -> np.ndarray:
-    """Basal crop coefficient over the season, FAO-56 four-stage form.
+def _stage_curve(crop: Crop, n_days: int, k) -> np.ndarray:
+    """Interpolate a four-stage FAO-56 coefficient set over the season.
 
-    Constant at Kcb_ini through emergence, rising linearly through development,
-    flat at Kcb_mid through mid-season, falling linearly to Kcb_end at harvest.
+    Shared by the basal and single coefficient curves so the two cannot drift
+    apart in shape - only in the values they are handed.
     """
     s = crop.stages_days
     kcb = np.empty(n_days)
@@ -264,9 +289,6 @@ def kcb_curve(crop: Crop, n_days: int) -> np.ndarray:
     mid_end = s.ini + s.dev + s.mid
     season = max(s.total, 1)
 
-    # Basal coefficients, not single ones: the dual model adds Ke for soil
-    # evaporation, so using Table 12 values here would double-count it.
-    k = crop.kcb
     kcb[:] = k.end
     kcb[day < ini_end] = k.ini
     dev = (day >= ini_end) & (day < dev_end)
@@ -279,6 +301,27 @@ def kcb_curve(crop: Crop, n_days: int) -> np.ndarray:
         progress = (day[late] - mid_end) / s.late
         kcb[late] = k.mid + progress * (k.end - k.mid)
     return kcb
+
+
+def kcb_curve(crop: Crop, n_days: int) -> np.ndarray:
+    """Basal crop coefficient over the season, FAO-56 Table 17.
+
+    Basal coefficients, not single ones: the dual model adds Ke for soil
+    evaporation, so using Table 12 values here would double-count it. A test
+    asserts the dual balance never reads ``crop.kc``, because this exact
+    substitution was made once and inflated crop water use.
+    """
+    return _stage_curve(crop, n_days, crop.kcb)
+
+
+def kc_curve(crop: Crop, n_days: int) -> np.ndarray:
+    """Single crop coefficient over the season, FAO-56 Table 12.
+
+    Used ONLY by the ponded paddy balance, where Table 12 is the correct table
+    because its paddy values already include evaporation from the water surface.
+    Every other path in this module must use ``kcb_curve``.
+    """
+    return _stage_curve(crop, n_days, crop.kc)
 
 
 def root_depth_curve(crop: Crop, n_days: int, bare_profile_depth_m: float) -> np.ndarray:
@@ -354,6 +397,23 @@ def run_water_balance(
     point - so it is a named parameter rather than a buried constant, and it is one
     of the first things to check against local soil moisture observations.
     """
+    # A ponded paddy is a different model, so it is dispatched rather than
+    # approximated here. The dispatch lives inside this function on purpose: every
+    # caller goes through run_water_balance, and a caller that had to remember to
+    # check the mode itself would eventually forget and silently run a flooded
+    # field through a drying-soil balance.
+    if irrigation.mode == "ponded":
+        return run_ponded_balance(
+            crop, texture, weather, et0_mm,
+            planting_index=planting_index,
+            duration_days=duration_days,
+            irrigation=irrigation,
+            initial_root_depletion_frac=initial_root_depletion_frac,
+            initial_surface_depletion_frac=initial_surface_depletion_frac,
+            surface_layer_depth_m=surface_layer_depth_m,
+            kc_min=kc_min,
+        )
+
     if len(et0_mm) != len(weather):
         raise WaterBalanceError("et0 series length does not match the weather series")
     if not 0.0 <= subsoil_depletion_frac <= 1.0:
@@ -581,6 +641,290 @@ def run_water_balance(
         final_surface_depletion_mm=de,
         root_growth_water_mm=root_growth_total,
         extraction_shortfall_mm=shortfall_total,
+        closure_residual_mm=closure,
+        policy=irrigation,
+        notes=tuple(notes),
+    )
+
+
+def run_ponded_balance(
+    crop: Crop,
+    texture: SoilTexture,
+    weather: DailyWeather,
+    et0_mm: np.ndarray,
+    *,
+    planting_index: int = 0,
+    duration_days: int | None = None,
+    irrigation: IrrigationPolicy,
+    initial_root_depletion_frac: float = 0.5,
+    initial_surface_depletion_frac: float = 1.0,
+    surface_layer_depth_m: float = 0.10,
+    kc_min: float = KC_MIN,
+) -> WaterBalanceResult:
+    """Water balance for a bunded, continuously submerged transplanted paddy.
+
+    This is a SEPARATE model from the dual-Kc balance above, not a configuration of
+    it, because under standing water the dual-Kc machinery does not describe
+    anything real:
+
+      * Ke, Kr, TEW and REW parameterise a soil surface that wets and then dries.
+        A ponded surface never dries, so the drying curve has no meaning and Kr is
+        pinned at 1 by construction.
+      * Ks exists to express water stress from root-zone depletion. A submerged
+        field has no depletion to express, so Ks is 1 on every day by physics
+        rather than by assumption.
+      * Deep percolation in the dual-Kc balance is the overflow of a full profile.
+        Under a puddled paddy it is a near-constant downward flux through the
+        plough pan that continues whether or not the profile is "full", and it is
+        typically the largest single term after ET.
+
+    So the equations here are the ones used for paddy irrigation requirement:
+
+        ETc        = Kc_single x ETo               (no stress, no separate Ke)
+        pond       += rain + irrigation - ETc - percolation
+        overflow    = pond above the bund height   -> runoff
+        irrigation  = enough to restore the target depth when the pond runs low
+
+    Note that it uses the SINGLE crop coefficient from FAO-56 Table 12, not the
+    basal Kcb. That is the opposite of the rest of this module and it is correct
+    here: Table 12's paddy Kc already includes evaporation from the water surface,
+    which is precisely the term the dual model would otherwise compute from a
+    drying-soil curve that does not apply. Using Kcb here would silently drop the
+    open-water evaporation from a flooded field.
+
+    Transpiration and evaporation are still reported separately so the rotation's
+    evaporation-fraction metric stays comparable across crops. The split uses
+    Kcb for transpiration and the Kc - Kcb remainder for evaporation off the water
+    surface, which keeps T + E == ETc exactly.
+
+    What this model does NOT claim:
+
+      * It does not model yield loss from submergence depth, nitrogen volatilisation
+        from floodwater, or the methane that is the dominant climate term for paddy.
+        Methane matters enormously for a rice decision and is simply absent here;
+        the carbon objective for a rice rotation is therefore incomplete in a
+        direction that flatters rice.
+      * ``percolation_mm_day`` is a single constant where the real flux depends on
+        the puddled layer a farmer has or has not formed. It is the most
+        load-bearing assumption in the whole paddy path, which is why it is a named
+        policy field and reported in the notes.
+    """
+    if irrigation.mode != "ponded":
+        raise WaterBalanceError(
+            "run_ponded_balance needs a ponded policy; use run_water_balance instead"
+        )
+    if len(et0_mm) != len(weather):
+        raise WaterBalanceError("et0 series length does not match the weather series")
+
+    n = int(duration_days if duration_days is not None else crop.duration_days)
+    if n <= 0:
+        raise WaterBalanceError("season duration must be positive")
+    if crop.is_fallow:
+        raise WaterBalanceError("a bare fallow cannot be ponded")
+    if planting_index < 0 or planting_index + n > len(weather):
+        raise WaterBalanceError(
+            f"season of {n} days from index {planting_index} runs past the weather "
+            f"series ({len(weather)} days)"
+        )
+
+    sl = slice(planting_index, planting_index + n)
+    dates = weather.dates[sl]
+    rain = weather.precip_mm[sl]
+    et0 = np.asarray(et0_mm[sl], dtype=float)
+
+    kcb_series = kcb_curve(crop, n)
+    kc_series = kc_curve(crop, n)
+    # The single coefficient must not fall below the basal one; if the tables
+    # disagree for this crop, trusting the larger keeps ETc >= transpiration.
+    kc_series = np.maximum(kc_series, kcb_series)
+    zr_series = root_depth_curve(crop, n, bare_profile_depth_m=1.0)
+
+    taw_per_m = texture.taw_mm_per_m
+    tew = texture.tew_mm(surface_layer_depth_m)
+    rew = min(texture.rew_mm, tew)
+
+    out = {
+        k: np.zeros(n)
+        for k in (
+            "kcb", "ke", "ks", "fc", "t", "tp", "e", "dr", "de", "taw", "raw",
+            "runoff", "infiltration", "irr_net", "irr_gross", "dp", "cn", "pond",
+        )
+    }
+
+    # Puddling water wets and saturates the profile before anything stands on the
+    # surface. Routing all of it into the pond made 80 mm of a 180 mm application
+    # spill the bund on the first day, which is not what happens: a dry seedbed
+    # takes that water in. So the profile is given an explicit store, filled
+    # first, and it later buffers the crop when the pond runs low.
+    mgmt_depth = irrigation.management_depth_m or max(crop.root.max_depth_m, 0.1)
+    initial_deficit = (
+        float(np.clip(initial_root_depletion_frac, 0.0, 1.0))
+        * taw_per_m * mgmt_depth
+    )
+    # Going from field capacity to saturation is the drainable porosity, which is
+    # the water a puddled layer holds above what a drained soil would.
+    saturation_capacity = 1000.0 * max(texture.drainable_porosity, 0.0) * mgmt_depth
+    profile_capacity = initial_deficit + saturation_capacity
+
+    pond = 0.0
+    profile_store = 0.0
+    irrigation_season_gross = 0.0
+    establishment_applied = 0.0
+    capped_days = 0
+    soil_draw_total = 0.0
+    dry_days = 0
+
+    for i in range(n):
+        taw = taw_per_m * zr_series[i]
+        raw = max(crop.root.p_depletion * taw, 1e-9)
+
+        kcb = float(kcb_series[i])
+        kc = float(kc_series[i])
+        etc = kc * et0[i]
+        t_act = kcb * et0[i]
+        e_act = max(etc - t_act, 0.0)
+
+        # Puddling and transplanting water, applied once at establishment.
+        irr_net = 0.0
+        if i == 0 and irrigation.establishment_mm > 0.0:
+            irr_net += irrigation.establishment_mm
+            establishment_applied = irrigation.establishment_mm
+
+        # Top up when the pond would otherwise drop below the minimum depth.
+        projected = pond + irr_net + rain[i] - etc - irrigation.percolation_mm_day
+        if projected < irrigation.min_ponding_mm:
+            want = irrigation.target_ponding_mm - projected
+            applied = min(want, irrigation.max_application_mm)
+            if applied < want:
+                capped_days += 1
+            irr_net += max(applied, 0.0)
+
+        irr_gross = irr_net / irrigation.efficiency
+        if irrigation.seasonal_cap_mm is not None:
+            remaining = irrigation.seasonal_cap_mm - irrigation_season_gross
+            if remaining <= 0.0:
+                irr_net = irr_gross = 0.0
+            elif irr_gross > remaining:
+                irr_gross = remaining
+                irr_net = irr_gross * irrigation.efficiency
+        irrigation_season_gross += irr_gross
+
+        # Inflow wets the profile before it stands on the surface. Once the
+        # profile is saturated the bund impounds the rest instead of shedding it,
+        # and only the excess over the bund height leaves the field. This is why a
+        # paddy's runoff is low and its percolation high - the opposite of the
+        # curve-number regime, which is why this path does not use one.
+        inflow = irr_net + rain[i]
+        to_profile = min(inflow, max(profile_capacity - profile_store, 0.0))
+        profile_store += to_profile
+        pond += inflow - to_profile
+        ro = max(pond - irrigation.bund_height_mm, 0.0)
+        pond -= ro
+
+        # ET and percolation draw the pond down, in that order. ET has priority
+        # because a crop keeps transpiring from a saturated profile after the
+        # standing water is gone, whereas percolation through the plough pan needs
+        # a head of water above it to drive the flux. Getting this order wrong
+        # would let percolation consume water the crop had already used.
+        et_from_pond = min(pond, etc)
+        pond -= et_from_pond
+        # Then from the water the puddling put into the profile.
+        et_from_profile = min(profile_store, etc - et_from_pond)
+        profile_store -= et_from_profile
+        # Anything still unmet comes from soil the model is not tracking, which is
+        # where the submergence assumption has actually broken down. It is counted
+        # rather than waved away: without it the mass balance is short by exactly
+        # this amount, and an untracked store that always has water is how a model
+        # ends up reporting a drained paddy as unstressed.
+        soil_draw = etc - et_from_pond - et_from_profile
+        soil_draw_total += soil_draw
+        if soil_draw > 0.0:
+            dry_days += 1
+
+        # Percolation needs a head of standing water above the plough pan, so it
+        # draws from the pond only.
+        percolation = min(pond, irrigation.percolation_mm_day)
+        pond -= percolation
+
+        for key, value in (
+            ("kcb", kcb), ("ke", max(kc - kcb, 0.0)), ("ks", 1.0),
+            ("fc", float(np.clip(kcb / max(crop.kcb.mid, kc_min + 1e-6), 0.0, 1.0))),
+            ("t", t_act), ("tp", t_act), ("e", e_act),
+            ("dr", 0.0), ("de", 0.0), ("taw", taw), ("raw", raw),
+            ("runoff", ro), ("infiltration", rain[i] - ro),
+            ("irr_net", irr_net), ("irr_gross", irr_gross),
+            ("dp", percolation), ("cn", 0.0), ("pond", pond),
+        ):
+            out[key][i] = value
+
+    notes = [
+        "Ponded paddy: a separate water balance from the dual-Kc model. The field "
+        "is kept submerged, so there is no water stress by construction and yield "
+        "here is not water-limited - the cost of rice shows up as irrigation, not "
+        "as lost yield.",
+        f"Percolation held at {irrigation.percolation_mm_day:.1f} mm/day through the "
+        f"puddled layer, {out['dp'].sum():.0f} mm over the season. This single "
+        "constant is the largest assumption in the paddy path.",
+        f"Establishment (puddling and transplanting) {establishment_applied:.0f} mm, "
+        f"of which up to {profile_capacity:.0f} mm wets and saturates the profile "
+        "before any water stands on the surface.",
+        "Methane emission from the flooded field is NOT modelled, and it is the "
+        "dominant climate term for paddy. The carbon figure for a rice rotation is "
+        "incomplete in rice's favour.",
+    ]
+    if capped_days:
+        notes.append(
+            f"On {capped_days} day(s) the pond could not be restored to target "
+            f"because a single application is capped at "
+            f"{irrigation.max_application_mm:.0f} mm."
+        )
+
+    if dry_days:
+        notes.append(
+            f"The pond fell to zero on {dry_days} day(s) and {soil_draw_total:.0f} mm "
+            "of crop water use was met from the saturated profile instead of from "
+            "standing water. On those days the field is not actually submerged, so "
+            "the no-stress assumption is weakest there."
+        )
+
+    # Mass balance, with the pond and the profile draw both counted as stores. A
+    # residual here is a bug, not an approximation, so it is computed and surfaced.
+    expected = (
+        out["irr_net"].sum() + out["infiltration"].sum()
+        - out["t"].sum() - out["e"].sum() - out["dp"].sum()
+    )
+    closure = float((pond + profile_store - soil_draw_total) - expected)
+
+    return WaterBalanceResult(
+        dates=dates,
+        crop_id=crop.id,
+        et0_mm=et0,
+        kcb=out["kcb"],
+        ke=out["ke"],
+        ks=out["ks"],
+        canopy_fraction=out["fc"],
+        transpiration_mm=out["t"],
+        potential_transpiration_mm=out["tp"],
+        soil_evaporation_mm=out["e"],
+        root_depletion_mm=out["dr"],
+        surface_depletion_mm=out["de"],
+        taw_mm=out["taw"],
+        raw_mm=out["raw"],
+        rainfall_mm=rain,
+        runoff_mm=out["runoff"],
+        infiltration_mm=out["infiltration"],
+        irrigation_applied_mm=out["irr_net"],
+        irrigation_gross_mm=out["irr_gross"],
+        deep_percolation_mm=out["dp"],
+        curve_number=out["cn"],
+        root_depth_m=zr_series,
+        initial_root_depletion_mm=0.0,
+        # A paddy hands the next crop a profile at field capacity, which is the
+        # real agronomic legacy of rice: wheat sown after rice starts wet.
+        final_root_depletion_mm=0.0,
+        final_surface_depletion_mm=0.0,
+        root_growth_water_mm=0.0,
+        extraction_shortfall_mm=0.0,
         closure_residual_mm=closure,
         policy=irrigation,
         notes=tuple(notes),

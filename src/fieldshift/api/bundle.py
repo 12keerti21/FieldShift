@@ -30,33 +30,20 @@ import numpy as np
 from ..agro.climate import Site
 from ..agro.et0 import et0_penman_monteith
 from ..agro.rothc import soc_from_organic_carbon_pct
-from ..agro.rotation import SeasonPlan
-from ..agro.waterbalance import IrrigationPolicy
 from ..data import load_registry
-from ..decide.candidates import RotationConstraints, YearPattern, build_rotation
-from ..decide.evidence import (
-    CROP_TABLE,
-    GRIDMET,
-    NASADEM,
-    POWER,
-    QUICKSTATS,
-    SSURGO,
-    build_card,
-)
+from ..decide.candidates import build_rotation
+from ..decide.evidence import build_card  # noqa: F401  (re-exported for the API)
 from ..decide.guardrails import check_crop
 from ..decide.objectives import OBJECTIVES, select_objectives
 from ..decide.search import search_rotations
 from ..io.power import load_power_daily, parse_power_daily
+from ..io.soilgrids import fetch_soilgrids_point, texture_from_soilgrids
 from ..io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
 from ..io.terrain import field_slope_percent, ls_factor
+from .regions import PADDY, PIVOT, TUBEWELL, Region, region  # noqa: F401
 
 BUNDLE_DIR = Path("data/bundles")
 RAW_DIR = Path("data/raw")
-
-PIVOT = IrrigationPolicy(
-    mode="refill_on_stress", efficiency=0.85,
-    refill_to_depletion_frac=0.25, max_application_mm=25,
-)
 
 OBJECTIVE_KEYS = (
     "production", "downside", "irrigation", "carbon", "wind_exposure", "bare_ground"
@@ -78,55 +65,18 @@ class SiteSpec:
     dem_tile: str | None = None
     existing_rotation: tuple[str, ...] = ()
     field_hectares: float = 65.0
+    # Which region's calendar, soil source and evidence apply here. This is the
+    # only thing that has to change to move the engine to a new part of the world.
+    region: str = "us_high_plains"
+
+    @property
+    def region_spec(self) -> Region:
+        return region(self.region)
 
     @property
     def site(self) -> Site:
         return Site(self.latitude, self.longitude, self.elevation_m, self.name)
 
-
-# Year patterns for the US High Plains calendar. Winter wheat is sown in October and
-# harvested the following July, so a wheat year leaves no room for a summer crop in
-# the year after it - the calendar check enforces that rather than trusting us.
-HIGH_PLAINS_PATTERNS: tuple[YearPattern, ...] = (
-    YearPattern("fallow", "fallow", (), "banks water, loses carbon and nitrogen"),
-    YearPattern(
-        "wheat", "winter wheat",
-        (SeasonPlan("wheat_winter", 274, 285, fertiliser_n_kg_ha=70.0),),
-        "dryland, 70 kg N/ha",
-    ),
-    YearPattern(
-        "wheat_irr", "winter wheat (irrigated)",
-        (SeasonPlan("wheat_winter", 274, 285, irrigation=PIVOT,
-                    fertiliser_n_kg_ha=100.0),),
-        "centre pivot",
-    ),
-    YearPattern(
-        "sorghum", "grain sorghum",
-        (SeasonPlan("sorghum", 152, 125, fertiliser_n_kg_ha=50.0),),
-        "dryland, drought tolerant",
-    ),
-    YearPattern(
-        "corn_irr", "corn (irrigated)",
-        (SeasonPlan("maize", 125, 150, irrigation=PIVOT, fertiliser_n_kg_ha=200.0),),
-        "the thirstiest option here",
-    ),
-    YearPattern(
-        "soy_irr", "soybean (irrigated)",
-        (SeasonPlan("soybean", 140, 140, irrigation=PIVOT),),
-        "fixes its own nitrogen",
-    ),
-    YearPattern(
-        "sorg_cover", "sorghum + rye cover",
-        (SeasonPlan("sorghum", 152, 125, fertiliser_n_kg_ha=50.0),
-         SeasonPlan("cereal_rye_cover", 288, 70)),
-        "a cover crop closes the autumn window",
-    ),
-    YearPattern(
-        "millet", "pearl millet",
-        (SeasonPlan("pearl_millet", 152, 100, fertiliser_n_kg_ha=40.0),),
-        "lowest water use of any grain here",
-    ),
-)
 
 SITES: tuple[SiteSpec, ...] = (
     SiteSpec(
@@ -155,6 +105,22 @@ SITES: tuple[SiteSpec, ...] = (
         "rather than an exception.",
         existing_rotation=("wheat", "fallow"),
     ),
+    # ---- Tier 2: the transfer case ----
+    # Same engine, global-only inputs. Sangrur sits in the part of central Punjab
+    # with the steepest reported water-table decline, under the rice-wheat system
+    # that causes it. It is the same shape of problem as the Ogallala, which is
+    # why it is the transfer worth running rather than an arbitrary second site.
+    SiteSpec(
+        "sangrur_pb", "Sangrur District, Punjab", 30.23, 76.09, 232.0,
+        "PB", "SANGRUR",
+        "Rice-wheat on the central Punjab plain, irrigated from a falling water "
+        "table. Run on global inputs only - predicted soil, no yield series to "
+        "check against - so every number here is the engine transferred, not "
+        "validated.",
+        existing_rotation=("rice_wheat",),
+        region="in_punjab",
+        field_hectares=2.5,
+    ),
 )
 
 SITES_BY_ID = {s.id: s for s in SITES}
@@ -166,6 +132,42 @@ def _power_path(spec: SiteSpec) -> Path:
 
 def _ssurgo_path(spec: SiteSpec) -> Path:
     return RAW_DIR / f"ssurgo_{spec.state}_{spec.county}.json".lower()
+
+
+def _soilgrids_path(spec: SiteSpec) -> Path:
+    return RAW_DIR / f"soilgrids_{spec.state}_{spec.county}.json".lower()
+
+
+def _load_soil(spec: SiteSpec, registry):
+    """Soil from whichever survey reaches this field.
+
+    Returns the texture plus a short provenance label for the bundle. The two
+    sources are not interchangeable and the difference is reported rather than
+    smoothed over: SSURGO is a survey of a mapped component, SoilGrids is a 250 m
+    global prediction with no hydrologic group, so a SoilGrids site carries lower
+    confidence and says which input caps it.
+    """
+    source = spec.region_spec.soil_source
+    if source == "ssurgo":
+        profile = fetch_ssurgo_point(
+            spec.latitude, spec.longitude, cache_path=str(_ssurgo_path(spec))
+        )
+        soil = texture_from_ssurgo(profile, registry.texture)
+        return soil, {
+            "component": profile.component,
+            "component_pct": profile.component_pct,
+        }
+    if source == "soilgrids":
+        profile = fetch_soilgrids_point(
+            spec.latitude, spec.longitude, cache_path=str(_soilgrids_path(spec))
+        )
+        soil = texture_from_soilgrids(profile, registry.texture)
+        return soil, {
+            "component": "SoilGrids 250 m prediction",
+            "component_pct": None,
+            "described_depth_cm": profile.described_depth_cm,
+        }
+    raise ValueError(f"unknown soil source {source!r}")
 
 
 def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 90) -> dict:
@@ -181,10 +183,7 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
         )
     et0 = et0_penman_monteith(spec.site, weather)
 
-    profile = fetch_ssurgo_point(
-        spec.latitude, spec.longitude, cache_path=str(_ssurgo_path(spec))
-    )
-    soil = texture_from_ssurgo(profile, registry.texture)
+    soil, soil_meta = _load_soil(spec, registry)
     soc = soc_from_organic_carbon_pct(
         soil.organic_carbon_pct, soil.bulk_density_g_cm3
     )
@@ -205,22 +204,22 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
             "placeholder of 0.25; the erosion figure here is indicative only"
         )
 
+    region_spec = spec.region_spec
+    patterns_all = region_spec.patterns
+
     existing_plan = None
     if spec.existing_rotation:
-        patterns = [p for p in HIGH_PLAINS_PATTERNS if p.id in spec.existing_rotation]
+        patterns = [p for p in patterns_all if p.id in spec.existing_rotation]
         if patterns:
             existing_plan = build_rotation(
                 patterns, name="EXISTING: " + " - ".join(p.name for p in patterns)
             )
 
     result = search_rotations(
-        HIGH_PLAINS_PATTERNS,
+        patterns_all,
         registry=registry, soil=soil, weather=weather, et0_mm=et0.values_mm,
         start_year=1984, initial_soc_t_ha=soc, ls=ls, cycle_years=cycle_years,
-        constraints=RotationConstraints(
-            max_consecutive_fallow_years=1, max_fallow_fraction=0.5,
-            max_irrigated_years=2,
-        ),
+        constraints=region_spec.constraints,
         objectives=select_objectives(OBJECTIVE_KEYS),
         max_candidates=max_candidates,
         extra_plans=[existing_plan] if existing_plan else (),
@@ -231,7 +230,7 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
 
     # Guardrail screen for every crop the patterns can place.
     windows = {}
-    for pattern in HIGH_PLAINS_PATTERNS:
+    for pattern in patterns_all:
         for season in pattern.seasons:
             windows[season.crop_id] = (
                 season.planting_doy,
@@ -264,6 +263,26 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
             "on_front": index in result.front,
             "cycle_years": plan.cycle_years,
             "crops": list(plan.crop_sequence),
+            # When each crop actually occupies the field. A rotation is a
+            # calendar, and a list of crop names does not show the thing that
+            # matters most to a farmer looking at it: where the gaps are, which
+            # crop overwinters, and how tight the turnarounds get.
+            "schedule": [
+                {
+                    "crop_id": season.crop_id,
+                    "crop_name": registry.crop(season.crop_id).name,
+                    "year_offset": season.year_offset,
+                    "start_doy": season.planting_doy,
+                    "duration_days": int(
+                        season.duration_days
+                        or registry.crop(season.crop_id).duration_days
+                    ),
+                    "irrigation": season.irrigation.mode,
+                    "fertiliser_n_kg_ha": season.fertiliser_n_kg_ha,
+                    "group": registry.crop(season.crop_id).group,
+                }
+                for season in plan.seasons
+            ],
             "notes": list(score.notes)[:3],
             "objectives": {
                 o.key: float(o.extract(score)) for o in result.objectives
@@ -285,11 +304,11 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
             "existing_rotation": list(spec.existing_rotation),
             "rainfall_mm_yr": rainfall,
             "soil": {
-                "component": profile.component,
-                "component_pct": profile.component_pct,
+                **soil_meta,
                 "texture": soil.name,
                 "available_water_mm_per_m": soil.taw_mm_per_m,
                 "measured": soil.taw_is_measured,
+                "provenance": soil.taw_provenance,
                 "organic_carbon_pct": soil.organic_carbon_pct,
                 "hydrologic_group": soil.hydrologic_group,
                 "source": soil.source,
@@ -305,6 +324,16 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
                 "annual_et0_mm": float(et0.values_mm.sum() / len(years)),
             },
             "starting_carbon_t_ha": soc,
+        },
+        "region": {
+            "id": region_spec.id,
+            "name": region_spec.name,
+            "tier": region_spec.tier,
+            "validated": region_spec.is_validated,
+            "yield_validation": region_spec.yield_validation,
+            "soil_source": region_spec.soil_source,
+            "review_first": list(region_spec.review_first),
+            "note": region_spec.note,
         },
         "objectives": [
             {
@@ -368,10 +397,22 @@ def available_sites(out_dir: Path = BUNDLE_DIR) -> list[dict]:
             site = json.loads(path.read_text())["site"]
         except (json.JSONDecodeError, KeyError):
             continue
+        try:
+            region_block = json.loads(path.read_text()).get("region", {})
+        except json.JSONDecodeError:
+            region_block = {}
         sites.append({
             "id": site["id"], "name": site["name"],
             "latitude": site["latitude"], "longitude": site["longitude"],
             "note": site["note"],
+            "field_hectares": site.get("field_hectares"),
+            # The tier is surfaced here so the map can distinguish a validated
+            # field from a transferred one before anything is clicked. A viewer
+            # should not have to open a site to find out which kind it is.
+            "region": region_block.get("id"),
+            "region_name": region_block.get("name"),
+            "tier": region_block.get("tier", 1),
+            "validated": region_block.get("validated", True),
         })
     # Keep the declared order where the site is known, so the pilot field leads.
     order = {s.id: i for i, s in enumerate(SITES)}

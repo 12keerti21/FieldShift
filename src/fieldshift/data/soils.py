@@ -32,6 +32,12 @@ class SoilTexture:
     measured_awc_mm_per_m: float | None = None
     organic_carbon_pct: float | None = None
     source: str = "USDA texture class centroid"
+    # Where the available-water figure came from. "survey" is a mapped soil
+    # component (SSURGO), "prediction" is a global model (SoilGrids), "centroid" is
+    # this table's own texture-class value. They are not interchangeable and the
+    # distinction has to survive all the way to what the farmer is shown, which is
+    # why it is a provenance string rather than a measured/estimated boolean.
+    awc_provenance: str = "centroid"
 
     # ---- derived water properties (FAO-56 chapter 8) ----
 
@@ -51,12 +57,22 @@ class SoilTexture:
 
     @property
     def taw_is_measured(self) -> bool:
-        """Whether available water came from a survey or from a class centroid.
+        """Whether available water came from a soil survey.
 
         Read by the evidence card: a farmer being shown an irrigation figure should
         be able to see whether the soil behind it was measured on their field.
+
+        A global model prediction is deliberately NOT measured. SoilGrids also
+        populates ``measured_awc_mm_per_m`` - it is the best available number and
+        it does override the centroid - but calling a 250 m machine-learning
+        output "measured" would overstate it to exactly the person least able to
+        check, so provenance is what this reads.
         """
-        return self.measured_awc_mm_per_m is not None
+        return self.awc_provenance == "survey"
+
+    @property
+    def taw_provenance(self) -> str:
+        return self.awc_provenance
 
     def taw_mm(self, root_depth_m: float) -> float:
         return self.taw_mm_per_m * root_depth_m

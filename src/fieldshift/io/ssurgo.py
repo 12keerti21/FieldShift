@@ -266,6 +266,7 @@ def texture_from_ssurgo(
         hydrologic_group=profile.hydrologic_group,
         measured_fractions=True,
         measured_awc_mm_per_m=profile.awc_mm_per_m(depth_cm),
+        awc_provenance="survey",
         organic_carbon_pct=profile.topsoil_organic_carbon_pct(),
         source=f"SSURGO {profile.component} ({profile.component_pct:.0f}% of map unit)",
     )

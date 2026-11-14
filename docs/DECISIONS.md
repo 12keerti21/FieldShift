@@ -899,3 +899,161 @@ exact string.
 - [ ] Team composition / who owns which layer
 - [ ] Product name (repo is `rotation-dss`, placeholder)
 - [ ] Frontend stack (deferred until engine API shape is known)
+
+---
+
+## 2026-11-14 — Tier 2: the Punjab transfer, and what it forced
+
+### 1. Region as an abstraction, not a config flag
+
+`src/fieldshift/api/regions.py`. A `Region` supplies exactly three things: which
+year patterns are agronomically real and on what dates, where the soil comes from,
+and what independent data exists to check against. Everything below it — water
+balance, RothC, RUSLE, the rotation search — is physics that does not know where it
+is. `build_bundle` previously hardcoded `HIGH_PLAINS_PATTERNS` and SSURGO, so the
+engine could not leave the United States.
+
+The load-bearing invariant is that **a tier-2 region cannot claim yield
+validation** — enforced in `Region.__post_init__` and tested. If someone later
+obtains a district yield series and wires it in, construction fails until they also
+promote the region to tier 1, which is the correct order of events: having the data
+is what makes it tier 1.
+
+The confidence downgrade is structural rather than written. The Punjab region
+declares a low-confidence source literally named `no district yield series`, and
+because `EvidenceCard.confidence` is the minimum over sources, no amount of good
+physics can lift a Punjab card above LOW.
+
+### 2. Sangrur, Punjab, because it is the same problem shape
+
+Rice-wheat over a falling water table is the Ogallala story on the other side of the
+world: a profitable monoculture mining a finite aquifer. That makes it the transfer
+worth running rather than an arbitrary second site. 2.5 ha field, which is realistic
+for the district and makes the POWER resolution mismatch honest — one 52 km cell is
+about 108,000x the field.
+
+### 3. Rice got its own water balance
+
+`run_ponded_balance`. Under standing water the dual-Kc machinery describes nothing
+real: Ke/Kr/TEW/REW parameterise a surface that wets and dries, Ks expresses
+depletion a submerged field does not have, and percolation is a driven flux through
+the plough pan rather than the overflow of a full profile. It uses FAO-56 **Table 12
+single** coefficients, which is the opposite of the rest of the module and correct
+here, because Table 12's paddy Kc already includes evaporation off the water
+surface; using Kcb would silently drop open-water evaporation from a flooded field.
+
+Dispatch lives inside `run_water_balance` on purpose. Every caller already goes
+through it, and a caller that had to check the mode itself would eventually forget
+and run a flooded field through a drying-soil balance.
+
+Two bugs the tests caught:
+
+- **Untracked store.** ET was debited in full when the pond could not supply it, so
+  the balance was short by exactly that amount. ET now takes priority over
+  percolation (a crop keeps transpiring from a saturated profile; percolation needs
+  a head of water), then draws the profile store, and any remainder is counted as
+  `soil_draw_total` and reported. An untracked store that always has water is how a
+  model reports a drained paddy as unstressed.
+- **Puddling spilled the bund.** 80 mm of a 180 mm establishment application became
+  runoff on day one, because establishment water was routed straight into the pond.
+  Puddling wets and saturates the profile before anything stands on the surface, so
+  the profile is now filled first.
+
+Stated limitation, prominently: **methane is not modelled**, and it is the dominant
+climate term for paddy. The carbon figure for a rice rotation is incomplete in
+rice's favour, and every ponded run says so in its notes.
+
+### 4. Production is dry matter now
+
+Found by the Punjab region, latent before it. Summing marketed tonnes across crops
+holding different amounts of water is not a quantity. Potato at 25 t/ha of fresh
+tubers against wheat at 4 t/ha of grain is six-fold in sale weight and about
+1.5-fold in dry matter, and a maize-potato rotation was ranking 2.5x more productive
+than rice-wheat purely through tuber water. `Economics.dry_matter_frac` is now
+required for every marketed crop, with a validator refusing the 1.0 placeholder on
+anything with a yield. On the US sites every crop is grain, so the error was
+invisible there.
+
+This moved the headline Finney figures from 1.03 -> 2.29 to **0.90 -> 1.99**; every
+other objective is unchanged. `docs/SUBMISSION.md` and `docs/DEMO.md` were corrected.
+
+### 5. SoilGrids, and treating throttling as throttling
+
+`src/fieldshift/io/soilgrids.py`. ISRIC answers **HTTP 200 with every value null**
+when rate-limiting, so "no data" and "slow down" are the same response on the wire.
+Eight of ten test points returned nulls on a first pass and succeeded on retry. An
+adapter that trusted the first 200 would report most of the world as having no soil,
+so an all-null body is a fetch failure and never an absence of soil.
+
+Three things are reported rather than fixed, because fixing them would mean
+inventing data:
+
+- Predicted topsoil organic carbon at Sangrur is **1.01%** (1.3% at 0-5 cm), roughly
+  twice what the region's cropped alluvium is normally reported to hold. It
+  initialises the RothC pools. We report what the global product says and name the
+  discrepancy.
+- SoilGrids has **no hydrologic group**, so runoff falls back to the texture class,
+  which puts Sangrur in group D. That likely overstates monsoon runoff and penalises
+  the rainfed options against the ponded ones. First item in `review_first`.
+- Sowing dates and the 4 mm/day puddled percolation are district practice in round
+  numbers, not sourced values, and they are listed for review rather than presented
+  as citations.
+
+**`awc_provenance` replaced a measured/estimated boolean.** SoilGrids does populate
+`measured_awc_mm_per_m` — it is the best number available and should override the
+texture centroid — but `taw_is_measured` would then have reported a 250 m
+machine-learning output as a measurement to exactly the person least able to check
+it. Provenance is now `survey` / `prediction` / `centroid`, and the farmer-facing
+flag reads provenance.
+
+### 6. ET0 in India: what we can and cannot say
+
+Sangrur Penman-Monteith ET0 is 1,909 mm/yr with a monthly shape that peaks at
+8.8 mm/day in May and dips through the monsoon — the expected shape for north-west
+India. There is no independent gridded ET product for India in our hands, so this
+cannot be validated the way gridMET validated the US.
+
+The one usable check: PM sits **+6.4% above Hargreaves-Samani** at Sangrur and
+**+11.0%** at Anantapur, against **+16.9%** at Finney County, where PM is
+independently confirmed good to −3.2% against gridMET. So the Indian PM values are
+not anomalously high relative to the one site we can actually check. That argument
+uses only data we fetched plus one validated reference point, which is the standing
+rule. It is weak evidence and is offered as weak evidence.
+
+Explicitly **not** done: comparing against a remembered figure for Punjab ET0 or
+rice water use. Those numbers exist in my training data and are not admissible
+here — this is the exact failure that produced the retracted +18% claim.
+
+### 7. Interface rebuilt around five screens
+
+The user judged the single-panel interface too plain, and reviewed an LLM-generated
+plan proposing seven screens including GPM rainfall, SMAP soil moisture, NDVI and
+land-surface-temperature layers. Four of those seven would have been facades: we
+have none of those datasets, OpenET returns HTTP 408, and our nitrogen is modelled
+rather than observed. Building them would have meant drawing charts with nothing
+behind them.
+
+Taken from the plan: the sidebar shell, the three-rotation side-by-side compare, the
+flip-card treatment for evidence, the forest/leaf/sage palette, and its own best
+line — "clear distinction between measured data, derived indicators and hypothetical
+projections".
+
+Rejected and replaced: the fake satellite-layer screens, in favour of a
+**Validation** screen served from `data/validation.json` via `/api/validation`, so
+the page and the record cannot drift. It shows all eight checks including the one we
+fail, the ten errors validation found in our own model, and the withdrawn ET0 claim
+with the rule adopted afterwards. Every check carries the command that reproduces
+it.
+
+Also added: goal presets (Balanced / Save water / Most output / Build soil / Lowest
+risk) in front of the six raw weight sliders, because six abstract weights are how
+an engineer thinks about this and not how a farmer does; a plain-language headline
+answer; and a **calendar strip** per rotation drawn from a new `schedule` block in
+the bundle, since a list of crop names hides the thing that matters most — where the
+bare gaps are, which crop overwinters, and how tight the turnarounds get.
+
+### 8. The evidence endpoint was claiming sources it had not used
+
+`/api/site/{id}/rotation/{i}/evidence` hardcoded `[POWER, SSURGO, CROP_TABLE,
+QUICKSTATS, GRIDMET]`. On a Punjab site that is a false citation on the one artefact
+whose entire job is to be checkable. Sources now come from the region.

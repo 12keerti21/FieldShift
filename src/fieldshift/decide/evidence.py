@@ -319,6 +319,37 @@ QUICKSTATS = DataSource(
     confidence="high",
     caveat="county averages, so they bound the model rather than describe this field",
 )
+SOILGRIDS = DataSource(
+    name="ISRIC SoilGrids v2.0",
+    variables="texture, water retention, organic carbon, bulk density",
+    role="soil properties where no national survey is available",
+    period="2020 release",
+    pixel_metres=250.0,
+    confidence="medium",
+    caveat=(
+        "a global machine-learning prediction, not a survey: water retention is "
+        "itself a model output, the product has no hydrologic group so runoff uses "
+        "the texture-class fallback, and predicted topsoil organic carbon at the "
+        "Punjab point is around twice what the region's cropped alluvium is "
+        "normally reported to hold"
+    ),
+)
+NO_YIELD_DATA = DataSource(
+    name="no district yield series",
+    variables="none",
+    role=(
+        "there is nothing here to check modelled yield against, which is what "
+        "makes a region tier 2 rather than tier 1"
+    ),
+    period="n/a",
+    pixel_metres=None,
+    confidence="low",
+    caveat=(
+        "the US sites were checked against 41 years of county yields; nothing "
+        "equivalent was obtained for this district, so these numbers are the "
+        "model's output and not a validated prediction"
+    ),
+)
 CROP_TABLE = DataSource(
     name="FieldShift crop table",
     variables="FAO-56 coefficients, rooting depth, nitrogen, residue, Ky",
