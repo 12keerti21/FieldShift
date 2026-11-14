@@ -23,6 +23,13 @@ from .rothc import (
     soc_from_organic_carbon_pct,
 )
 from .runoff import curve_number, scs_runoff_mm
+from .rusle import (
+    RusleFactors,
+    WindExposure,
+    soil_erodibility,
+    soil_loss,
+    wind_exposure_index,
+)
 from .synthetic import ARCHETYPES, ClimateArchetype, synthetic_weather
 from .waterbalance import (
     RAINFED,
@@ -45,6 +52,8 @@ __all__ = [
     "RAINFED",
     "RothCPools",
     "RothCResult",
+    "RusleFactors",
+    "WindExposure",
     "Site",
     "WaterBalanceError",
     "WaterBalanceResult",
@@ -61,5 +70,8 @@ __all__ = [
     "run_water_balance",
     "soc_from_organic_carbon_pct",
     "scs_runoff_mm",
+    "soil_erodibility",
+    "soil_loss",
     "synthetic_weather",
+    "wind_exposure_index",
 ]

@@ -551,6 +551,67 @@ comes out at 12.4 - both in the right range for a cultivated topsoil.
   because its dominant control is anaerobic microsites a field-scale model cannot
   resolve. Flagged rather than dressed up.
 
+## 2026-11-14 - RUSLE, and the mechanism it cannot see
+
+`fieldshift/agro/rusle.py`. A = R K LS C P, with every factor and its provenance
+carried on the result rather than collapsed into one number - they come from very
+different places and carry very different confidence.
+
+### A unit error worth 7.6x
+The Williams/EPIC erodibility equation returns K in US customary units. RUSLE in SI
+needs t ha h / (ha MJ mm), a factor of **0.1317** smaller. Without the conversion K
+for our pilot soil came out at **0.3526** against a published silt-loam range of
+0.03-0.045, and soil loss with it. That would have read as a serious erosion problem
+on a field that has none. K is now converted and **range-checked on every call**,
+with an error message naming a missing conversion as the likely cause.
+
+After the fix every texture lands in its published range: sand 0.0123, silt loam
+0.0464, silt 0.0599, clay 0.0300.
+
+### The R factor is not EI30, and says so
+Rainfall erosivity properly needs the kinetic energy of 30-minute intensity.
+Retrieving sub-hourly precipitation as a point time series was not achievable: the
+GES DISC Data Rods endpoint returns an empty shell page, and granule-by-granule
+IMERG retrieval is tens of thousands of requests. R therefore uses the Renard &
+Freimund (1994) regressions, which were fitted on US data and so suit the Tier 1
+site. **Both available forms are computed and their spread is reported as the
+uncertainty** - 1211 from annual rainfall against 1525 from the MFI - because a
+single figure would imply a precision that is not there. MFI is preferred by
+default, since two sites with equal annual totals are not equally erosive and that
+distinction is exactly what a rotation tool needs.
+
+### The finding that matters: RUSLE reports on the wrong mechanism here
+The pilot field slopes **0.25 percent**, so LS is 0.060 and water erosion is
+inherently negligible. Even a bare fallow reaches **3.59 t/ha/yr**, a third of
+tolerable soil loss. RUSLE's verdict is that the field is fine.
+
+It is not. This is the Dust Bowl region and the dominant process is wind, which
+RUSLE does not model at all. Using the wind data already in the POWER record:
+
+| rotation | wind index | bare days above 6 m/s |
+|---|---|---|
+| wheat-fallow | 1572 (2.50x) | 799 |
+| continuous wheat | 628 (1.00x) | 182 |
+| wheat + cover crop | 263 (0.42x) | 0 |
+
+RUSLE ranks all three as safe; the dominant mechanism separates them sixfold. So
+`wind_exposure_index` computes an explicit flag from observed wind and simulated
+cover, and the result states plainly that RUSLE does not account for it and that
+quantifying it needs the Wind Erosion Equation and field roughness data this model
+does not have. A flat-terrain note also fires automatically, saying that a low soil
+loss there reflects topography rather than management.
+
+This completes the fallow trade-off. Summer fallow gives better individual crops
+(+15 percent) but half as many of them, three times the bare ground, a quarter of
+the carbon gain, more water lost to evaporation, and **2.5 times the wind erosion
+exposure**. It loses on five of six dimensions.
+
+### Organic carbon is a second erosion pathway
+K falls as organic carbon rises - 0.0490 at 0.5 percent against 0.0374 at 2.5
+percent, a 24 percent reduction. Because RothC moves that carbon over the
+simulation, erodibility is not a static property of the field: a carbon-building
+rotation reduces erosion through soil structure as well as through surface cover.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
