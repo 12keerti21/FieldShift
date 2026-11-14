@@ -48,6 +48,16 @@ class IrrigationPolicy:
     means irrigate earlier. ``efficiency`` is the fraction of applied water that
     reaches the root zone, so the reported requirement is at the field gate rather
     than at the root - the number a farmer actually has to find.
+
+    ``management_depth_m`` is the profile depth scheduling is managed over, and it
+    defaults to the crop's maximum rooting depth, which is the standard irrigation
+    design assumption. It exists because triggering on the *instantaneous* root zone
+    is badly wrong early in the season: three days after sowing, roots occupy ~15 cm
+    holding ~20 mm, so any sensible depletion threshold is crossed immediately and
+    the model irrigates a bare seedbed from day one. That produced ~190 mm of
+    needless early irrigation and ~170 mm of soil evaporation in the Finney County
+    run, roughly half the total overestimate. Real irrigators schedule against the
+    design root zone and let the first pass fall in late June.
     """
 
     mode: str = "rainfed"  # "rainfed" | "refill_on_stress"
@@ -57,6 +67,7 @@ class IrrigationPolicy:
     seasonal_cap_mm: float | None = None
     efficiency: float = 0.70
     wetted_fraction: float = 1.0
+    management_depth_m: float | None = None
 
     def __post_init__(self) -> None:
         if self.mode not in ("rainfed", "refill_on_stress"):
@@ -67,6 +78,8 @@ class IrrigationPolicy:
             raise WaterBalanceError("wetted fraction must be in (0, 1]")
         if self.trigger_depletion_frac <= 0.0:
             raise WaterBalanceError("trigger_depletion_frac must be positive")
+        if self.management_depth_m is not None and self.management_depth_m <= 0.0:
+            raise WaterBalanceError("management_depth_m must be positive when given")
         if not 0.0 <= self.refill_to_depletion_frac < 1.0:
             raise WaterBalanceError("refill_to_depletion_frac must be in [0, 1)")
 
@@ -251,17 +264,20 @@ def kcb_curve(crop: Crop, n_days: int) -> np.ndarray:
     mid_end = s.ini + s.dev + s.mid
     season = max(s.total, 1)
 
-    kcb[:] = crop.kc.end
-    kcb[day < ini_end] = crop.kc.ini
+    # Basal coefficients, not single ones: the dual model adds Ke for soil
+    # evaporation, so using Table 12 values here would double-count it.
+    k = crop.kcb
+    kcb[:] = k.end
+    kcb[day < ini_end] = k.ini
     dev = (day >= ini_end) & (day < dev_end)
     if s.dev > 0:
         progress = (day[dev] - ini_end) / s.dev
-        kcb[dev] = crop.kc.ini + progress * (crop.kc.mid - crop.kc.ini)
-    kcb[(day >= dev_end) & (day < mid_end)] = crop.kc.mid
+        kcb[dev] = k.ini + progress * (k.mid - k.ini)
+    kcb[(day >= dev_end) & (day < mid_end)] = k.mid
     late = (day >= mid_end) & (day < season)
     if s.late > 0:
         progress = (day[late] - mid_end) / s.late
-        kcb[late] = crop.kc.mid + progress * (crop.kc.end - crop.kc.mid)
+        kcb[late] = k.mid + progress * (k.end - k.mid)
     return kcb
 
 
@@ -320,9 +336,17 @@ def run_water_balance(
     subsoil_depletion_frac: float = 0.5,
     surface_layer_depth_m: float = 0.10,
     bare_profile_depth_m: float = 1.0,
+    residue_cover_fraction: float = 0.0,
     kc_min: float = KC_MIN,
 ) -> WaterBalanceResult:
     """Run one crop occupancy and return the daily series plus season totals.
+
+    ``residue_cover_fraction`` is the share of the soil surface covered by crop
+    residue from the PREVIOUS crop. FAO-56 reduces soil evaporation by roughly 5
+    percent for each 10 percent of surface under organic mulch, which this applies
+    to Ke. It is not a detail: it is the mechanism by which one crop's residue saves
+    water for the next, so it is a rotation benefit the model has to see rather than
+    a calibration knob. Under Kansas no-till corn, 50-70 percent cover is typical.
 
     ``subsoil_depletion_frac`` is how depleted newly explored subsoil is assumed to
     be as roots deepen. It is a real simplification with a real effect - at 0 the
@@ -334,6 +358,8 @@ def run_water_balance(
         raise WaterBalanceError("et0 series length does not match the weather series")
     if not 0.0 <= subsoil_depletion_frac <= 1.0:
         raise WaterBalanceError("subsoil_depletion_frac must be in [0, 1]")
+    if not 0.0 <= residue_cover_fraction <= 1.0:
+        raise WaterBalanceError("residue_cover_fraction must be in [0, 1]")
 
     n = int(duration_days if duration_days is not None else crop.duration_days)
     if crop.is_fallow and duration_days is None:
@@ -369,6 +395,12 @@ def run_water_balance(
         rh_min = np.full(n, DEFAULT_RH_MIN_PCT)
 
     notes: list[str] = []
+    mulch_factor = 1.0 - 0.5 * residue_cover_fraction
+    if residue_cover_fraction > 0.0:
+        notes.append(
+            f"soil evaporation reduced {(1.0 - mulch_factor):.0%} by "
+            f"{residue_cover_fraction:.0%} residue cover (FAO-56 mulch adjustment)"
+        )
     if weather.wind_2m_ms is None or weather.rh_min_pct is None:
         notes.append(
             "Kc_max used default wind and/or humidity (FAO-56 eq 72 reference "
@@ -377,12 +409,17 @@ def run_water_balance(
 
     kcb_series = kcb_curve(crop, n) if not crop.is_fallow else np.zeros(n)
     zr_series = root_depth_curve(crop, n, bare_profile_depth_m)
-    kcb_full = max(crop.kc.mid, kc_min + 1e-6)
+    kcb_full = max(crop.kcb.mid, kc_min + 1e-6)
     height = crop.root.height_m
 
     taw_per_m = texture.taw_mm_per_m
     tew = texture.tew_mm(surface_layer_depth_m)
     rew = min(texture.rew_mm, tew)
+
+    # Scheduling is managed over a fixed design profile, not the growing root zone.
+    mgmt_depth = irrigation.management_depth_m or max(crop.root.max_depth_m, 0.1)
+    taw_mgmt = taw_per_m * mgmt_depth
+    raw_mgmt = max(crop.root.p_depletion * taw_mgmt, 1e-9)
 
     cover_type = cover_type_for_crop(crop)
     condition = condition_for_crop(crop)
@@ -421,12 +458,23 @@ def run_water_balance(
         ro = float(scs_runoff_mm(rain[i], cn))
         infiltration = rain[i] - ro
 
-        # 3. irrigation, decided on the depletion at the start of the day
+        # 3. irrigation, decided on depletion over the MANAGEMENT depth at the
+        #    start of the day. Soil below the current root zone but inside the
+        #    managed profile is assumed to sit at `subsoil_depletion_frac` of its
+        #    capacity, consistent with how root growth is accounted above.
         irr_net = irr_gross = 0.0
-        if irrigation.is_irrigated and dr >= irrigation.trigger_depletion_frac * raw:
-            target = irrigation.refill_to_depletion_frac * taw
-            want = max(dr - target, 0.0)
-            irr_net = min(want, irrigation.max_application_mm)
+        depth_below = max(mgmt_depth - zr_series[i], 0.0)
+        dr_managed = dr + taw_per_m * depth_below * subsoil_depletion_frac
+        if (
+            irrigation.is_irrigated
+            and dr_managed >= irrigation.trigger_depletion_frac * raw_mgmt
+        ):
+            target = irrigation.refill_to_depletion_frac * taw_mgmt
+            want = max(dr_managed - target, 0.0)
+            # Never apply more than the current root zone can actually hold; the
+            # surplus would otherwise be booked as deep percolation and lost, when
+            # in reality it is banked in subsoil the roots reach later.
+            irr_net = min(want, irrigation.max_application_mm, dr)
             irr_gross = irr_net / irrigation.efficiency
             if irrigation.seasonal_cap_mm is not None:
                 remaining = irrigation.seasonal_cap_mm - irrigation_season_gross
@@ -445,6 +493,9 @@ def run_water_balance(
         kr = 1.0 if de <= rew else max((tew - de) / max(tew - rew, 1e-9), 0.0)
         kr = float(np.clip(kr, 0.0, 1.0))
         ke = min(kr * max(kc_max - kcb, 0.0), few * kc_max)
+        # FAO-56: organic mulch suppresses soil evaporation by about 5% per 10% of
+        # surface covered. This is how the previous crop's residue pays forward.
+        ke *= mulch_factor
 
         ks = 1.0 if dr <= raw else max((taw - dr) / max(taw - raw, 1e-9), 0.0)
         ks = float(np.clip(ks, 0.0, 1.0))

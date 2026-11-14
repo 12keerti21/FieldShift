@@ -57,6 +57,7 @@ def _crop(d: dict) -> Crop:
         multi_year=bool(d["multi_year"]),
         typical_seasons=tuple(d["typical_seasons"]),
         kc=Kc(**d["kc"]),
+        kcb=Kc(**d["kcb"]),
         stages_days=Stages(**d["stages_days"]),
         root=Root(**d["root"]),
         thermal=Thermal(**d["thermal"]),
@@ -380,6 +381,22 @@ def _validate(reg: Registry) -> None:
         for label, v in (("ini", c.kc.ini), ("mid", c.kc.mid), ("end", c.kc.end)):
             if not 0.0 <= v <= 1.4:
                 errs.append(f"{tag}: kc.{label}={v} outside plausible 0-1.4")
+        for label, v in (("ini", c.kcb.ini), ("mid", c.kcb.mid), ("end", c.kcb.end)):
+            if not 0.0 <= v <= 1.4:
+                errs.append(f"{tag}: kcb.{label}={v} outside plausible 0-1.4")
+        # The basal coefficient excludes soil evaporation, so it can never exceed
+        # the single coefficient. This guard is what would have caught the earlier
+        # error of using Table 12 values as basal coefficients.
+        for label, b, single in (
+            ("ini", c.kcb.ini, c.kc.ini),
+            ("mid", c.kcb.mid, c.kc.mid),
+            ("end", c.kcb.end, c.kc.end),
+        ):
+            if b > single + 1e-9:
+                errs.append(
+                    f"{tag}: kcb.{label}={b} exceeds kc.{label}={single}; the basal "
+                    "coefficient cannot exceed the single coefficient"
+                )
         if not c.is_fallow and not 0.15 <= c.root.p_depletion <= 0.80:
             errs.append(f"{tag}: p_depletion={c.root.p_depletion} outside FAO-56 range")
         if c.root.initial_depth_m > c.root.max_depth_m:

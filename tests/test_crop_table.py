@@ -169,3 +169,31 @@ def test_validator_rejects_bad_dpm_rpm(reg):
     bad = _with_crop(reg, "wheat", residue=res)
     with pytest.raises(ParameterError, match="not a RothC value"):
         _validate(bad)
+
+
+def test_basal_coefficients_never_exceed_single_coefficients(reg):
+    """kcb excludes soil evaporation, so kcb <= kc must hold for every crop.
+
+    This is the guard that would have caught storing FAO-56 Table 12 single
+    coefficients where Table 17 basal coefficients belong.
+    """
+    for c in reg.crops.values():
+        assert c.kcb.ini <= c.kc.ini + 1e-9, c.id
+        assert c.kcb.mid <= c.kc.mid + 1e-9, c.id
+        assert c.kcb.end <= c.kc.end + 1e-9, c.id
+
+
+def test_annual_crops_start_from_bare_soil_basal_transpiration(reg):
+    """At emergence there is no canopy, so Kcb_ini is ~0.15 for annual crops."""
+    for c in reg.crops.values():
+        if c.is_fallow or c.multi_year or c.group == "forage":
+            continue
+        if c.id == "rice_lowland":
+            continue  # flooded: the water surface itself transpires-equivalent
+        assert c.kcb.ini == pytest.approx(0.15), c.id
+
+
+def test_bare_fallow_has_zero_basal_transpiration(reg):
+    f = reg.crop("fallow_bare")
+    assert (f.kcb.ini, f.kcb.mid, f.kcb.end) == (0.0, 0.0, 0.0)
+    assert f.kc.ini > 0.0  # but the single coefficient is non-zero: soil evaporates

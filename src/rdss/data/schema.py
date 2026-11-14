@@ -12,7 +12,13 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class Kc:
-    """FAO-56 crop coefficients for the three plateau points of the Kc curve."""
+    """Crop coefficients at the three anchor points of the FAO-56 curve.
+
+    Used for both the single coefficient (Table 12, includes soil evaporation) and
+    the basal coefficient (Table 17, transpiration only). They are NOT
+    interchangeable: the dual-coefficient water balance must use the basal values,
+    or soil evaporation is counted twice.
+    """
 
     ini: float
     mid: float
@@ -128,7 +134,8 @@ class Crop:
     duration_days: int
     multi_year: bool
     typical_seasons: tuple[str, ...]
-    kc: Kc
+    kc: Kc  # FAO-56 Table 12, single coefficient - reference only
+    kcb: Kc  # FAO-56 Table 17, basal coefficient - what the dual model uses
     stages_days: Stages
     root: Root
     thermal: Thermal

@@ -12,6 +12,8 @@ stressed than a thirsty one on the same weather, and that stored soil water carr
 from one season to the next.
 """
 
+import pathlib
+
 import numpy as np
 import pytest
 
@@ -64,21 +66,47 @@ def test_kcb_curve_has_the_four_fao56_stages(reg):
     kcb = kcb_curve(crop, crop.duration_days)
     s = crop.stages_days
     assert len(kcb) == crop.duration_days
-    assert np.allclose(kcb[: s.ini], crop.kc.ini)
+    assert np.allclose(kcb[: s.ini], crop.kcb.ini)
     rise = kcb[s.ini : s.ini + s.dev]
     assert np.all(np.diff(rise) > 0)
-    assert np.allclose(kcb[s.ini + s.dev : s.ini + s.dev + s.mid], crop.kc.mid)
+    assert np.allclose(kcb[s.ini + s.dev : s.ini + s.dev + s.mid], crop.kcb.mid)
     decline = kcb[s.ini + s.dev + s.mid :]
     assert np.all(np.diff(decline) < 0)
-    assert kcb.max() == pytest.approx(crop.kc.mid)
+    assert kcb.max() == pytest.approx(crop.kcb.mid)
 
 
 def test_kcb_curve_ends_near_the_declared_end_value(reg):
     for cid in ("wheat", "maize", "chickpea", "cotton", "potato"):
         crop = reg.crop(cid)
         kcb = kcb_curve(crop, crop.duration_days)
-        step = (crop.kc.mid - crop.kc.end) / max(crop.stages_days.late, 1)
-        assert kcb[-1] == pytest.approx(crop.kc.end, abs=abs(step) + 1e-9)
+        step = (crop.kcb.mid - crop.kcb.end) / max(crop.stages_days.late, 1)
+        assert kcb[-1] == pytest.approx(crop.kcb.end, abs=abs(step) + 1e-9)
+
+
+def test_the_dual_model_uses_basal_not_single_coefficients(reg):
+    """Regression guard on a bug that overstated seasonal ET by ~7 percent.
+
+    FAO-56 Table 12 gives SINGLE coefficients, which already contain soil
+    evaporation; Table 17 gives BASAL coefficients, to which the dual model adds Ke
+    separately. An earlier revision stored Table 12 values and fed them to the dual
+    model, counting soil evaporation twice. Nothing in the water balance may read
+    `crop.kc`.
+    """
+    crop = reg.crop("maize")
+    assert crop.kcb.mid < crop.kc.mid
+    assert crop.kcb.ini < crop.kc.ini
+
+    curve = kcb_curve(crop, crop.duration_days)
+    assert curve.max() == pytest.approx(crop.kcb.mid)
+    assert curve.max() < crop.kc.mid
+
+    source = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "src" / "rdss" / "agro" / "waterbalance.py"
+    ).read_text()
+    assert "crop.kc." not in source, (
+        "the water balance must read crop.kcb, never crop.kc"
+    )
 
 
 def test_every_crop_produces_a_bounded_kcb_curve(reg):
@@ -534,3 +562,122 @@ def test_out_of_range_subsoil_assumption_is_rejected(reg, monsoon):
         run_water_balance(
             reg.crop("wheat"), reg.texture("loam"), w, e, subsoil_depletion_frac=1.5
         )
+
+
+# --- residue mulch: how one crop's residue pays forward to the next ------------
+
+
+def test_residue_cover_reduces_soil_evaporation(reg, monsoon):
+    """The mechanism by which a high-residue crop saves water for its successor."""
+    w, e = monsoon
+    kw = dict(planting_index=MONSOON_SOWING)
+    bare = run_water_balance(reg.crop("maize"), reg.texture("silt_loam"), w, e, **kw)
+    mulched = run_water_balance(
+        reg.crop("maize"), reg.texture("silt_loam"), w, e,
+        residue_cover_fraction=0.6, **kw,
+    )
+    assert mulched.total_soil_evaporation_mm < bare.total_soil_evaporation_mm
+    assert any("residue cover" in n for n in mulched.notes)
+
+    # FAO-56 suppresses the evaporation RATE by 5% per 10% cover, so 60% cover cuts
+    # the daily rate by 30%. The SEASONAL total falls by less than that, and the
+    # reason is a real feedback rather than an error: slower evaporation leaves the
+    # surface layer wetter, so Kr stays higher for longer and some of the suppressed
+    # water evaporates later instead of never. The cumulative effect is therefore
+    # sub-proportional to the rate effect.
+    ratio = mulched.total_soil_evaporation_mm / bare.total_soil_evaporation_mm
+    assert 0.70 < ratio < 0.90, ratio
+    assert ratio > 0.70, "a 30% rate cut cannot remove more than 30% of the total"
+
+
+def test_residue_cover_leaves_more_water_for_transpiration(reg, monsoon):
+    w, e = monsoon
+    kw = dict(planting_index=MONSOON_SOWING, crop=reg.crop("maize"),
+              texture=reg.texture("silt_loam"), weather=w, et0_mm=e)
+    bare = run_water_balance(**kw)
+    mulched = run_water_balance(residue_cover_fraction=0.6, **kw)
+    assert mulched.total_transpiration_mm >= bare.total_transpiration_mm
+    assert mulched.evaporation_fraction < bare.evaporation_fraction
+
+
+def test_mulch_effect_is_monotonic_and_bounded(reg, monsoon):
+    """More cover always means less evaporation, but never less than half.
+
+    Full cover halves the evaporation RATE; because of the Kr feedback the seasonal
+    total falls by somewhat less, so the cumulative ratio stays above 0.5.
+    """
+    w, e = monsoon
+    kw = dict(planting_index=MONSOON_SOWING)
+    totals = [
+        run_water_balance(
+            reg.crop("maize"), reg.texture("loam"), w, e,
+            residue_cover_fraction=f, **kw,
+        ).total_soil_evaporation_mm
+        for f in (0.0, 0.25, 0.5, 0.75, 1.0)
+    ]
+    assert all(a > b for a, b in zip(totals, totals[1:])), totals
+    assert 0.5 < totals[-1] / totals[0] < 0.75
+
+
+def test_residue_mulch_preserves_mass_balance(reg, monsoon):
+    w, e = monsoon
+    r = run_water_balance(
+        reg.crop("maize"), reg.texture("silt_loam"), w, e,
+        planting_index=MONSOON_SOWING, residue_cover_fraction=0.7,
+    )
+    assert abs(r.closure_residual_mm) < 1e-6
+
+
+def test_out_of_range_residue_cover_is_rejected(reg, monsoon):
+    w, e = monsoon
+    with pytest.raises(WaterBalanceError, match="residue_cover_fraction"):
+        run_water_balance(
+            reg.crop("maize"), reg.texture("loam"), w, e, residue_cover_fraction=1.5
+        )
+
+
+# --- irrigation management depth ------------------------------------------------
+
+
+def test_scheduling_uses_the_design_profile_not_the_seedling_root_zone(reg, monsoon):
+    """Triggering on the instantaneous root zone irrigates a bare seedbed on day 3.
+
+    Three days after sowing roots hold ~20 mm, so any depletion threshold is crossed
+    at once. Managing against the design root depth is what real irrigators do, and
+    it removed ~50 mm of spurious early irrigation in the Finney County run.
+    """
+    w, e = monsoon
+    shallow = IrrigationPolicy(
+        mode="refill_on_stress", efficiency=0.85, management_depth_m=0.15
+    )
+    design = IrrigationPolicy(mode="refill_on_stress", efficiency=0.85)  # defaults to max root depth
+
+    kw = dict(planting_index=MONSOON_SOWING, duration_days=150)
+    a = run_water_balance(reg.crop("maize"), reg.texture("silt_loam"), w, e,
+                          irrigation=shallow, **kw)
+    b = run_water_balance(reg.crop("maize"), reg.texture("silt_loam"), w, e,
+                          irrigation=design, **kw)
+
+    first_a = int(np.flatnonzero(a.irrigation_applied_mm > 0)[0])
+    first_b = int(np.flatnonzero(b.irrigation_applied_mm > 0)[0])
+    assert first_b > first_a
+    assert b.total_soil_evaporation_mm < a.total_soil_evaporation_mm
+
+
+def test_management_depth_defaults_to_max_rooting_depth(reg, monsoon):
+    w, e = monsoon
+    explicit = IrrigationPolicy(
+        mode="refill_on_stress", management_depth_m=reg.crop("maize").root.max_depth_m
+    )
+    default = IrrigationPolicy(mode="refill_on_stress")
+    kw = dict(planting_index=MONSOON_SOWING, duration_days=150)
+    a = run_water_balance(reg.crop("maize"), reg.texture("loam"), w, e,
+                          irrigation=explicit, **kw)
+    b = run_water_balance(reg.crop("maize"), reg.texture("loam"), w, e,
+                          irrigation=default, **kw)
+    assert a.total_irrigation_gross_mm == pytest.approx(b.total_irrigation_gross_mm)
+
+
+def test_non_positive_management_depth_is_rejected():
+    with pytest.raises(WaterBalanceError, match="management_depth_m"):
+        IrrigationPolicy(mode="refill_on_stress", management_depth_m=0.0)
