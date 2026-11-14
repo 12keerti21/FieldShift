@@ -30,6 +30,7 @@ import numpy as np
 from ..agro.climate import Site
 from ..agro.et0 import et0_penman_monteith
 from ..agro.rothc import soc_from_organic_carbon_pct
+from ..agro.scenario import Scenario, perturb
 from ..data import load_registry
 from ..decide.candidates import build_rotation
 from ..decide.evidence import build_card  # noqa: F401  (re-exported for the API)
@@ -226,6 +227,7 @@ def build_bundle(
     cycle_years: int = 3,
     max_candidates: int = 90,
     on_stage=None,
+    scenario: Scenario | None = None,
 ) -> dict:
     """Run the whole pipeline for one site and return a serialisable bundle.
 
@@ -260,6 +262,13 @@ def build_bundle(
     coords = (payload.get("geometry") or {}).get("coordinates") or []
     if len(coords) >= 3 and spec.elevation_m == 0.0:
         site = replace(site, elevation_m=float(coords[2]))
+
+    # A scenario perturbs the weather BEFORE reference ET is computed, so the
+    # extra evaporative demand of a warmer year falls out of FAO-56 rather than
+    # being applied by hand afterwards. Doing it the other way round would miss
+    # the coupling that matters most: hotter is also thirstier.
+    if scenario is not None and not scenario.is_baseline:
+        weather = perturb(weather, scenario)
 
     et0 = et0_penman_monteith(site, weather)
     stage("soil")
@@ -407,6 +416,13 @@ def build_bundle(
                 "annual_et0_mm": float(et0.values_mm.sum() / len(years)),
             },
             "starting_carbon_t_ha": soc,
+        },
+        "scenario": {
+            "name": scenario.name if scenario else "observed weather",
+            "warming_c": scenario.warming_c if scenario else 0.0,
+            "rain_scale": scenario.rain_scale if scenario else 1.0,
+            "is_baseline": scenario.is_baseline if scenario else True,
+            "caveats": list(scenario.caveats) if scenario else [],
         },
         "region": {
             "id": region_spec.id,

@@ -29,7 +29,8 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Literal
 
-from .bundle import SiteSpec, build_bundle
+from ..agro.scenario import Scenario
+from .bundle import SITES_BY_ID, SiteSpec, build_bundle
 from .regions import REGIONS, region
 
 Status = Literal["queued", "running", "done", "failed"]
@@ -57,6 +58,8 @@ class Job:
     latitude: float
     longitude: float
     region_id: str
+    scenario: Scenario | None = None
+    site_id: str | None = None
     status: Status = "queued"
     stage: str = "queued"
     message: str = "Waiting to start"
@@ -73,6 +76,14 @@ class Job:
     def public(self) -> dict:
         out = {
             "job_id": self.id,
+            "kind": "scenario" if self.scenario is not None else "point",
+            "site_id": self.site_id,
+            "scenario": None if self.scenario is None else {
+                "name": self.scenario.name,
+                "warming_c": self.scenario.warming_c,
+                "rain_scale": self.scenario.rain_scale,
+                "caveats": list(self.scenario.caveats),
+            },
             "status": self.status,
             "stage": self.stage,
             "message": self.message,
@@ -157,20 +168,27 @@ def _run(job: Job, existing: tuple[str, ...], field_hectares: float,
          cycle_years: int, max_candidates: int) -> None:
     try:
         reg = region(job.region_id)
-        spec = SiteSpec(
-            id=f"live_{job.id[:8]}",
-            name=f"{job.latitude:.4f}, {job.longitude:.4f}",
-            latitude=job.latitude, longitude=job.longitude,
-            elevation_m=0.0,  # replaced from POWER's own reported elevation
-            state="", county="",
-            note=(
-                f"Analysed on demand against the {reg.name} cropping calendar. "
-                "Not a precomputed field."
-            ),
-            existing_rotation=existing,
-            region=job.region_id,
-            field_hectares=field_hectares,
-        )
+        if job.site_id is not None:
+            # A scenario on a field we already have. Weather and soil are cached,
+            # so this skips straight to the expensive part - which is why a
+            # scenario comes back in well under a minute while a brand new point
+            # takes two.
+            spec = SITES_BY_ID[job.site_id]
+        else:
+            spec = SiteSpec(
+                id=f"live_{job.id[:8]}",
+                name=f"{job.latitude:.4f}, {job.longitude:.4f}",
+                latitude=job.latitude, longitude=job.longitude,
+                elevation_m=0.0,  # replaced from POWER's reported elevation
+                state="", county="",
+                note=(
+                    f"Analysed on demand against the {reg.name} cropping "
+                    "calendar. Not a precomputed field."
+                ),
+                existing_rotation=existing,
+                region=job.region_id,
+                field_hectares=field_hectares,
+            )
         job.status = "running"
         _advance(job, "weather")
 
@@ -179,7 +197,7 @@ def _run(job: Job, existing: tuple[str, ...], field_hectares: float,
 
         bundle = build_bundle(
             spec, cycle_years=cycle_years, max_candidates=max_candidates,
-            on_stage=progress,
+            on_stage=progress, scenario=job.scenario,
         )
         job.result = bundle
         job.status = "done"
@@ -203,6 +221,25 @@ def _reap() -> None:
             _JOBS.pop(job_id, None)
 
 
+def start_scenario(site_id: str, scenario: Scenario) -> Job:
+    """Re-run a precomputed field under perturbed weather.
+
+    Much cheaper than a fresh point because the weather and soil are already on
+    disk - only the simulation runs again. The result has the same shape as any
+    other bundle, so it compares against the baseline without a special case.
+    """
+    spec = SITES_BY_ID.get(site_id)
+    if spec is None:
+        raise JobError(f"no precomputed site {site_id!r} to run a scenario on")
+    return _queue(
+        Job(id=uuid.uuid4().hex, latitude=spec.latitude, longitude=spec.longitude,
+            region_id=spec.region, scenario=scenario, site_id=site_id),
+        existing=spec.existing_rotation,
+        field_hectares=spec.field_hectares,
+        cycle_years=3, max_candidates=90,
+    )
+
+
 def start(
     latitude: float,
     longitude: float,
@@ -217,7 +254,15 @@ def start(
     reg = region(region_id)  # raises for an unknown region, before any work starts
     for pattern_id in existing_rotation:
         reg.pattern(pattern_id)  # raises for a rotation this region cannot grow
+    return _queue(
+        Job(id=uuid.uuid4().hex, latitude=latitude, longitude=longitude,
+            region_id=region_id),
+        existing=existing_rotation, field_hectares=field_hectares,
+        cycle_years=cycle_years, max_candidates=max_candidates,
+    )
 
+
+def _queue(job: Job, *, existing, field_hectares, cycle_years, max_candidates) -> Job:
     with _LOCK:
         _reap()
         active = sum(1 for j in _JOBS.values() if j.status in ("queued", "running"))
@@ -227,12 +272,10 @@ def start(
                 "core for about a minute. Wait for one to finish rather than "
                 "queueing work that would only make them all slower."
             )
-        job = Job(id=uuid.uuid4().hex, latitude=latitude, longitude=longitude,
-                  region_id=region_id)
         _JOBS[job.id] = job
 
     thread = threading.Thread(
-        target=_run, args=(job, existing_rotation, field_hectares, cycle_years,
+        target=_run, args=(job, tuple(existing), field_hectares, cycle_years,
                            max_candidates),
         daemon=True, name=f"analyse-{job.id[:8]}",
     )

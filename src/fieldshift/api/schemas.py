@@ -150,6 +150,19 @@ class AnalyseRequest(BaseModel):
         return v
 
 
+class ScenarioRequest(BaseModel):
+    """A uniform perturbation of the observed weather record.
+
+    Deliberately only two numbers. A richer scenario specification would imply a
+    richer method than replaying an observed record with an offset, and the
+    interface should not promise more than the physics delivers.
+    """
+
+    warming_c: float = Field(0.0, ge=-2.0, le=6.0)
+    rain_scale: float = Field(1.0, gt=0.0, le=2.0)
+    label: str | None = Field(None, max_length=80)
+
+
 class AnalyseStarted(BaseModel):
     job_id: str
     status: str

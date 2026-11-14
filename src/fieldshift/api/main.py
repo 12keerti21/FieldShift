@@ -25,9 +25,17 @@ from ..report.fieldplan import render_field_plan
 from . import jobs
 from .bundle import SITES_BY_ID, available_sites, load_bundle
 from .jobs import suggest_region
+from ..agro.scenario import (
+    PRESETS as SCENARIO_PRESETS,
+    RAIN_SCALE_RANGE,
+    WARMING_RANGE_C,
+    Scenario,
+    ScenarioError,
+)
 from .regions import REGIONS, RegionError, region
 from .schemas import (
     AnalyseStarted,
+    ScenarioRequest,
     AnalyseRequest,
     RankRequest,
     RankResponse,
@@ -393,6 +401,61 @@ def analyse(request: AnalyseRequest) -> AnalyseStarted:
         status=job.status,
         message=where,
         poll=f"/api/analyse/{job.id}",
+    )
+
+
+@app.get("/api/scenarios")
+def scenarios() -> dict:
+    """The weather stress tests on offer, and what they are not.
+
+    Offered as named questions rather than two raw sliders, because "would this
+    rotation still work if every year had been two degrees hotter" is a question
+    a farmer can hold, and "warming_c = 2.0" is not.
+    """
+    return {
+        "scenarios": [
+            {"warming_c": sc.warming_c, "rain_scale": sc.rain_scale,
+             "name": sc.name, "is_baseline": sc.is_baseline}
+            for sc in SCENARIO_PRESETS
+        ],
+        "warming_range_c": list(WARMING_RANGE_C),
+        "rain_scale_range": list(RAIN_SCALE_RANGE),
+        "caveats": list(Scenario(1.0, 1.0).caveats),
+        "what_this_is": (
+            "A stress test, not a climate projection. The observed 1984-2024 "
+            "weather is replayed with a constant offset applied to every day. It "
+            "answers 'would this still work if every year had been hotter', and it "
+            "does not answer 'what will the climate be in 2050'."
+        ),
+    }
+
+
+@app.post("/api/site/{site_id}/scenario", response_model=AnalyseStarted)
+def run_scenario(site_id: str, request: ScenarioRequest) -> AnalyseStarted:
+    """Re-simulate a precomputed field under perturbed weather.
+
+    Cheaper than a new point because the weather and soil are already cached, so
+    only the simulation runs again.
+    """
+    try:
+        scenario = Scenario(
+            warming_c=request.warming_c, rain_scale=request.rain_scale,
+            label=request.label or "",
+        )
+    except ScenarioError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    try:
+        job = jobs.start_scenario(site_id, scenario)
+    except jobs.JobError as exc:
+        code = 429 if "already running" in str(exc) else 404
+        raise HTTPException(code, str(exc)) from exc
+    return AnalyseStarted(
+        job_id=job.id, status=job.status,
+        message=(
+            f"Replaying 41 years at {site_id} under {scenario.name}. This is a "
+            "stress test of the observed record, not a climate projection."
+        ),
+        poll=f"/api/analyse/{job.id}", estimated_seconds=60,
     )
 
 

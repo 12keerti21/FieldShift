@@ -433,6 +433,7 @@ const SCREENS = [
   {id:"rotations",  icon:"⌘", name:"Rotations"},
   {id:"compare",    icon:"⇄", name:"Compare"},
   {id:"evidence",   icon:"▤", name:"Evidence"},
+  {id:"climate",    icon:"◈", name:"Climate stress"},
   {id:"validation", icon:"✓", name:"Validation"},
 ];
 const state = {
@@ -444,6 +445,7 @@ const state = {
   source:{kind:"site", id:null},
   regions:[], draft:{lat:null, lon:null, region:null, rotation:[], hectares:3},
   job:null, poll:null,
+  scenarios:[], scenarioJob:null, scenarioPoll:null, scenarioResult:null,
 };
 
 // One place that knows which endpoints to hit for the current bundle.
@@ -562,6 +564,8 @@ async function boot(){
       get("/api/sites"), get("/api/validation").catch(()=>null),
       get("/api/regions").catch(()=>({regions:[]})),
     ]);
+    get("/api/scenarios").then(r => { state.scenarios = r.scenarios || []; })
+      .catch(()=>{});
     state.sites = sites.sites;
     state.validation = val;
     state.regions = regs.regions || [];
@@ -579,7 +583,8 @@ async function boot(){
 async function selectSite(id){
   state.siteId = id; state.selected = null;
   state.source = {kind:"site", id};
-  stopPolling();
+  stopPolling(); stopScenarioPolling();
+  state.scenarioJob = null; state.scenarioResult = null;
   state.bundle = await get("/api/site/" + id);
   renderNav();
   await rerank();
@@ -632,7 +637,7 @@ function render(){
     Tier ${reg.tier} · ${reg.validated?"validated":"transferred"}</span>`;
   const fn = {analyse:screenAnalyse, field:screenField, rotations:screenRotations,
               compare:screenCompare, evidence:screenEvidence,
-              validation:screenValidation}[state.screen];
+              climate:screenClimate, validation:screenValidation}[state.screen];
   $("#screens").innerHTML = `<div class="screen">${fn()}</div>`;
   if(state.screen === "analyse") mountPicker();
   if(state.screen === "field") mountMap();
@@ -1356,6 +1361,189 @@ async function loadEvidence(){
   }catch(e){
     if(host()) host().innerHTML = `<div class="alert">${esc(e.message)}</div>`;
   }
+}
+
+/* -------------------------------------------------- 5. Climate stress */
+function screenClimate(){
+  const b = state.bundle;
+  const live = state.source.kind === "job";
+  if(live){
+    return `<div class="alert"><b>Climate stress runs on precomputed fields.</b>
+      This is an on-demand result, so pick one of the saved fields in the sidebar
+      first. Re-simulating a fresh point under several climates would mean
+      downloading its weather again for each one.</div>`;
+  }
+  const j = state.scenarioJob, res = state.scenarioResult;
+  const ex = state.rank.existing;
+
+  return `
+    <p class="lede">Would the recommendation still hold if every year had been
+      hotter and drier? This replays the same forty-one years of weather with a
+      constant offset and re-simulates everything from scratch — about half a
+      minute, because the weather and soil are already here.</p>
+
+    <div class="alert">
+      <b>This is a stress test, not a climate projection.</b> We are replaying the
+      observed 1984–2024 record with an offset applied to every day. It answers
+      <i>"would this still work if every year had been 2 °C hotter"</i>. It does
+      <b>not</b> answer <i>"what will the climate be in 2050"</i> — that needs a
+      climate model, and we do not have one.
+    </div>
+
+    <div class="sec"><h3>Pick a stress test</h3><div class="rule"></div></div>
+    <div class="goals">${state.scenarios.filter(sc=>!sc.is_baseline).map(sc =>
+      `<button class="goal ${j && j.scenario && j.scenario.name===sc.name?"on":""}"
+        ${j && j.status==="running" ? "disabled" : ""}
+        onclick="runScenario(${sc.warming_c},${sc.rain_scale},'${esc(sc.name)}')">
+        ${esc(sc.name)}</button>`).join("")}</div>
+
+    ${j && j.status==="running" ? `
+      <div class="card" style="margin-top:14px">
+        <h3>Re-simulating under ${esc(j.scenario?j.scenario.name:"")}</h3>
+        <div class="prog"><i style="width:${Math.max(j.progress*100,4)}%"></i></div>
+        <div style="font-size:12.5px;color:var(--muted)">
+          ${fmt(j.elapsed_seconds,0)}s · ${esc(j.message)}</div>
+      </div>` : ""}
+
+    ${j && j.status==="failed" ? `<div class="alert" style="margin-top:14px">
+      <b>That run failed.</b> <code>${esc(j.error||"")}</code></div>` : ""}
+
+    ${res ? climateResult(res, ex) : ""}`;
+}
+
+function climateResult(res, baselineExisting){
+  const sb = res.scenario;
+  const ex = res.rotations.find(r => r.is_existing);
+  const objs = res.objectives;
+
+  // Which rotations beat the current one on every measure, under this climate?
+  const mx = {}; objs.forEach(o => mx[o.key] = o.maximise);
+  const dominates = (a, e) => {
+    let better = false;
+    for(const o of objs){
+      const av = a.objectives[o.key], ev = e.objectives[o.key];
+      if(av === undefined || ev === undefined) continue;
+      if(mx[o.key]){ if(av < ev - 1e-9) return false; if(av > ev + 1e-9) better = true; }
+      else { if(av > ev + 1e-9) return false; if(av < ev - 1e-9) better = true; }
+    }
+    return better;
+  };
+  const dom = ex ? res.rotations.filter(r => !r.is_existing && dominates(r, ex)) : [];
+  const best = dom.length
+    ? dom.reduce((a,b) => a.objectives.production >= b.objectives.production ? a : b)
+    : null;
+
+  // Did the leading advice survive the stress?
+  const baselineTop = state.rank.ranked[0];
+  const held = best && baselineTop &&
+    best.name.replace(/^EXISTING: /,"") === baselineTop.name.replace(/^EXISTING: /,"");
+
+  const site = res.site;
+  const baseSite = state.bundle.site;
+  const rows = [
+    ["rainfall", baseSite.rainfall_mm_yr, site.rainfall_mm_yr, "mm/yr", 0, false],
+    ["evaporative demand", baseSite.weather.annual_et0_mm,
+     site.weather.annual_et0_mm, "mm/yr", 0, false],
+  ];
+  if(ex && baselineExisting){
+    rows.push(["your output", baselineExisting.objectives.production,
+      ex.objectives.production, "t DM/ha/yr", 2, true]);
+    rows.push(["your water need", baselineExisting.objectives.irrigation,
+      ex.objectives.irrigation, "mm/yr", 0, false]);
+    rows.push(["your soil carbon", baselineExisting.objectives.carbon,
+      ex.objectives.carbon, "t C/ha/yr", 3, true]);
+  }
+
+  return `
+    <div class="sec"><h3>Under ${esc(sb.name)}</h3><div class="rule"></div></div>
+
+    <div class="${held?"finding":"alert"}">
+      ${held
+        ? `<b>The advice holds.</b> Under this climate the same rotation still
+           comes out on top, and <b>${dom.length}</b> rotations still beat your
+           current one on every measure. A recommendation that survives being
+           stressed is worth more than one that only works in the weather we
+           happened to get.`
+        : best
+          ? `<b>The advice changes.</b> Under this climate the leading option
+             becomes <b>${esc(best.name)}</b>. That is worth knowing: it means
+             the current recommendation depends on the climate staying roughly
+             as it has been.`
+          : `<b>Nothing beats your current rotation outright under this climate.</b>
+             Every remaining option involves a genuine trade-off.`}
+    </div>
+
+    <div class="card"><table>
+      <tr><th>what changes</th><th class="n">observed</th>
+        <th class="n">${esc(sb.name)}</th><th class="n">change</th></tr>
+      ${rows.map(([label, a, c, unit, dp, up]) => {
+        const diff = c - a;
+        const good = up ? diff > 0 : diff < 0;
+        const cls = Math.abs(diff) < 1e-9 ? "" : (good ? "better" : "worse");
+        return `<tr><td>${esc(label)}</td>
+          <td class="n">${fmt(a,dp)}</td><td class="n">${fmt(c,dp)}</td>
+          <td class="n" style="color:var(--${cls==="better"?"good":cls==="worse"?"bad":"muted"})">
+            ${sign(diff,dp)} ${esc(unit)}</td></tr>`;
+      }).join("")}
+    </table></div>
+
+    ${best ? `<div class="card">
+      <h3>Best option under this climate</h3>
+      <div class="rot" style="cursor:default;margin:0">
+        <div class="r1"><span class="nm">${esc(best.name)}</span></div>
+        <div class="r2">
+          <span>output <b>${fmt(best.objectives.production)}</b> t DM/ha/yr</span>
+          <span>water <b>${fmt(best.objectives.irrigation,0)}</b> mm/yr</span>
+          <span>carbon <b>${sign(best.objectives.carbon,3)}</b> t C/ha/yr</span>
+          <span>bare soil <b>${fmt(best.objectives.bare_ground*100,0)}%</b></span>
+        </div>
+        ${calendar(best)}
+      </div></div>` : ""}
+
+    <div class="card raise">
+      <h3>What this stress test does not represent</h3>
+      <ul class="ev" style="margin:0">${(sb.caveats||[])
+        .map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+    </div>`;
+}
+
+async function runScenario(warming, rainScale, label){
+  stopScenarioPolling();
+  state.scenarioResult = null;
+  try{
+    const started = await get(`/api/site/${state.siteId}/scenario`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({warming_c:warming, rain_scale:rainScale, label}),
+    });
+    state.scenarioJob = {job_id:started.job_id, status:"running", progress:0,
+      elapsed_seconds:0, message:started.message,
+      scenario:{name:label, caveats:[]}};
+    render();
+    state.scenarioPoll = setInterval(async () => {
+      try{
+        const j = await get(`/api/analyse/${started.job_id}`);
+        state.scenarioJob = j;
+        if(j.status === "done"){
+          stopScenarioPolling();
+          state.scenarioResult = j.result;
+        }
+        if(j.status === "failed") stopScenarioPolling();
+        if(state.screen === "climate") render();
+      }catch(e){
+        stopScenarioPolling();
+        state.scenarioJob = {...(state.scenarioJob||{}), status:"failed",
+          error:e.message};
+        if(state.screen === "climate") render();
+      }
+    }, 2500);
+  }catch(e){
+    state.scenarioJob = {status:"failed", error:e.message};
+    render();
+  }
+}
+
+function stopScenarioPolling(){
+  if(state.scenarioPoll){ clearInterval(state.scenarioPoll); state.scenarioPoll = null; }
 }
 
 /* ------------------------------------------------------ 5. Validation */
