@@ -451,6 +451,50 @@ collection is not yet exposed. The authoritative alternative is the Kansas
 Geological Survey WIZARD database, outside the challenge resource list. GRACE
 remains available via PO.DAAC once Earthdata credentials work.
 
+## 2026-11-14 - Earthdata working; terrain, and a 17x error avoided
+
+Earthdata downloads verified end to end: CMR search, the redirect chain to the
+LP DAAC, and a 6.4 MB NASADEM tile retrieved through `~/.netrc`.
+
+`fieldshift/io/terrain.py` reads NASADEM `.hgt` directly - raw big-endian int16,
+3601x3601 per tile, row zero at the north edge - which removes rasterio from the
+critical path entirely.
+
+### The finding
+A standard 3x3 Horn slope estimate at the pilot point returned **5.77%**. The real
+gradient there is about **0.25%**. Garden City sits on near-flat High Plains
+tableland, and two independent mechanisms corrupt a small-window estimate:
+
+1. **Sensor noise.** NASADEM carries a few metres of vertical error. Over a 31 m
+   cell that is several percent of apparent gradient on its own.
+2. **Storage quantisation.** `.hgt` holds whole metres, so one 31 m cell pair
+   resolves slope in steps of roughly 3 percent. A 1 percent true slope cannot be
+   represented by a single cell pair at all - and this error exists even with a
+   perfect sensor.
+
+Because RUSLE's LS factor scales close to linearly with slope in this range, taking
+the 3x3 figure would have **overstated soil loss by about 17 times** (LS 0.909
+against 0.052).
+
+### The fix, and the check that it is not just smoothing
+Slope is now fitted as a least-squares plane over a ~300 m window
+(`field_slope_percent`). `slope_stability_profile` shows the estimate converging:
+4.91% at 62 m, 1.64% at 124 m, 0.24% at 186 m, then stable.
+
+The obvious risk is that a wide fit simply flattens everything, which would be a
+worse error. Checked against the steepest ~1 km cell in the same tile, a valley
+wall at 38.705N: Horn gives 6.38% and the wide planar fit gives 5.51%, so real
+gradient survives. On the flat site the same pair is 5.77% against 0.25%. The
+method discriminates rather than smooths, and a synthetic-tile test pins both
+behaviours independently of any download.
+
+### Still deliberately explicit
+`slope_length_m` remains a required argument with a documented default of 75 m. It
+is the distance from where overland flow begins to where it deposits or reaches a
+channel - not the field length, and not derivable from a DEM point. It is a prime
+candidate for local correction and should never be silently defaulted in a result
+shown to a farmer.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
