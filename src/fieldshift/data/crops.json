@@ -40,7 +40,8 @@
     "Millet, green manure and forage parameters rest on fewer published sources than the FAO-56 crops - confidence is lower accordingly.",
     "kc (single) and kcb (basal) are distinct and must not be interchanged: kc already contains soil evaporation. An earlier revision used kc as kcb in the dual model and overestimated seasonal ET by roughly the soil-evaporation term.",
     "Ky is a whole-season factor and so cannot represent the fact that water stress at flowering costs far more yield than the same stress during vegetative growth. Stage-specific Ky exists in FAO-33 for some crops and is not used here; a rotation judged on seasonal totals alone will understate the value of avoiding stress at a critical stage.",
-    "The crop set was originally India-leaning. Winter wheat and five US cover crops were added for the Tier 1 site; the original 'wheat' entry is SPRING wheat at 140 days and must not be used for an overwintering crop."
+    "The crop set was originally India-leaning. Winter wheat and five US cover crops were added for the Tier 1 site; the original 'wheat' entry is SPRING wheat at 140 days and must not be used for an overwintering crop.",
+    "One cultivar per crop. Growing-degree-day requirements vary widely within a species - grain sorghum spans roughly 1300 to 2000 depending on hybrid - so a thermal-maturity verdict is a statement about the listed cultivar rather than the species. The guardrail layer says so on every maturity refusal."
   ],
   "crops": [
     {

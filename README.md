@@ -56,7 +56,7 @@ No language model makes a decision; at most it narrates structured model output.
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
 | Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
-| Honesty layer | evidence cards, resolution-mismatch confidence downgrade, guardrails | not started |
+| Honesty layer | evidence cards, guardrails, computed resolution mismatch | **done** |
 | Delivery | map UI, bare-soil × erosive-rain calendar, printable field plan | not started |
 
 Build order and the cut line (what to drop if behind) live in `docs/DECISIONS.md`.
@@ -251,6 +251,55 @@ PYTHONPATH=src ./.venv/bin/python scripts/show_carbon.py      # 41-yr RothC runs
 have fetched or a citation we can point at. An earlier run attributed a residual to
 a "+18% ET0 bias" on the strength of a *remembered* climatology figure; gridMET
 showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
+
+## The honesty layer
+
+Two components, because a recommendation a farmer cannot interrogate is an
+instruction rather than decision support.
+
+**Guardrails** (`decide/guardrails.py`) refuse recommendations the optimiser would
+otherwise happily make - it will propose a frost-sensitive crop for a Nebraska
+winter if the water balance looks good, because a water balance knows nothing about
+frost. They run on the observed record, so they return **frequencies**: "killing
+frost during grain fill in 7 of 41 years" is usable, "frost risk: high" is not.
+
+Almost everything is a warning rather than a refusal. A screen that refuses freely
+removes options a farmer may have good local reasons to want. Only two things are
+genuine refusals: failure to reach maturity in three years out of four, and frost
+that kills during flowering. Heat is never a refusal - `t_max` is where growth
+ceases, not where the crop dies.
+
+The only real test of a crop screen is whether it agrees with what farmers actually
+grow, and that caught two false refusals and one category error:
+
+| | what went wrong |
+|---|---|
+| winter wheat in Finney County | refused on heat, in the county where it has been the dominant crop for a century |
+| winter wheat in Nebraska | refused on degree days, because a whole-season sum counts dormant winter months at zero |
+| cereal rye cover crop | refused for "not reaching maturity" in a 70-day autumn window - which is exactly how a rye cover is grown |
+
+One disagreement is deliberately left standing: grain sorghum is refused at the
+cooler Nebraska site although it is grown there with short-season hybrids needing
+~1300-1500 degree days against the 1700 in our table. The refusal is correct for the
+cultivar it was given, so **the verdict says so** rather than the threshold being
+loosened until it agrees.
+
+**Evidence cards** (`decide/evidence.py`) carry every dataset, equation, validation
+result and unknown behind one recommendation. Two things are computed rather than
+asserted:
+
+- **Resolution mismatch.** Calling a dataset "coarse" conveys nothing. One NASA
+  POWER cell covers 270,400 ha; a quarter-section field is 65 - a ratio of
+  **4,160:1**, computed from the actual areas, which is what tells a farmer how far
+  to trust an absolute number.
+- **Confidence from the weakest link, never an average.** A card resting on one
+  low-confidence input is low-confidence however many strong inputs sit beside it.
+  Averaging would let good inputs launder a bad one. The card also names *every*
+  source at the floor, since naming one would imply fixing it alone would help.
+
+```bash
+PYTHONPATH=src ./.venv/bin/python scripts/show_evidence.py
+```
 
 ## Layout
 ```

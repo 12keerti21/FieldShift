@@ -764,6 +764,80 @@ This is an OpenET service fault, not an authentication problem here. The crop-ET
 validation gap therefore stays open, and the recalled Kansas figure stays withdrawn
 rather than being quietly reinstated. Retry if the service recovers.
 
+## 2026-11-14 - Tier 2: guardrails and evidence cards
+
+### Guardrails
+`decide/guardrails.py`. The search ranks rotations on simulated outcomes and has no
+idea whether a crop can survive at the site - it will propose a frost-sensitive crop
+for a Nebraska winter if the water balance happens to look good.
+
+- **Frequencies, not verdicts.** Every rule runs on the 41-year record and returns
+  how often the hazard occurred. "Killing frost during grain fill in 7 of 41 years"
+  can be weighed against something; "frost risk: high" cannot.
+- **Two levels, and almost everything is a warning.** A screen that refuses freely
+  removes options a farmer may have good local reasons to want, and we are not in a
+  position to overrule them - only to say what the record shows. Across all three
+  sites and nine crops, warnings outnumber refusals, and a test asserts that.
+- **Heat is never a refusal.** `t_max_c` is where growth ceases, not where the crop
+  dies; heat reduces yield rather than making a crop impossible, and part of that
+  cost already flows through the water balance.
+- **Frost and heat are judged on the reproductive window only.** Frost on dormant
+  winter wheat is normal; the same frost at anthesis is fatal. Testing the whole
+  season would be simultaneously too strict for an overwintering crop and too
+  lenient for a spring one.
+
+**Validated against what farmers actually grow**, which is the only real test, and
+it caught three errors:
+
+1. Winter wheat refused in Finney County on heat - where it has been the dominant
+   crop for a century. Cause: treating `t_max` as disqualifying.
+2. Winter wheat refused in Nebraska on degree days. Cause: a whole-season sum counts
+   dormant months at zero, understating what an overwintering crop achieves. The
+   refusal threshold moved from 60 to 25 percent of years and the verdict now
+   carries a dormancy caveat.
+3. Cereal rye cover crop refused for "not reaching maturity" in a 70-day autumn
+   window - **a category error**. A crop with no harvest is terminated on purpose, so
+   maturity is the wrong test entirely. Cover crops now report their growth window
+   instead, and frost on them is reported as a possible intended termination rather
+   than a risk, because oats sown as an autumn cover are grown to be winter-killed.
+
+Screen now agrees with practice at 12 of 12 tested crop-site combinations, with one
+deliberate exception left standing: grain sorghum refused at the cooler Nebraska
+site although it is grown there. Our table holds one cultivar per crop at 1700
+degree days; northern growers use short-season hybrids at 1300-1500. The refusal is
+correct for the cultivar given, so every maturity refusal now says so rather than
+the threshold being loosened until it agrees. Recorded as a known gap in crops.json.
+
+**The water budget is not invented.** Irrigation can only be refused against a
+supplied sustainable cap. The groundwater record that would set one automatically is
+unavailable - the USGS endpoint carrying historical well levels has been retired -
+and guessing a figure would silently decide which rotations are viable.
+
+**Market pathway is never a refusal.** We cannot know local prices, buyers or seed
+availability, and a tool that eliminated a crop for lacking price data would be
+presenting its own ignorance as a recommendation.
+
+### Evidence cards
+`decide/evidence.py`. Every claim travels with its datasets, equations, validation
+results and unknowns.
+
+- **Resolution mismatch is computed.** One NASA POWER cell is 270,400 ha against a
+  65 ha quarter-section field: a ratio of 4,160 to 1, calculated from actual areas.
+  A test asserts the word "coarse" does not appear, because it conveys nothing.
+- **Confidence is the weakest link, never an average.** Averaging would let strong
+  inputs launder a weak one, which is the specific failure this layer prevents. A
+  test confirms three high-confidence sources cannot lift a card carrying one
+  low-confidence source.
+- **All sources at the floor are named**, not just one - naming a single source
+  would imply that fixing it alone would raise the card.
+- **"Needs local review" is assembled, not written**, from guardrail flags and source
+  caveats, so it cannot drift out of step with what it summarises.
+- **Standing unknowns are always present**: wind erosion, market access, equipment
+  and labour, whether the pathogens are actually in the field, sowing dates, and
+  groundwater decline. The wind-erosion gap in particular appears on every card.
+- Every card ends with the same line: FieldShift supports a decision, it does not
+  make one.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
