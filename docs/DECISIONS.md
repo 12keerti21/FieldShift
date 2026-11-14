@@ -280,6 +280,47 @@ not sourced, and must not be calibrated against further. We now hold a working
 OpenET key, which gives field-scale actual ET for the western US - that is the
 proper, citable reference and the next validation to run.
 
+## 2026-11-14 - RothC soil carbon
+
+`rdss/agro/rothc.py` implements RothC-26.3: five pools, monthly timestep, three
+rate modifiers. This is the model that makes rotation comparison worth doing -
+water stress and erosion are seasonal, but carbon is the state variable that
+remembers decades of management and that a farmer cannot see changing year to year.
+
+Validated against the model's published behaviour: the temperature modifier equals
+1.0 at RothC's 9.25 degC reference, the CO2 partition falls from 0.830 at 5 percent
+clay to 0.757 at 60 percent, maximum TSMD matches the published form, and carbon
+balance closes to 1e-9 t C/ha.
+
+- **The clay dependence is a result, not an assumption.** Of the carbon that
+  decomposes, the share retained rather than respired rises with clay, so the same
+  residue input builds more carbon on a heavy soil than a light one. A
+  carbon-building rotation is therefore soil-specific, which is a genuine
+  agronomic conclusion the model produces.
+- **Irrigation was added to the moisture term**, which standard RothC omits because
+  it assumes rainfed conditions. Leaving it out made an irrigated Ogallala field
+  look as dry as a rainfed one, understating decomposition and overstating its
+  carbon gain by roughly a third - an error in the flattering direction, which is
+  the worst kind. With irrigation included, continuous irrigated maize with residue
+  retained gains 0.38 t C/ha/yr, inside the 0.2-0.5 range reported for western
+  Kansas no-till.
+- **Inverse mode is used for initialisation**, not a guessed pool split. A measured
+  SOC total says nothing about how carbon divides between a pool with a five-week
+  turnover and one with fifty years, and that split controls how fast the soil can
+  respond to management. The implied historic input is itself a check: at the pilot
+  point it is 0.8 t C/ha/yr, which is what the previous rotation must have returned
+  to hold SOC where SSURGO measured it.
+- **Spin-up runs 400-2000 simulated years.** HUM has a ~50-year turnover, so a
+  short spin-up leaves it still filling and the model then shows a spurious trend
+  that looks like a management effect.
+- **Concentration is converted to stock explicitly** via bulk density and depth.
+  Treating a percentage as a stock is a factor-of-three error that leaves no trace.
+
+Headline result on real data (41 years POWER weather, SSURGO soil, measured
+starting stock 25.7 t C/ha): a 30.1 t C/ha spread between the best and worst
+rotation. Baling maize stover reduces carbon gain to -0.02 t C/ha/yr - it stops
+soil building outright.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer

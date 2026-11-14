@@ -8,6 +8,13 @@ dataset layer exists.
 
 from .climate import DailyWeather, MonthlyWeather, Site, WeatherError
 from .et0 import ET0Method, ET0Result, et0, et0_hargreaves, et0_penman_monteith
+from .rothc import (
+    RothCPools,
+    RothCResult,
+    initialise_from_measured_soc,
+    run_rothc,
+    soc_from_organic_carbon_pct,
+)
 from .runoff import curve_number, scs_runoff_mm
 from .synthetic import ARCHETYPES, ClimateArchetype, synthetic_weather
 from .waterbalance import (
@@ -27,6 +34,8 @@ __all__ = [
     "IrrigationPolicy",
     "MonthlyWeather",
     "RAINFED",
+    "RothCPools",
+    "RothCResult",
     "Site",
     "WaterBalanceError",
     "WaterBalanceResult",
@@ -35,7 +44,10 @@ __all__ = [
     "et0",
     "et0_hargreaves",
     "et0_penman_monteith",
+    "initialise_from_measured_soc",
+    "run_rothc",
     "run_water_balance",
+    "soc_from_organic_carbon_pct",
     "scs_runoff_mm",
     "synthetic_weather",
 ]
