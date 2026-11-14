@@ -66,6 +66,27 @@ TUBEWELL = IrrigationPolicy(
     refill_to_depletion_frac=0.30, max_application_mm=75,
 )
 
+# Mid-South furrow irrigation: gravity water down the row. Less efficient than a
+# pivot and applied in large sets, but it is what the Delta actually uses.
+FURROW = IrrigationPolicy(
+    mode="refill_on_stress", efficiency=0.65,
+    refill_to_depletion_frac=0.30, max_application_mm=65,
+)
+
+# Arkansas Grand Prairie rice. Dry-drilled then permanently flooded, so the
+# management is the same submergence as Punjab - which is the entire reason this
+# site exists. The one number that genuinely differs is percolation: rice is
+# grown on the Grand Prairie precisely BECAUSE a dense clay subsoil holds water,
+# where Punjab's lighter alluvium lets it through. That difference is the
+# hypothesis this site tests, so it is declared here and swept in the validation
+# rather than tuned until the answer agreed.
+DELTA_FLOOD = IrrigationPolicy(
+    mode="ponded", efficiency=0.75,
+    percolation_mm_day=2.0, establishment_mm=120.0,
+    target_ponding_mm=75.0, min_ponding_mm=50.0, bund_height_mm=125.0,
+    max_application_mm=75.0,
+)
+
 # Transplanted paddy under continuous submergence. This dispatches to the ponded
 # balance, which is a different model - see run_ponded_balance. percolation_mm_day
 # is the single most load-bearing number in the whole Punjab run.
@@ -356,7 +377,102 @@ IN_PUNJAB = Region(
 )
 
 
-REGIONS: tuple[Region, ...] = (US_HIGH_PLAINS, IN_PUNJAB)
+# --------------------------------------------------------------------------- #
+# Tier 1: US Mid-South — the region that makes the paddy model checkable
+# --------------------------------------------------------------------------- #
+
+# This region exists for one reason: the paddy water balance is the least tested
+# thing in the engine, and Punjab has no yield or water record we could obtain to
+# test it against. Arkansas floods its rice exactly the way Punjab does, and NASS
+# publishes both county rice yields back to 1938 and the irrigation water
+# actually applied. The management is the analogue; the climate deliberately is
+# not. A paddy model that works in a temperate Arkansas summer AND a tropical
+# Punjab monsoon is better evidenced than one that only ever saw one of them.
+#
+# It also widens the envelope. The four High Plains fields span aridity 1.6 to
+# 3.6 - all semi-arid. Arkansas sits at 0.88, so it is the first humid site the
+# engine has ever been asked about.
+MID_SOUTH_PATTERNS: tuple[YearPattern, ...] = (
+    YearPattern(
+        "rice", "rice (flooded)",
+        (SeasonPlan("rice_lowland", 110, 140, irrigation=DELTA_FLOOD,
+                    fertiliser_n_kg_ha=165.0),),
+        "drill-seeded in April, permanently flooded, harvested in September",
+    ),
+    YearPattern(
+        "soy", "soybean",
+        (SeasonPlan("soybean", 140, 130),),
+        "rainfed; the usual partner to rice in this rotation",
+    ),
+    YearPattern(
+        "soy_irr", "soybean (furrow irrigated)",
+        (SeasonPlan("soybean", 140, 130, irrigation=FURROW),),
+        "most Delta soybean is irrigated at least once",
+    ),
+    YearPattern(
+        "corn_irr", "corn (furrow irrigated)",
+        (SeasonPlan("maize", 100, 145, irrigation=FURROW,
+                    fertiliser_n_kg_ha=220.0),),
+        "the high-input break crop",
+    ),
+    YearPattern(
+        "grain_sorghum", "grain sorghum",
+        (SeasonPlan("sorghum", 130, 125, fertiliser_n_kg_ha=110.0),),
+        "a drier-footed summer grain",
+    ),
+    YearPattern(
+        "wheat", "winter wheat",
+        (SeasonPlan("wheat_winter", 300, 215, fertiliser_n_kg_ha=110.0),),
+        "sown after rice harvest, off in time for a summer crop",
+    ),
+    YearPattern(
+        "rice_cover", "rice + winter cover",
+        (SeasonPlan("rice_lowland", 110, 140, irrigation=DELTA_FLOOD,
+                    fertiliser_n_kg_ha=165.0),
+         SeasonPlan("cereal_rye_cover", 280, 80)),
+        "a cover crop closes the winter window after rice",
+    ),
+)
+
+US_MID_SOUTH = Region(
+    id="us_mid_south",
+    name="US Mid-South",
+    tier=1,
+    patterns=MID_SOUTH_PATTERNS,
+    constraints=RotationConstraints(
+        # A bare year is not a Delta option; the land is cropped every year.
+        max_consecutive_fallow_years=0,
+        max_fallow_fraction=0.0,
+        max_irrigated_years=None,
+    ),
+    soil_source="ssurgo",
+    sources=(POWER, SSURGO, NASADEM, CROP_TABLE, QUICKSTATS, GRIDMET),
+    yield_validation=(
+        "USDA NASS: county rice yields from 1938, and state irrigation water "
+        "applied to rice (2013, 2018, 2023) - the only observed record we have "
+        "found anywhere against which the ponded paddy water balance can be "
+        "checked directly"
+    ),
+    review_first=(
+        "Percolation under the permanent flood, declared at 2.0 mm/day against "
+        "Punjab's 4.0. The Grand Prairie is rice country precisely because a "
+        "dense clay subsoil holds water, so a lower figure is expected - but it "
+        "is the single number the irrigation estimate turns on and it is swept "
+        "rather than asserted in scripts/validate_paddy.py.",
+        "Flood timing. Delta rice is drill-seeded dry in April and permanently "
+        "flooded around the four-leaf stage, whereas this model floods from "
+        "establishment. The first few weeks are therefore wetter in the model "
+        "than in the field.",
+    ),
+    note=(
+        "Grand Prairie rice and soybean on a clay-pan soil. Humid where every "
+        "other field we run is semi-arid, and flooded exactly as Punjab is - "
+        "which is what makes the paddy model testable here."
+    ),
+)
+
+
+REGIONS: tuple[Region, ...] = (US_HIGH_PLAINS, US_MID_SOUTH, IN_PUNJAB)
 REGIONS_BY_ID = {r.id: r for r in REGIONS}
 
 

@@ -136,6 +136,17 @@
    "detail": "bare_ground is one of six measures a rotation is ranked on and was the only one nothing else could check, because a yield statistic says nothing about when the soil was covered. A satellite can. The check splits, and not where we expected. Sangrur's monthly NDVI profile is unmistakably rice-wheat - wheat through January to March, bare April to June between wheat harvest and rice transplanting, rice July to September - and our simulated canopy tracks it at r = +0.772 with peak greenness within about a month. That is the FIRST crop-side validation of the Punjab tier; the groundwater check tested the water, this tests the cropping. The four US pixels fail two different ways and both are our fault rather than the satellite's: Sedgwick and Holt never bare off (annual minimum NDVI 0.315 and 0.266) so they are permanent grass, not an arable rotation - Holt sits in the Nebraska Sandhills, which is cattle range; Finney and Hale do bare off but peak in late July, which is a summer crop, while we modelled winter wheat that peaks in May. The weak US correlations are therefore not evidence the canopy model is wrong, they are evidence we compared it against the wrong ground.",
    "reproduce": "python scripts/validate_ndvi.py",
    "tier": 2
+  },
+  {
+   "id": "paddy_irrigation",
+   "title": "The paddy water balance against observed irrigation",
+   "question": "Does the flooded-rice model ask for the right amount of water?",
+   "against": "USDA NASS irrigation census, water applied to gravity-irrigated rice in Arkansas (2013, 2018, 2023)",
+   "result": "FAILS as configured: 1,135 mm modelled against 610-640 mm observed, +77%. The cause is identified and quantified.",
+   "verdict": "fail",
+   "detail": "The paddy model drives the entire Punjab result - the 1,996 mm/yr rice-wheat is said to need, and therefore the 24% saving from switching - and nothing had ever checked it, because India gave us no water record we could obtain. Arkansas floods its rice exactly the way Punjab does and NASS publishes the water actually applied, so the management is the analogue even though the climate deliberately is not. The model fails. Percolation cannot rescue it: swept from 1 to 6 mm/day the closest approach is still 50% over, so the error is structural rather than a mis-set parameter. The diagnosis: this model floods from establishment for all 140 days, where Delta rice is drill-seeded dry in April and permanently flooded only at about the four-leaf stage, roughly 95 days. Correcting only the flood window takes it from +77% to +49%; with a clay-pan percolation of 1.0 mm/day and on-farm delivery at 0.90 it reaches 690 mm, +8%. We did NOT apply those corrections and declare success - simulating the flood window alone would silently drop the dry establishment phase, where the crop is in the ground and taking flush irrigations, and doing it properly needs one rice crop split into a dry phase and a ponded phase, which the season model does not support. Punjab's rice is TRANSPLANTED into an already flooded field, so this specific failure mode is absent there by construction - but the Punjab figures now rest on a model that has been tested once and failed in a way we can explain, which is more than was known before and much less than validation.",
+   "reproduce": "python scripts/validate_paddy.py",
+   "tier": 1
   }
  ],
  "bugs_found": [
@@ -203,6 +214,11 @@
    "title": "Site coordinates were county reference points, not verified cropland",
    "effect": "4 of 5 validation pixels were not growing the rotation being validated against them",
    "how": "We placed each field at a county reference coordinate and assumed the 250 m cell beneath it was arable land growing the modelled rotation. MODIS says otherwise: two sites never bare off at all and are permanent grass, and two bare off but green up in high summer rather than spring, so they grow a summer crop and not the winter wheat-fallow we simulated. Caught only because we went looking for an independent check on ground cover. The fix is to move the sample points onto verified cropland using a land-cover product; until then the US arm of the NDVI check is reported as inconclusive rather than quietly averaged in."
+  },
+  {
+   "title": "The paddy model floods for the whole season, not the flood window",
+   "effect": "over-predicts rice irrigation by roughly 50% where the two differ",
+   "how": "Found by the first independent test the paddy model has ever had. Drill-seeded rice is dry for about five weeks before the permanent flood goes on, so holding water from establishment pays evaporation and percolation on 45 days that are never flooded. Quantified rather than fixed: a correct fix means splitting one rice crop into a dry phase and a ponded phase, and making that change against a target we already know would be fitting rather than modelling."
   }
  ]
 }

@@ -106,6 +106,18 @@ SITES: tuple[SiteSpec, ...] = (
         "rather than an exception.",
         existing_rotation=("wheat", "fallow"),
     ),
+    # ---- Tier 1: the Mid-South, where the paddy model becomes checkable ----
+    SiteSpec(
+        "arkansas_ar", "Arkansas County, Arkansas", 34.29, -91.37, 62.0,
+        "AR", "ARKANSAS",
+        "Grand Prairie rice and soybean on a clay-pan soil. Humid where every "
+        "other field here is semi-arid, and flooded exactly the way Punjab is - "
+        "which is what lets the paddy water balance be checked against an "
+        "observed record for the first time.",
+        existing_rotation=("rice", "soy"),
+        region="us_mid_south",
+        field_hectares=65.0,
+    ),
     # ---- Tier 2: the transfer case ----
     # Same engine, global-only inputs. Sangrur sits in the part of central Punjab
     # with the steepest reported water-table decline, under the rice-wheat system
