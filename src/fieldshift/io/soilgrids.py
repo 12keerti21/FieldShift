@@ -20,12 +20,23 @@ cosmetic:
 Two findings from using it, both recorded because they change how the output should
 be read:
 
-1. The service intermittently answers HTTP 200 with every value null rather than
-   failing. Ten test points returned data for two; the same points retried later
-   returned data. This is throttling presenting as absence of data, and an adapter
-   that trusted the first 200 would silently report "no soil here" for most of the
-   world. Hence the retry, and hence the refusal to treat an all-null body as a
-   valid answer.
+1. The service answers HTTP 200 with every value null when it is rate-limiting,
+   rather than failing or returning 429. This is throttling wearing the costume of
+   missing data, and an adapter that trusted the first 200 would silently report
+   "no soil here" for most of the world.
+
+   The cooldown is longer than a short backoff can ride out. Measured here: ten
+   points in quick succession returned data for two; isolated requests minutes
+   later succeeded for those same two; and after a burst of seven, four further
+   requests spaced 25 seconds apart over 75 seconds all still came back null -
+   including for a point that had answered moments earlier. So the retry below
+   helps with a brief squeeze and cannot help with an exhausted quota.
+
+   Two consequences, both deliberate. An all-null body is a failure to FETCH and
+   never an absence of soil. And because a cooldown can outlast any reasonable
+   wait, callers that cannot afford to fail - an on-demand analysis, as opposed to
+   a precomputed site that can simply be rebuilt later - are expected to try
+   another soil source rather than to retry harder. See `_load_soil`.
 
 2. At the Sangrur pilot point SoilGrids predicts 1.3 percent topsoil organic carbon.
    Punjab's intensively cropped alluvial topsoils are repeatedly reported in the

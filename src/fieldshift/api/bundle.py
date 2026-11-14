@@ -150,36 +150,74 @@ def _soilgrids_path(spec: SiteSpec) -> Path:
     return RAW_DIR / f"soilgrids_{_key(spec)}.json"
 
 
-def _load_soil(spec: SiteSpec, registry):
-    """Soil from whichever survey reaches this field.
+def _ssurgo_soil(spec: SiteSpec, registry):
+    profile = fetch_ssurgo_point(
+        spec.latitude, spec.longitude, cache_path=str(_ssurgo_path(spec))
+    )
+    return texture_from_ssurgo(profile, registry.texture), {
+        "component": profile.component,
+        "component_pct": profile.component_pct,
+        "soil_source": "ssurgo",
+    }
 
-    Returns the texture plus a short provenance label for the bundle. The two
-    sources are not interchangeable and the difference is reported rather than
-    smoothed over: SSURGO is a survey of a mapped component, SoilGrids is a 250 m
-    global prediction with no hydrologic group, so a SoilGrids site carries lower
-    confidence and says which input caps it.
+
+def _soilgrids_soil(spec: SiteSpec, registry):
+    profile = fetch_soilgrids_point(
+        spec.latitude, spec.longitude, cache_path=str(_soilgrids_path(spec))
+    )
+    return texture_from_soilgrids(profile, registry.texture), {
+        "component": "SoilGrids 250 m prediction",
+        "component_pct": None,
+        "described_depth_cm": profile.described_depth_cm,
+        "soil_source": "soilgrids",
+    }
+
+
+SOIL_SOURCES = {"ssurgo": _ssurgo_soil, "soilgrids": _soilgrids_soil}
+
+
+def _load_soil(spec: SiteSpec, registry):
+    """Soil from whichever survey actually reaches this field.
+
+    The region declares a preferred source, and that preference is right: SSURGO
+    is a survey of a mapped component and SoilGrids is a 250 m global prediction,
+    so where SSURGO reaches it should win. The two are never treated as
+    equivalent - the texture carries its own provenance and the evidence card
+    reports which capped the confidence.
+
+    But a preference is not an availability. SSURGO stops at the US border, and
+    ISRIC rate-limits by returning HTTP 200 with empty values for a cooldown that
+    can outlast any sensible retry - measured here as still refusing four spaced
+    requests over 75 seconds after a burst. For a precomputed site that is merely
+    an annoyance to retry later; for an on-demand analysis it is the difference
+    between an answer and a dead end.
+
+    So the declared source is tried first and the other is tried second. If both
+    fail, this raises with both reasons rather than falling back to a texture
+    centroid - because choosing a centroid means choosing a texture class, and
+    without any soil data that would be inventing the single most load-bearing
+    input in the model.
     """
-    source = spec.region_spec.soil_source
-    if source == "ssurgo":
-        profile = fetch_ssurgo_point(
-            spec.latitude, spec.longitude, cache_path=str(_ssurgo_path(spec))
-        )
-        soil = texture_from_ssurgo(profile, registry.texture)
-        return soil, {
-            "component": profile.component,
-            "component_pct": profile.component_pct,
-        }
-    if source == "soilgrids":
-        profile = fetch_soilgrids_point(
-            spec.latitude, spec.longitude, cache_path=str(_soilgrids_path(spec))
-        )
-        soil = texture_from_soilgrids(profile, registry.texture)
-        return soil, {
-            "component": "SoilGrids 250 m prediction",
-            "component_pct": None,
-            "described_depth_cm": profile.described_depth_cm,
-        }
-    raise ValueError(f"unknown soil source {source!r}")
+    preferred = spec.region_spec.soil_source
+    order = [preferred] + [k for k in SOIL_SOURCES if k != preferred]
+    failures = []
+    for name in order:
+        try:
+            soil, meta = SOIL_SOURCES[name](spec, registry)
+        except Exception as exc:
+            failures.append(f"{name}: {type(exc).__name__}: {exc}")
+            continue
+        if name != preferred:
+            meta["fallback_from"] = preferred
+        return soil, meta
+    raise SoilUnavailable(
+        "No soil source could describe this field, so there is nothing to "
+        "simulate against. Tried " + "; ".join(failures)
+    )
+
+
+class SoilUnavailable(RuntimeError):
+    """Every soil source refused. Not recoverable by guessing."""
 
 
 def build_bundle(
