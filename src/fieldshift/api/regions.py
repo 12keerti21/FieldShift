@@ -37,6 +37,7 @@ from ..decide.evidence import (
     DataSource,
     GRIDMET,
     INDIAWRIS,
+    MODIS_NDVI,
     NASADEM,
     NO_YIELD_DATA,
     POWER,
@@ -321,7 +322,8 @@ IN_PUNJAB = Region(
         enforce_return_intervals=True,
     ),
     soil_source="soilgrids",
-    sources=(POWER, SOILGRIDS, INDIAWRIS, CROP_TABLE, NO_YIELD_DATA),
+    sources=(POWER, SOILGRIDS, INDIAWRIS, MODIS_NDVI, CROP_TABLE,
+             NO_YIELD_DATA),
     yield_validation=None,
     review_first=(
         "Canal supply. This model assumes every millimetre of irrigation is "

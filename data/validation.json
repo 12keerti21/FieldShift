@@ -125,6 +125,17 @@
    "detail": "Finding groundwater data did not validate the yields. The engine's yield path in Punjab rests on FAO-33 Ky values, regional recommended nitrogen rates and sowing dates entered as district practice in round numbers, none of which has been checked against a Punjab observation. The Punjab region therefore still declares a low-confidence source and no card there can read above LOW. A data trap found along the way is worth recording: India-WRIS reports manual well depths as POSITIVE metres below ground and telemetric depths as NEGATIVE. Combining them unnormalised does not produce a noisy trend, it produces a meaningless one, because half the stations would appear to move opposite to the other half for identical physical behaviour.",
    "reproduce": "python -m pytest tests/test_indiawris.py",
    "tier": 2
+  },
+  {
+   "id": "ndvi_cover",
+   "title": "Ground cover against MODIS NDVI",
+   "question": "When the model says the field is green, is it actually green?",
+   "against": "MODIS MOD13Q1 NDVI, 16-day 250 m, 2003-2024, via NASA AppEEARS",
+   "result": "1 of 5 pixels is a valid comparison, and it passes: Sangrur r = +0.772; the other 4 are not growing what we modelled",
+   "verdict": "partial",
+   "detail": "bare_ground is one of six measures a rotation is ranked on and was the only one nothing else could check, because a yield statistic says nothing about when the soil was covered. A satellite can. The check splits, and not where we expected. Sangrur's monthly NDVI profile is unmistakably rice-wheat - wheat through January to March, bare April to June between wheat harvest and rice transplanting, rice July to September - and our simulated canopy tracks it at r = +0.772 with peak greenness within about a month. That is the FIRST crop-side validation of the Punjab tier; the groundwater check tested the water, this tests the cropping. The four US pixels fail two different ways and both are our fault rather than the satellite's: Sedgwick and Holt never bare off (annual minimum NDVI 0.315 and 0.266) so they are permanent grass, not an arable rotation - Holt sits in the Nebraska Sandhills, which is cattle range; Finney and Hale do bare off but peak in late July, which is a summer crop, while we modelled winter wheat that peaks in May. The weak US correlations are therefore not evidence the canopy model is wrong, they are evidence we compared it against the wrong ground.",
+   "reproduce": "python scripts/validate_ndvi.py",
+   "tier": 2
   }
  ],
  "bugs_found": [
@@ -187,6 +198,11 @@
    "title": "A year-long groundwater query silently returned only telemetric data",
    "effect": "every long-record manual well was crowded out of the result",
    "how": "The endpoint caps a response at 50,000 rows and the telemetric piezometers report every few minutes, so a single 1994-2024 request came back entirely full of GPRS readings from 20 stations with zero manual wells. The adapter now fetches year by year, falls back to month by month when a year still hits the cap, and refuses rather than accepting a response at the page limit."
+  },
+  {
+   "title": "Site coordinates were county reference points, not verified cropland",
+   "effect": "4 of 5 validation pixels were not growing the rotation being validated against them",
+   "how": "We placed each field at a county reference coordinate and assumed the 250 m cell beneath it was arable land growing the modelled rotation. MODIS says otherwise: two sites never bare off at all and are permanent grass, and two bare off but green up in high summer rather than spring, so they grow a summer crop and not the winter wheat-fallow we simulated. Caught only because we went looking for an independent check on ground cover. The fix is to move the sample points onto verified cropland using a land-cover product; until then the US arm of the NDVI check is reported as inconclusive rather than quietly averaged in."
   }
  ]
 }

@@ -337,6 +337,23 @@ INDIAWRIS = DataSource(
         "including canal supply and lateral inflow"
     ),
 )
+MODIS_NDVI = DataSource(
+    name="MODIS NDVI (NASA AppEEARS)",
+    variables="16-day vegetation index",
+    role=(
+        "independent check on modelled ground cover - the only one of the six "
+        "ranked measures that nothing else could reach"
+    ),
+    period="2003-2024, 16-day composites",
+    pixel_metres=250.0,
+    confidence="high",
+    caveat=(
+        "it validates the rotation actually in the pixel and says nothing about "
+        "the alternatives, which were never grown; and it confirmed that four of "
+        "our five sample points are not growing the rotation we modelled against "
+        "them"
+    ),
+)
 SOILGRIDS = DataSource(
     name="ISRIC SoilGrids v2.0",
     variables="texture, water retention, organic carbon, bulk density",

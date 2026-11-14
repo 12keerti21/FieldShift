@@ -135,17 +135,47 @@ def main() -> int:
             m = yrs == y
             if m.sum() < 15:
                 continue
-            obs_peaks.append(doy[m][np.argmax(obs.ndvi[m])])
             same = [(d, c) for d, c in zip(dates, cover)
                     if d.astype("datetime64[Y]").astype(int) + 1970 == y]
-            if not same:
+            # A fallow year has zero cover on every day, so "the day cover peaks"
+            # is whichever day sorts first - a meaningless number that was
+            # dragging the timing statistic by months. Compare timing only in
+            # years the model actually grows something.
+            if not same or max(c for _, c in same) < 0.1:
                 continue
+            obs_peaks.append(doy[m][np.argmax(obs.ndvi[m])])
             mod_peaks.append(
                 (max(same, key=lambda x: x[1])[0]
                  - np.datetime64(f"{y}-01-01")).astype(int) + 1
             )
         peak_gap = (float(np.mean(obs_peaks) - np.mean(mod_peaks))
                     if obs_peaks and mod_peaks else float("nan"))
+
+        # Is this pixel even growing the system we modelled? A 250 m cell at a
+        # county centroid is whatever happens to be there, and if it never goes
+        # bare it is not an arable field on a fallow rotation. Judged from the
+        # data rather than assumed: a cropland that bares off drops below ~0.2
+        # at its annual minimum, and its peak wanders year to year as the crop
+        # changes. Permanent grass does neither.
+        annual_min = np.mean([
+            obs.ndvi[yrs == y].min() for y in np.unique(yrs)
+            if (yrs == y).sum() >= 15
+        ])
+        peak_wander = float(np.std(obs_peaks)) if len(obs_peaks) > 2 else float("nan")
+
+        # Two tests, and both must pass before the comparison means anything.
+        #
+        #   bares off    an arable field on a fallow rotation must go bare, so its
+        #                annual minimum should fall below ~0.25. Permanent grass
+        #                never does.
+        #   right season a pixel can bare off and still be growing something else
+        #                entirely. Finney bares off, but it peaks in late July -
+        #                that is a summer crop, and we modelled winter wheat,
+        #                which peaks in May. Baring off alone is necessary and
+        #                nowhere near sufficient.
+        bares_off = annual_min < 0.25
+        right_season = np.isfinite(peak_gap) and abs(peak_gap) <= 45
+        comparable = bool(bares_off and right_season)
 
         tier = spec.region_spec.tier
         print(f"\n{spec.name}  (tier {tier})")
@@ -157,8 +187,13 @@ def main() -> int:
               f"(observed minus modelled)")
         print(f"  observed bare (NDVI < {BARE_NDVI})          {observed_bare:>6.1%}")
         print(f"  our reported bare fraction        {modelled_bare:>6.1%}")
+        print(f"  mean annual minimum NDVI          {annual_min:>6.3f}  "
+              f"{'bares off' if bares_off else 'NEVER BARES - not arable'}")
+        print(f"  peak timing wander, year to year  {peak_wander:>6.0f} days")
+        print(f"  is this pixel comparable?         "
+              f"{'YES' if comparable else 'NO - ' + ('wrong season' if bares_off else 'not arable')}")
         rows.append((spec.name, tier, r, peak_gap, observed_bare, modelled_bare,
-                     len(pairs)))
+                     len(pairs), comparable, annual_min, bares_off))
 
     if not rows:
         print("\nNo site could be compared.")
@@ -168,42 +203,87 @@ def main() -> int:
     print("SUMMARY")
     print(RULE)
     print(f"{'field':26s} {'tier':>4s} {'r':>7s} {'peak':>7s} "
-          f"{'obs bare':>9s} {'our bare':>9s}")
-    for name, tier, r, gap, ob, mb, _ in rows:
+          f"{'min NDVI':>9s} {'comparable?':>13s}")
+    for name, tier, r, gap, ob, mb, _, comparable, amin, bares in rows:
+        why = "yes" if comparable else ("wrong season" if bares else "not arable")
         print(f"{name[:26]:26s} {tier:>4d} {r:>+7.3f} {gap:>+6.0f}d "
-              f"{ob:>8.1%} {mb:>8.1%}")
+              f"{amin:>9.3f} {why:>13s}")
 
-    rs = np.array([r[2] for r in rows])
-    gaps = np.array([r[3] for r in rows if np.isfinite(r[3])])
-    positive = int((rs > 0).sum())
+    usable = [x for x in rows if x[7]]
+    unusable = [x for x in rows if not x[7]]
 
     print(f"""
 {RULE}
-VERDICT
+VERDICT — PARTIAL, and the failure is the interesting half
 {RULE}
 
-Correlation between modelled canopy cover and observed greenness is positive at
-{positive} of {len(rs)} fields, mean r = {rs.mean():+.3f}. Peak greenness timing is off by a
-mean of {np.abs(gaps).mean():.0f} days, which is within one MODIS compositing period
-({16} days) — the satellite cannot resolve timing finer than that, so a smaller
-number would not mean more.
+This check splits cleanly, and not along the line we expected.
 
-What this does and does not establish:
+WHERE THE PIXEL GROWS WHAT WE MODELLED
+""")
+    for name, tier, r, gap, ob, mb, n, comparable, amin, bares in usable:
+        print(f"  {name} (tier {tier}): r = {r:+.3f}, peak timing {gap:+.0f} days, "
+              f"annual minimum NDVI {amin:.3f}")
+    print(f"""
+WHERE IT DOES NOT
+""")
+    for name, tier, r, gap, ob, mb, n, comparable, amin, bares in unusable:
+        reason = (f"it peaks {gap:+.0f} days from our crop, so it is growing a "
+                  "different season's crop"
+                  if bares else
+                  f"it never bares off (annual minimum NDVI {amin:.3f}), so it is "
+                  "not an arable field on a fallow rotation")
+        print(f"  {name} (tier {tier}): r = {r:+.3f}, but {reason}")
 
-  IT DOES    Confirm that the model puts the crop on the ground at roughly the
-             right time of year, and that our canopy rises and falls with real
-             observed greenness. The bare-ground measure is no longer unchecked.
+    print(f"""
+WHAT WENT WRONG, AND IT IS OUR MISTAKE RATHER THAN THE SATELLITE'S
 
-  IT DOES NOT  Validate the alternative rotations. The satellite only ever saw
-             the rotation the farmer actually grew. Everything else the tool
-             proposes remains a simulation, and the evidence cards say so.
+Our site coordinates are county reference points. We never checked that the
+250 m cell underneath each one is an arable field growing the rotation we
+modelled - we assumed it. The satellite says otherwise for {len(unusable)} of {len(rows)} sites.
 
-  CAUTION    The absolute bare fractions are not directly comparable. Ours counts
-             DAYS with no crop in the ground; the satellite's counts OBSERVATIONS
-             below an NDVI threshold, and a field with a thin or senescing crop
-             reads as bare to MODIS while our model still calls it cropped.
-             Compare the direction and the ranking between fields, not the
-             absolute percentages.
+The evidence is in the data rather than in an opinion, and it fails in two
+different ways.
+
+Sedgwick and Holt never bare off at all - their annual minimum NDVI stays above
+0.26 and their greenness peaks in midsummer with very little year-to-year
+wander, which is what permanent grass does and not what a rotation does. Holt
+sits in the Nebraska Sandhills, which is cattle range.
+
+Finney and Hale do bare off, so they are plausibly arable - but they peak in
+late July. Winter wheat peaks in May. A pixel that greens up in high summer is
+growing a summer crop, which those counties certainly do grow; it is simply not
+the winter wheat-fallow rotation we modelled against it.
+
+So the weak correlations at those sites are not evidence that our canopy model
+is wrong. They are evidence that we compared it against the wrong ground. That
+is a real defect, and it is ours.
+
+WHAT THIS DOES ESTABLISH
+
+Where the pixel genuinely grows the modelled system, the agreement is strong.
+Sangrur's monthly profile is unmistakably rice-wheat: wheat through January to
+March, bare from April to June between wheat harvest and rice transplanting,
+rice from July to September. Our simulated canopy tracks it at r = +0.772 with
+peak greenness within about a month.
+
+That matters more than it looks, because Punjab is the tier we could NOT
+validate on the crop side at all. The groundwater check tested the water; this
+is the first independent check of the cropping itself, and it passes.
+
+WHAT IT STILL DOES NOT ESTABLISH
+
+  - The alternative rotations. The satellite only ever saw what was grown.
+  - Any absolute bare-ground percentage. Ours counts days with no crop in the
+    ground; MODIS counts observations below a greenness threshold, and a thin or
+    senescing crop reads as bare to the satellite while our model calls it
+    cropped. Compare direction and ranking, never the raw percentages.
+
+WHAT TO DO ABOUT IT
+
+Move the US sample points onto verified cropland rather than county reference
+points, using a land-cover product, and re-run. Until that is done the US arm of
+this particular check stays inconclusive and is reported as such.
 """)
     return 0
 
