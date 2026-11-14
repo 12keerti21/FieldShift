@@ -107,6 +107,12 @@ def site_detail(site_id: str) -> dict:
     data = _bundle(site_id)
     return {
         "site": data["site"],
+        # The region block is not optional. Without it the interface cannot tell a
+        # validated field from a transferred one, and it falls back to assuming
+        # tier 1 - which badged a Punjab field as "validated" against observed
+        # yields that do not exist. A test pins this.
+        "region": data.get("region", {"id": "us_high_plains", "name": "US High Plains",
+                                      "tier": 1, "validated": True}),
         "objectives": data["objectives"],
         "search": data["search"],
         "rotations": data["rotations"],

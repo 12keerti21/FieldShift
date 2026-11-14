@@ -309,3 +309,41 @@ def test_the_interface_shows_the_caveat_without_interaction(client):
     page = client.get("/").text
     assert "does not make one" in page
     assert "NASA POWER" in page
+
+
+def test_site_detail_carries_the_region_block(client):
+    """Without it the interface cannot tell a validated field from a transferred one.
+
+    This is not a cosmetic field. The page falls back to assuming tier 1 when the
+    block is absent, which badged the Punjab field as "Tier 1 - validated" against
+    observed yields that do not exist - the exact overclaim the two-tier design
+    exists to prevent.
+    """
+    for site in client.get("/api/sites").json()["sites"]:
+        data = client.get(f"/api/site/{site['id']}").json()
+        assert "region" in data, f"{site['id']} has no region block"
+        region = data["region"]
+        assert region["tier"] == site["tier"], (
+            f"{site['id']}: site list says tier {site['tier']} but the detail "
+            f"says tier {region['tier']}"
+        )
+        assert region["validated"] == site["validated"]
+        # and tier 2 must never report itself as validated
+        if region["tier"] == 2:
+            assert region["validated"] is False
+            assert region["yield_validation"] is None
+
+
+def test_an_unvalidated_site_says_so_in_its_evidence(client):
+    """The downgrade has to reach the artefact a judge or agronomist actually reads."""
+    sites = client.get("/api/sites").json()["sites"]
+    tier2 = [s for s in sites if s["tier"] == 2]
+    if not tier2:
+        pytest.skip("no tier 2 site built")
+    card = client.get(f"/api/site/{tier2[0]['id']}/rotation/0/evidence").json()["card"]
+    assert card["confidence"] == "low"
+    names = {s["name"] for s in card["sources"]}
+    # it must not cite US-only datasets it never touched
+    assert "USDA SSURGO" not in names
+    assert "USDA NASS QuickStats" not in names
+    assert any("SoilGrids" in n for n in names)
