@@ -352,12 +352,20 @@ def simulate_rotation(
     initial_surface_depletion_frac: float = 0.7,
     initial_residue_t_ha: float = 1.0,
     bare_profile_depth_m: float = 1.5,
+    initial_carbon_pools: RothCPools | None = None,
 ) -> RotationOutcome:
     """Simulate a rotation over several cycles of real weather.
 
     Gaps between crops are filled with explicit bare-fallow water balances, so the
     cost of an uncovered window - evaporation and runoff - and the water a dry
     fallow genuinely conserves are both accounted rather than assumed.
+
+    ``initial_carbon_pools`` should be supplied when comparing rotations. Derived
+    per-rotation, the spin-up would give each candidate a slightly different
+    starting soil - because the pool split depends on the cover calendar - and the
+    comparison would then measure part of that difference rather than the rotations.
+    Sharing one starting state is both fairer and far faster, since the spin-up is
+    hundreds of simulated years.
     """
     if len(et0_mm) != len(weather):
         raise RotationError("et0 series length does not match the weather series")
@@ -387,14 +395,22 @@ def simulate_rotation(
         for m in np.unique(weather.month[start:start + duration]):
             cover_climatology[int(m) - 1] = True
 
-    pools, implied_input = initialise_from_measured_soc(
-        initial_soc_t_ha, clay_pct=soil.clay_pct, temp_c=clim_t, rain_mm=clim_r,
-        et0_mm=clim_e, covered=cover_climatology,
-    )
-    notes.append(
-        f"carbon pools initialised from {initial_soc_t_ha:.1f} t C/ha; implied "
-        f"historic input {implied_input:.1f} t C/ha/yr"
-    )
+    if initial_carbon_pools is None:
+        pools, implied_input = initialise_from_measured_soc(
+            initial_soc_t_ha, clay_pct=soil.clay_pct, temp_c=clim_t, rain_mm=clim_r,
+            et0_mm=clim_e, covered=cover_climatology,
+        )
+        notes.append(
+            f"carbon pools initialised from {initial_soc_t_ha:.1f} t C/ha; implied "
+            f"historic input {implied_input:.1f} t C/ha/yr"
+        )
+    else:
+        pools = initial_carbon_pools
+        notes.append(
+            f"carbon pools supplied ({pools.total:.1f} t C/ha), shared across "
+            "candidates so the comparison measures the rotations rather than "
+            "differences in their spin-up"
+        )
 
     # --- walk the timeline ---
     state = FieldState(

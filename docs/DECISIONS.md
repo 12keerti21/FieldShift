@@ -612,6 +612,82 @@ percent, a 24 percent reduction. Because RothC moves that carbon over the
 simulation, erodibility is not a static property of the field: a carbon-building
 rotation reduces erosion through soil structure as well as through surface cover.
 
+## 2026-11-14 - The decision layer: search, Pareto front, trade-offs
+
+`fieldshift/decide/` - candidates, objectives, pareto, search. This is the step
+that makes FieldShift a decision-support tool rather than a calculator: it proposes
+rotations, discards the ones that cannot work, simulates the rest through 41 years of
+observed weather, and returns the set where no option is beaten on every count.
+
+### The headline result
+On the pilot field, searching a 3-year cycle over 8 year patterns:
+
+    176 distinct cycles examined -> 79 feasible -> 80 simulated -> 16 on the front
+      rejected 80  impossible calendar
+      rejected  7  too much fallow
+      rejected  5  exceeds the irrigation limit
+      rejected  4  breaks a pathogen return interval
+      rejected  1  no marketable crop
+
+**The farmer's existing rotation - winter wheat and summer fallow - is dominated on
+every objective by four of the 79 alternatives.** Against continuous winter wheat:
+production 1.05 -> 2.38 t/ha/yr, carbon **-0.021 -> +0.286** t C/ha/yr (it is
+currently losing carbon), wind exposure 769 -> 381, bare ground 59.8% -> 21.5%.
+Nothing is given up. The trade-off report prints "WORSE: nothing".
+
+### Design decisions
+- **Year patterns, not free crop slots.** A pattern is one year's cropping already
+  known to fit the calendar. Searching over patterns means the generator cannot
+  produce two crops occupying one field, which was the commonest way a hand-written
+  rotation turned out impossible.
+- **Cyclic equivalence is collapsed.** [A,B,C], [B,C,A] and [C,A,B] are one rotation
+  started at different points. Deduplicating cut the space by more than two thirds
+  and stops a farmer being shown duplicates dressed as alternatives.
+- **Calendar feasibility is checked before simulation**, so an impossible sequence is
+  a reported reason rather than an exception. It removed 80 of 176 candidates - and
+  it **independently derives why western Kansas runs wheat-sorghum-FALLOW on three
+  years rather than wheat-sorghum on two**: winter wheat harvested in July collides
+  with a June sorghum sowing, so the fallow year is forced by the calendar, not
+  chosen. That is a result, not a rule we encoded.
+- **Rejections are counted and explained**, and an empty survivor set says so
+  explicitly: a constraint that eliminates every option is a bug that looks like a
+  result.
+- **One shared starting soil for every candidate.** Derived per rotation, the carbon
+  spin-up would hand each candidate a slightly different soil, since the pool split
+  depends on the cover calendar - and the comparison would then partly measure that.
+  Also hundreds of times faster.
+- **Pareto front over weighted scoring.** A weighted sum collapses a real trade-off
+  into one number and hides the exchange rate. Weighted ranking exists for when a
+  choice must be made, but it operates on simulated outcomes rather than crop
+  attributes, and `weight_sensitivity` reports whether the top choice survives a
+  50 percent shift in each stated priority - because a recommendation that flips on
+  one weight is an artefact of the weighting and the farmer should be told which
+  priority is actually deciding.
+
+### A real bug, and what it cost
+`downside_production` was computed only over years that produced a crop. That handed
+a fallow-heavy rotation the yield of its good years and none of its empty ones,
+inflating a corn-corn-fallow rotation's "bad year" to **8.8 t/ha** and putting **13
+extra rotations on the Pareto front** that did not belong there. Fixed to span every
+year in the window, including the empty ones; the front fell from 29 to 16 and every
+fallow-containing rotation left it.
+
+### Field versus farm, stated rather than finessed
+`downside` and `production` answer different questions and the difference is easy to
+misread. This model simulates ONE FIELD through time, so a fallow year genuinely
+produces nothing and the downside is zero. In practice wheat-fallow is run across
+space as well - half the farm in wheat every year - so farm-level income is far
+steadier. `production_t_ha_yr` is the closer analogue of that view. Presenting only
+the field-level downside would unfairly condemn fallow rotations; presenting only the
+cycle average would hide that this field carries a year of no income. Both are
+reported, and the objective's own note explains why.
+
+### Prices
+`score_rotation` refuses to value some crops and not others: supplying prices for
+only part of a rotation would penalise diversification for being diversified. Either
+every price is given, or the economic objective stays physical production - which is
+the default, since the crop table will not invent market data.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
