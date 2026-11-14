@@ -18,7 +18,7 @@ No language model makes a decision; at most it narrates structured model output.
 | Layer | Contents | Status |
 |---|---|---|
 | Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
-| Physical models | FAO-56 ET0 and dual-Kc water balance **done**; RothC, RUSLE pending | in progress |
+| Physical models | FAO-56 ET0 (**validated, -3.2% vs gridMET**) and dual-Kc water balance done; RothC, RUSLE pending | in progress |
 | State simulator | couples the above; carries soil state across seasons | not started |
 | Optimizer | enumeration / DP over multi-year crop sequences | not started |
 | Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
@@ -121,6 +121,26 @@ Two engineering notes:
 - **Stored soil water carries between seasons.** `run_water_balance` returns the
   closing depletion so the rotation simulator can chain seasons: a crop that leaves
   the profile dry is a cost to whatever follows it, and the model has to see that.
+
+## Validation status
+
+| Our output | Independent reference | Result |
+|---|---|---|
+| FAO-56 Penman-Monteith ET0 | gridMET published 4 km grass ETo | **-3.2%** over 40 yr, daily r = 0.966, RMSE 0.70 mm/d |
+| Worst dryland maize seasons | documented US High Plains droughts | recovers 2012, 2011, 2002, 1988, 2022 unprompted |
+| Soil texture class at pilot point | SSURGO (Richfield silt loam) | class correct; **our centroid AWC understated by 52%** |
+| Seasonal crop ET | *pending* a cited source | earlier comparison used a remembered figure - withdrawn |
+
+Reproduce the first one:
+
+```bash
+PYTHONPATH=src ./.venv/bin/python scripts/validate_et0.py
+```
+
+**A process rule, learned the hard way:** a validation target must be a dataset we
+have fetched or a citation we can point at. An earlier run attributed a residual to
+a "+18% ET0 bias" on the strength of a *remembered* climatology figure; gridMET
+showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
 
 ## Layout
 ```

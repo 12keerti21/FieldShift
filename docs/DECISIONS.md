@@ -84,10 +84,13 @@ pressure curve, and extraterrestrial radiation against FAO-56 Annex 2 Table 2.6
 (equator and 20N in mid-January). Polar day/night, hemispheric symmetry including
 the orbital-eccentricity residual, and all sensitivity signs are covered.
 
-**Open gap:** the FAO-56 worked examples (Ch.4 Examples 17 and 18) are not
-reproduced line by line, because that needs the publication's intermediate values.
-Close this when the resource list provides FAO-56 - it is the single strongest
-validation available for this module.
+**CLOSED 2026-11-14 by gridMET comparison.** Our ET0 agrees with gridMET's
+independently computed 4 km published grass reference ET to **-3.2%** over 40
+complete years at Finney County, with daily r = 0.966, RMSE 0.70 mm/day, and
+May-Sep agreement of -0.6%. January differs by -17%, a low-magnitude winter month
+(1.33 vs 1.59 mm/day) that barely affects a crop season. This is stronger evidence
+than reproducing a worked example, because gridMET is computed from a different
+forcing dataset and so is genuinely independent.
 
 ## 2026-11-12 - Water balance, runoff and a synthetic weather generator
 268 tests.
@@ -184,6 +187,61 @@ instead).
 Sowing windows / crop calendars; `Ky` FAO-33 yield response factors (check GAEZ);
 local pathogen presence to escalate the `regional` constraints we report but do not
 enforce.
+
+## 2026-11-14 - RETRACTION: the "+18% ET0 bias" did not exist
+
+**What I reported earlier was wrong.** After validating the water balance against
+remembered Kansas extension figures, I attributed a residual overestimate to a
+"+18% bias in POWER-driven ET0 against station climatology" and recorded it as a
+forcing-resolution artefact of POWER's ~0.5 degree grid.
+
+That conclusion rested on a remembered May-Sep climatology figure of ~825 mm. It
+was not measured. gridMET - a published 4 km product computed from different
+forcing - puts May-Sep reference ET at 975 mm against our 969 mm, a difference of
+**-0.6%**. Annual agreement is -3.2%, daily r = 0.966.
+
+**Our ET0 was never biased high.** The claim is withdrawn.
+
+Two consequences that matter more than the retraction itself:
+
+1. **The "Kansas reference ET 610-710 mm" figure I validated against was also
+   recalled, not sourced.** Having been wrong once with the same method, it must
+   carry the same suspicion. The remaining crop-ET discrepancy may be largely in
+   that reference rather than in the model. It needs a cited source - OpenET, or a
+   named KSU publication - before any further calibration is done against it.
+2. **SSURGO contradicts our soil parameters in the direction that would explain
+   much of the residual.** Measured AWC for the Richfield silt loam at this point
+   is 212 mm/m depth-weighted to 1.5 m, against our texture-class centroid of
+   140 mm/m - we were understating plant-available water by 52%, i.e. 318 mm of
+   root-zone storage versus 210 mm. More storage means less modelled stress and
+   less irrigation demand. The texture *class* was right; the centroid's water
+   retention was not.
+
+**Process change adopted:** no remembered figure is used as a validation reference
+again. A validation target must be a dataset we have fetched or a citation we can
+point at. `scripts/validate_et0.py` is the pattern - it is reproducible, it names
+its source, and anyone can re-run it.
+
+## 2026-11-14 - gridMET adapter and a one-sided plausibility guard
+
+The THREDDS NCSS CSV export returns the variable's **packed integer values and
+does not apply the `scale_factor`** recorded in the file metadata. For reference ET
+that factor is 0.1, so an unguarded read yields 42 mm/day. That is physically
+impossible, but it is large enough to look like a credible "the model is biased"
+finding, and for one run it was reported as exactly that.
+
+- `rdss/io/gridmet.py` reads `scale_factor` and `add_offset` **from the dataset
+  metadata rather than hard-coding them**, so a repack upstream cannot silently
+  rescale everything downstream.
+- It then **refuses values outside a physical range** per variable. A magnitude
+  guard on a well-understood quantity costs nothing and catches the whole class of
+  silent unit errors.
+- The guard is **one-sided by construction**: over-scaling leaves values
+  implausibly small and still inside the window. A test documents this rather than
+  letting anyone assume the guard is complete.
+- **Chunking is required, not an optimisation.** A single 41-year NCSS request came
+  back with 30 years and no error - silently truncated. The adapter chunks by
+  decade and de-duplicates.
 
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
