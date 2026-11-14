@@ -378,6 +378,79 @@ HTTP and HTTPS; the service appears down. Albers coordinate conversion is solved
 be the better validation channel anyway - it carries the irrigated/dryland and
 fallow/continuous splits that CDL pixel labels do not.
 
+## 2026-11-14 - Rotation simulator, validated against an observed rotation effect
+
+`rdss/agro/rotation.py` chains seasons so four things carry between crops: soil
+water, soil carbon (one continuous RothC run), surface residue, and crop history.
+Without that carry-over a rotation can only be scored crop by crop, which is the
+weighted-sum approach this project explicitly rejected.
+
+**The validation result.** USDA NASS reports dryland wheat yield separately for
+crops following summer fallow (35.4 bu/ac) and continuous cropping (32.0 bu/ac) in
+Finney County - an observed rotation effect of **+10.8%** over 25 years. Nothing in
+the model was fitted to it.
+
+    modelled advantage to fallow:  +15.0%
+    observed advantage (NASS):     +10.8%
+    error:                         +4.2 percentage points
+
+The advantage is emergent: it comes from soil water banked through the fallow year
+and carried into the next wheat crop. A simulator that scored crops independently
+would show no difference between these two rotations at all.
+
+We **over-predict** the fallow benefit by about 4 points, and the likely reason is
+honest and specific: a modelled fallow is perfectly bare, while a real summer
+fallow loses water to weeds and imperfect control, so it banks less than the model
+assumes. That is a named limitation, not a tuning parameter.
+
+**The full trade-off emerged with it**, which is the more important outcome:
+
+| | wheat-fallow | continuous wheat |
+|---|---|---|
+| yield per crop | 2.72 t/ha | 2.36 t/ha |
+| crops in 38 years | 19 | 39 |
+| bare fraction | 59.7% | 21.5% |
+| carbon | +0.07 t C/ha/yr | +0.28 |
+| evaporation fraction | 0.64 | 0.45 |
+
+Fallow wins per crop and loses on everything else. No part of that was asserted.
+
+Design decisions:
+
+- **Gaps between crops are simulated, not skipped.** Every uncovered window gets an
+  explicit bare-fallow water balance, so its evaporation and runoff cost is counted
+  and the water a dry fallow genuinely conserves is credited.
+- **Overlapping occupancies raise rather than silently double-cropping.** This guard
+  immediately caught an agronomically impossible rotation in our own test suite:
+  sorghum planted in June of the year winter wheat is harvested in July.
+- **Cover-crop biomass is estimated from transpiration** via biomass water
+  productivity, because a crop with no harvest has no yield to derive residue from.
+  Flagged in the module as the weakest number in it.
+- **Baling reduces carbon input but never to zero**, because roots are returned
+  whatever happens to the straw.
+- **Low-confidence Ky is surfaced in the result notes**, so a yield resting on an
+  analogue crop says so.
+
+### Crop table extended for Tier 1
+The set was India-leaning. Added **winter wheat** (285 days, Oct-Jul, the dominant
+High Plains crop and necessary for the validation above - the existing `wheat`
+entry is SPRING wheat at 140 days and must not be used for an overwintering crop)
+plus five US cover crops: hairy vetch, crimson clover, oats, field pea and forage
+radish. 33 crops total.
+
+FAO-33 **Ky** yield response factors added to every crop, with confidence tags -
+`low` where no FAO-33 entry exists and an analogue was used. The validator now
+enforces that a crop with a marketable yield must have a Ky and one without must
+not.
+
+### Groundwater deferred, with a specific reason
+The USGS legacy `gwlevels` endpoint is retired (403 with and without an API key),
+and the replacement OGC API serves no historical groundwater levels for this county
+- those are discrete annual field measurements, not daily values, and that
+collection is not yet exposed. The authoritative alternative is the Kansas
+Geological Survey WIZARD database, outside the challenge resource list. GRACE
+remains available via PO.DAAC once Earthdata credentials work.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer

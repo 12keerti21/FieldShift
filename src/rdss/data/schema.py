@@ -110,6 +110,29 @@ class RotationInfo:
 
 
 @dataclass(frozen=True)
+class YieldResponse:
+    """FAO-33 Ky: how hard yield falls when water use falls short.
+
+    `value` is None where the crop has no marketable yield, which is a meaningful
+    state rather than missing data - a green manure's benefit is never a yield.
+    """
+
+    value: float | None
+    confidence: str
+    source: str
+
+    @property
+    def is_known(self) -> bool:
+        return self.value is not None
+
+    def relative_yield_loss(self, et_deficit_fraction: float) -> float | None:
+        """Fraction of attainable yield lost, from the relative ET deficit."""
+        if self.value is None:
+            return None
+        return min(max(self.value * et_deficit_fraction, 0.0), 1.0)
+
+
+@dataclass(frozen=True)
 class Economics:
     yield_t_ha: tuple[float, float, float]
     price_local_required: bool
@@ -145,6 +168,7 @@ class Crop:
     traits: Traits
     rotation: RotationInfo
     economics: Economics
+    ky: YieldResponse
     meta: Meta
 
     @property

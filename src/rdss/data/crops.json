@@ -19,7 +19,8 @@
     "residue.cn_ratio": "carbon:nitrogen ratio of the residue",
     "residue.root_shoot_ratio": "below-ground DM / above-ground DM",
     "economics.yield_t_ha": "tonnes marketable product per hectare [low, typical, high]",
-    "kcb": "dimensionless FAO-56 BASAL crop coefficient (Table 17); transpiration only. This is what the dual-coefficient water balance uses - Ke supplies soil evaporation on top of it."
+    "kcb": "dimensionless FAO-56 BASAL crop coefficient (Table 17); transpiration only. This is what the dual-coefficient water balance uses - Ke supplies soil evaporation on top of it.",
+    "ky": "FAO-33 yield response factor, dimensionless: (1 - Ya/Ym) = Ky x (1 - ETa/ETm). Ky > 1 means yield falls faster than water use; Ky < 1 means the crop tolerates deficit. null where the crop has no marketable yield."
   },
   "provenance": [
     "FAO Irrigation and Drainage Paper 56 (Allen et al., 1998) Tables 11, 12, 17, 22 - Kc values, stage lengths, rooting depth, depletion fraction, crop height",
@@ -28,7 +29,8 @@
     "Coleman & Jenkinson, RothC-26.3 documentation - DPM/RPM ratio by vegetation type",
     "Peoples et al. (2009), Herridge et al. (2008) - biological N fixation ranges and %Ndfa",
     "ICAR / ICRISAT crop production guides - millets, pigeonpea, green manures (Indian subcontinent values)",
-    "IPCC 2019 Refinement Vol 4 Ch 11 Table 11.1a - residue and root:shoot ratios"
+    "IPCC 2019 Refinement Vol 4 Ch 11 Table 11.1a - residue and root:shoot ratios",
+    "FAO Irrigation and Drainage Paper 33 (Doorenbos & Kassam, 1979) - yield response factors Ky"
   ],
   "known_gaps": [
     "Sowing windows are deliberately ABSENT: they are region-specific and belong in a region config, not here. 'typical_seasons' is only a coarse tag.",
@@ -36,7 +38,9 @@
     "FAO-56 stage lengths vary by climate and cultivar. Values here are mid-range; a short-duration local cultivar can differ by 30+ days.",
     "GDD-to-maturity depends strongly on cultivar. Treat as a screening threshold, not a yield predictor.",
     "Millet, green manure and forage parameters rest on fewer published sources than the FAO-56 crops - confidence is lower accordingly.",
-    "kc (single) and kcb (basal) are distinct and must not be interchanged: kc already contains soil evaporation. An earlier revision used kc as kcb in the dual model and overestimated seasonal ET by roughly the soil-evaporation term."
+    "kc (single) and kcb (basal) are distinct and must not be interchanged: kc already contains soil evaporation. An earlier revision used kc as kcb in the dual model and overestimated seasonal ET by roughly the soil-evaporation term.",
+    "Ky is a whole-season factor and so cannot represent the fact that water stress at flowering costs far more yield than the same stress during vegetative growth. Stage-specific Ky exists in FAO-33 for some crops and is not used here; a rotation judged on seasonal totals alone will understate the value of avoiding stress at a critical stage.",
+    "The crop set was originally India-leaning. Winter wheat and five US cover crops were added for the Tier 1 site; the original 'wheat' entry is SPRING wheat at 140 days and must not be used for an overwintering crop."
   ],
   "crops": [
     {
@@ -133,6 +137,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.25
+      },
+      "ky": {
+        "value": 1.05,
+        "confidence": "high",
+        "source": "FAO-33, winter and spring wheat"
       }
     },
     {
@@ -230,6 +239,11 @@
         "ini": 1.0,
         "mid": 1.15,
         "end": 0.7
+      },
+      "ky": {
+        "value": 1.0,
+        "confidence": "medium",
+        "source": "FAO-33 lists paddy rice at ~1.0"
       }
     },
     {
@@ -326,6 +340,11 @@
         "ini": 0.15,
         "mid": 1.15,
         "end": 0.15
+      },
+      "ky": {
+        "value": 1.25,
+        "confidence": "high",
+        "source": "FAO-33; the most water-sensitive crop here"
       }
     },
     {
@@ -423,6 +442,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.35
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -520,6 +544,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.2
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; sorghum used as analogue"
       }
     },
     {
@@ -617,6 +646,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.25
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; sorghum used as analogue"
       }
     },
     {
@@ -713,6 +747,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.2
+      },
+      "ky": {
+        "value": 1.0,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -810,6 +849,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.25
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
       }
     },
     {
@@ -908,6 +952,11 @@
         "ini": 0.15,
         "mid": 1.0,
         "end": 0.45
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
       }
     },
     {
@@ -1006,6 +1055,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.3
+      },
+      "ky": {
+        "value": 0.85,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -1104,6 +1158,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.5
+      },
+      "ky": {
+        "value": 0.7,
+        "confidence": "high",
+        "source": "FAO-33; unusually tolerant of deficit"
       }
     },
     {
@@ -1201,6 +1260,11 @@
         "ini": 0.15,
         "mid": 1.0,
         "end": 0.25
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
       }
     },
     {
@@ -1297,6 +1361,11 @@
         "ini": 0.15,
         "mid": 1.05,
         "end": 0.2
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
       }
     },
     {
@@ -1395,6 +1464,11 @@
         "ini": 0.15,
         "mid": 1.0,
         "end": 0.5
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
       }
     },
     {
@@ -1491,6 +1565,11 @@
         "ini": 0.15,
         "mid": 1.05,
         "end": 0.25
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "FAO-33 lists rapeseed near 0.9"
       }
     },
     {
@@ -1588,6 +1667,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.25
+      },
+      "ky": {
+        "value": 0.95,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -1684,6 +1768,11 @@
         "ini": 0.15,
         "mid": 1.0,
         "end": 0.2
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry"
       }
     },
     {
@@ -1780,6 +1869,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.5
+      },
+      "ky": {
+        "value": 0.85,
+        "confidence": "high",
+        "source": "FAO-33, seed cotton"
       }
     },
     {
@@ -1876,6 +1970,11 @@
         "ini": 0.15,
         "mid": 1.1,
         "end": 0.65
+      },
+      "ky": {
+        "value": 1.1,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -1973,6 +2072,11 @@
         "ini": 0.15,
         "mid": 1.2,
         "end": 0.7
+      },
+      "ky": {
+        "value": 1.2,
+        "confidence": "high",
+        "source": "FAO-33"
       }
     },
     {
@@ -2071,6 +2175,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.85
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "green manure: no marketable yield"
       }
     },
     {
@@ -2169,6 +2278,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.85
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "green manure: no marketable yield"
       }
     },
     {
@@ -2266,6 +2380,11 @@
         "ini": 0.15,
         "mid": 0.95,
         "end": 0.9
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
       }
     },
     {
@@ -2363,6 +2482,11 @@
         "ini": 0.15,
         "mid": 1.0,
         "end": 0.9
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
       }
     },
     {
@@ -2459,6 +2583,11 @@
         "ini": 0.3,
         "mid": 1.0,
         "end": 0.95
+      },
+      "ky": {
+        "value": 1.1,
+        "confidence": "medium",
+        "source": "FAO-33 alfalfa/forage analogue"
       }
     },
     {
@@ -2556,6 +2685,11 @@
         "ini": 0.3,
         "mid": 1.15,
         "end": 1.1
+      },
+      "ky": {
+        "value": 1.1,
+        "confidence": "high",
+        "source": "FAO-33, hay"
       }
     },
     {
@@ -2651,6 +2785,629 @@
         "ini": 0.0,
         "mid": 0.0,
         "end": 0.0
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "no crop"
+      }
+    },
+    {
+      "id": "wheat_winter",
+      "name": "Winter wheat",
+      "family": "Poaceae",
+      "group": "cereal",
+      "duration_days": 285,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "overwintering"
+      ],
+      "kc": {
+        "ini": 0.4,
+        "mid": 1.15,
+        "end": 0.25
+      },
+      "stages_days": {
+        "ini": 150,
+        "dev": 60,
+        "mid": 45,
+        "late": 30
+      },
+      "root": {
+        "initial_depth_m": 0.15,
+        "max_depth_m": 1.8,
+        "p_depletion": 0.55,
+        "height_m": 1.0
+      },
+      "thermal": {
+        "t_base_c": 0,
+        "t_opt_min_c": 12,
+        "t_opt_max_c": 24,
+        "t_max_c": 35,
+        "gdd_maturity_c_days": 2400,
+        "frost_sensitive": false,
+        "t_frost_damage_c": -15
+      },
+      "water": {
+        "seasonal_req_mm": [
+          450,
+          650
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": false,
+        "bnf_kg_n_ha": [
+          0,
+          0
+        ],
+        "ndfa_fraction": 0.0,
+        "n_uptake_kg_per_t_product": 26
+      },
+      "residue": {
+        "product_to_residue_ratio": 1.5,
+        "cn_ratio": 90,
+        "root_shoot_ratio": 0.25,
+        "decomposition": "slow",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 2,
+        "waterlogging_tolerance": 1,
+        "salinity_tolerance_ec_ds_m": 6.0,
+        "max_canopy_cover_frac": 0.9,
+        "deep_rooted": false,
+        "cover_crop": false,
+        "biofumigant": false,
+        "allelopathic": false,
+        "nematode_suppressive": false,
+        "forage_value": 2
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "Overwinters, so it holds the soil through the season when a spring crop would leave it bare. In the US High Plains it is usually grown in a wheat-fallow or wheat-sorghum-fallow sequence to bank soil water across a fallow year, and the yield advantage of that fallow is directly observable in USDA county statistics."
+      },
+      "economics": {
+        "yield_t_ha": [
+          1.5,
+          2.6,
+          4.5
+        ],
+        "price_local_required": true
+      },
+      "meta": {
+        "confidence": "high",
+        "sources": [
+          "FAO-56 T11/T12/T17/T22",
+          "FAO-33",
+          "USDA NASS county statistics"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 1.1,
+        "end": 0.25
+      },
+      "ky": {
+        "value": 1.05,
+        "confidence": "high",
+        "source": "FAO-33, winter wheat"
+      }
+    },
+    {
+      "id": "hairy_vetch",
+      "name": "Hairy vetch (cover crop)",
+      "family": "Fabaceae",
+      "group": "green_manure",
+      "duration_days": 200,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "short_window"
+      ],
+      "kc": {
+        "ini": 0.4,
+        "mid": 1.05,
+        "end": 0.95
+      },
+      "stages_days": {
+        "ini": 60,
+        "dev": 50,
+        "mid": 70,
+        "late": 20
+      },
+      "root": {
+        "initial_depth_m": 0.1,
+        "max_depth_m": 1.0,
+        "p_depletion": 0.5,
+        "height_m": 0.4
+      },
+      "thermal": {
+        "t_base_c": 0,
+        "t_opt_min_c": 10,
+        "t_opt_max_c": 22,
+        "t_max_c": 32,
+        "gdd_maturity_c_days": 1100,
+        "frost_sensitive": false,
+        "t_frost_damage_c": -18
+      },
+      "water": {
+        "seasonal_req_mm": [
+          200,
+          350
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": true,
+        "bnf_kg_n_ha": [
+          60,
+          140
+        ],
+        "ndfa_fraction": 0.8,
+        "n_uptake_kg_per_t_product": 0
+      },
+      "residue": {
+        "product_to_residue_ratio": 0.0,
+        "cn_ratio": 15,
+        "root_shoot_ratio": 0.25,
+        "decomposition": "fast",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 2,
+        "waterlogging_tolerance": 2,
+        "salinity_tolerance_ec_ds_m": 2.0,
+        "max_canopy_cover_frac": 0.9,
+        "deep_rooted": false,
+        "cover_crop": true,
+        "biofumigant": false,
+        "allelopathic": false,
+        "nematode_suppressive": false,
+        "forage_value": 4
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "The strongest overwintering legume cover for the US: fixes heavily and dies back cleanly. Its low C:N releases nitrogen fast, which suits a following cereal but means it builds less stable carbon than a grass cover."
+      },
+      "economics": {
+        "yield_t_ha": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_local_required": false
+      },
+      "meta": {
+        "confidence": "medium",
+        "sources": [
+          "USDA-NRCS cover crop literature",
+          "SARE Managing Cover Crops Profitably",
+          "FAO-56 T17"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 1.0,
+        "end": 0.9
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
+      }
+    },
+    {
+      "id": "crimson_clover",
+      "name": "Crimson clover (cover crop)",
+      "family": "Fabaceae",
+      "group": "green_manure",
+      "duration_days": 170,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "short_window"
+      ],
+      "kc": {
+        "ini": 0.4,
+        "mid": 1.0,
+        "end": 0.95
+      },
+      "stages_days": {
+        "ini": 45,
+        "dev": 45,
+        "mid": 60,
+        "late": 20
+      },
+      "root": {
+        "initial_depth_m": 0.1,
+        "max_depth_m": 0.8,
+        "p_depletion": 0.5,
+        "height_m": 0.4
+      },
+      "thermal": {
+        "t_base_c": 0,
+        "t_opt_min_c": 12,
+        "t_opt_max_c": 24,
+        "t_max_c": 32,
+        "gdd_maturity_c_days": 1000,
+        "frost_sensitive": false,
+        "t_frost_damage_c": -12
+      },
+      "water": {
+        "seasonal_req_mm": [
+          200,
+          320
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": true,
+        "bnf_kg_n_ha": [
+          50,
+          120
+        ],
+        "ndfa_fraction": 0.75,
+        "n_uptake_kg_per_t_product": 0
+      },
+      "residue": {
+        "product_to_residue_ratio": 0.0,
+        "cn_ratio": 18,
+        "root_shoot_ratio": 0.22,
+        "decomposition": "fast",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 2,
+        "waterlogging_tolerance": 2,
+        "salinity_tolerance_ec_ds_m": 2.0,
+        "max_canopy_cover_frac": 0.9,
+        "deep_rooted": false,
+        "cover_crop": true,
+        "biofumigant": false,
+        "allelopathic": false,
+        "nematode_suppressive": false,
+        "forage_value": 4
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "Less cold-hardy than hairy vetch but establishes faster and is easier to terminate."
+      },
+      "economics": {
+        "yield_t_ha": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_local_required": false
+      },
+      "meta": {
+        "confidence": "medium",
+        "sources": [
+          "USDA-NRCS cover crop literature",
+          "SARE Managing Cover Crops Profitably",
+          "FAO-56 T17"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 0.95,
+        "end": 0.9
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
+      }
+    },
+    {
+      "id": "oats_cover",
+      "name": "Oats (cover crop)",
+      "family": "Poaceae",
+      "group": "cover_crop",
+      "duration_days": 75,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "short_window"
+      ],
+      "kc": {
+        "ini": 0.3,
+        "mid": 1.05,
+        "end": 0.95
+      },
+      "stages_days": {
+        "ini": 12,
+        "dev": 18,
+        "mid": 35,
+        "late": 10
+      },
+      "root": {
+        "initial_depth_m": 0.1,
+        "max_depth_m": 1.0,
+        "p_depletion": 0.55,
+        "height_m": 0.8
+      },
+      "thermal": {
+        "t_base_c": 2,
+        "t_opt_min_c": 12,
+        "t_opt_max_c": 22,
+        "t_max_c": 30,
+        "gdd_maturity_c_days": 800,
+        "frost_sensitive": true,
+        "t_frost_damage_c": -8
+      },
+      "water": {
+        "seasonal_req_mm": [
+          150,
+          280
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": false,
+        "bnf_kg_n_ha": [
+          0,
+          0
+        ],
+        "ndfa_fraction": 0.0,
+        "n_uptake_kg_per_t_product": 0
+      },
+      "residue": {
+        "product_to_residue_ratio": 0.0,
+        "cn_ratio": 40,
+        "root_shoot_ratio": 0.3,
+        "decomposition": "medium",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 1,
+        "waterlogging_tolerance": 2,
+        "salinity_tolerance_ec_ds_m": 4.0,
+        "max_canopy_cover_frac": 0.9,
+        "deep_rooted": false,
+        "cover_crop": true,
+        "biofumigant": false,
+        "allelopathic": false,
+        "nematode_suppressive": false,
+        "forage_value": 4
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "Winter-killed in the High Plains, which is often the point: it covers the autumn erosion window then dies, leaving a mulch and no termination cost and no spring water use."
+      },
+      "economics": {
+        "yield_t_ha": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_local_required": false
+      },
+      "meta": {
+        "confidence": "medium",
+        "sources": [
+          "USDA-NRCS cover crop literature",
+          "SARE Managing Cover Crops Profitably",
+          "FAO-56 T17"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 1.0,
+        "end": 0.9
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
+      }
+    },
+    {
+      "id": "field_pea",
+      "name": "Field pea",
+      "family": "Fabaceae",
+      "group": "grain_legume",
+      "duration_days": 100,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "short_window"
+      ],
+      "kc": {
+        "ini": 0.4,
+        "mid": 1.15,
+        "end": 0.3
+      },
+      "stages_days": {
+        "ini": 20,
+        "dev": 25,
+        "mid": 35,
+        "late": 20
+      },
+      "root": {
+        "initial_depth_m": 0.15,
+        "max_depth_m": 1.0,
+        "p_depletion": 0.45,
+        "height_m": 0.5
+      },
+      "thermal": {
+        "t_base_c": 0,
+        "t_opt_min_c": 13,
+        "t_opt_max_c": 22,
+        "t_max_c": 30,
+        "gdd_maturity_c_days": 1300,
+        "frost_sensitive": false,
+        "t_frost_damage_c": -4
+      },
+      "water": {
+        "seasonal_req_mm": [
+          300,
+          450
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": true,
+        "bnf_kg_n_ha": [
+          50,
+          120
+        ],
+        "ndfa_fraction": 0.7,
+        "n_uptake_kg_per_t_product": 55
+      },
+      "residue": {
+        "product_to_residue_ratio": 1.3,
+        "cn_ratio": 28,
+        "root_shoot_ratio": 0.18,
+        "decomposition": "fast",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 1,
+        "waterlogging_tolerance": 1,
+        "salinity_tolerance_ec_ds_m": 1.6,
+        "max_canopy_cover_frac": 0.8,
+        "deep_rooted": false,
+        "cover_crop": false,
+        "biofumigant": false,
+        "allelopathic": false,
+        "nematode_suppressive": false,
+        "forage_value": 3
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "A marketable pulse that can replace summer fallow in a wheat rotation, so the N benefit comes without giving up a harvest. The trade-off is the stored water a fallow would have banked."
+      },
+      "economics": {
+        "yield_t_ha": [
+          0.8,
+          1.8,
+          3.0
+        ],
+        "price_local_required": true
+      },
+      "meta": {
+        "confidence": "medium",
+        "sources": [
+          "USDA-NRCS cover crop literature",
+          "SARE Managing Cover Crops Profitably",
+          "FAO-56 T17"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 1.1,
+        "end": 0.25
+      },
+      "ky": {
+        "value": 0.9,
+        "confidence": "low",
+        "source": "no FAO-33 entry; pulse analogue"
+      }
+    },
+    {
+      "id": "forage_radish",
+      "name": "Forage radish (cover crop)",
+      "family": "Brassicaceae",
+      "group": "cover_crop",
+      "duration_days": 70,
+      "multi_year": false,
+      "typical_seasons": [
+        "cool_season",
+        "short_window"
+      ],
+      "kc": {
+        "ini": 0.35,
+        "mid": 1.0,
+        "end": 0.9
+      },
+      "stages_days": {
+        "ini": 12,
+        "dev": 18,
+        "mid": 30,
+        "late": 10
+      },
+      "root": {
+        "initial_depth_m": 0.1,
+        "max_depth_m": 1.5,
+        "p_depletion": 0.5,
+        "height_m": 0.3
+      },
+      "thermal": {
+        "t_base_c": 2,
+        "t_opt_min_c": 12,
+        "t_opt_max_c": 24,
+        "t_max_c": 32,
+        "gdd_maturity_c_days": 750,
+        "frost_sensitive": true,
+        "t_frost_damage_c": -6
+      },
+      "water": {
+        "seasonal_req_mm": [
+          150,
+          280
+        ]
+      },
+      "nitrogen": {
+        "is_fixer": false,
+        "bnf_kg_n_ha": [
+          0,
+          0
+        ],
+        "ndfa_fraction": 0.0,
+        "n_uptake_kg_per_t_product": 0
+      },
+      "residue": {
+        "product_to_residue_ratio": 0.0,
+        "cn_ratio": 20,
+        "root_shoot_ratio": 0.35,
+        "decomposition": "fast",
+        "dpm_rpm_ratio": 1.44
+      },
+      "traits": {
+        "drought_tolerance": 2,
+        "heat_tolerance": 2,
+        "waterlogging_tolerance": 2,
+        "salinity_tolerance_ec_ds_m": 4.0,
+        "max_canopy_cover_frac": 0.85,
+        "deep_rooted": true,
+        "cover_crop": true,
+        "biofumigant": true,
+        "allelopathic": false,
+        "nematode_suppressive": true,
+        "forage_value": 3
+      },
+      "rotation": {
+        "min_return_interval_agronomic_years": 1,
+        "notes": "A taproot that punches through compacted layers and leaves open channels when it decays, plus genuine biofumigation. Being a brassica it is governed by the clubroot return interval, so it cannot be used freely in a canola or mustard rotation."
+      },
+      "economics": {
+        "yield_t_ha": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_local_required": false
+      },
+      "meta": {
+        "confidence": "medium",
+        "sources": [
+          "USDA-NRCS cover crop literature",
+          "SARE Managing Cover Crops Profitably",
+          "FAO-56 T17"
+        ]
+      },
+      "kcb": {
+        "ini": 0.15,
+        "mid": 0.95,
+        "end": 0.85
+      },
+      "ky": {
+        "value": null,
+        "confidence": "high",
+        "source": "cover crop: no marketable yield"
       }
     }
   ]

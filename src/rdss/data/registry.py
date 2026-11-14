@@ -30,6 +30,7 @@ from .schema import (
     Traits,
     Violation,
     Water,
+    YieldResponse,
 )
 
 VALID_DPM_RPM = {1.44, 0.67, 0.25}  # RothC: arable/improved grass/woodland
@@ -74,6 +75,11 @@ def _crop(d: dict) -> Crop:
         economics=Economics(
             yield_t_ha=tuple(d["economics"]["yield_t_ha"]),
             price_local_required=bool(d["economics"]["price_local_required"]),
+        ),
+        ky=YieldResponse(
+            value=d["ky"]["value"],
+            confidence=d["ky"]["confidence"],
+            source=d["ky"]["source"],
         ),
         meta=Meta(confidence=d["meta"]["confidence"], sources=tuple(d["meta"]["sources"])),
     )
@@ -426,6 +432,16 @@ def _validate(reg: Registry) -> None:
         ):
             if not 0 <= v <= 5:
                 errs.append(f"{tag}: {label} tolerance {v} outside 0-5")
+        if c.ky.confidence not in VALID_CONFIDENCE:
+            errs.append(f"{tag}: ky confidence {c.ky.confidence!r} invalid")
+        if c.ky.value is not None and not 0.2 <= c.ky.value <= 2.0:
+            errs.append(f"{tag}: ky {c.ky.value} outside the plausible 0.2-2.0 range")
+        # A crop with a marketable yield needs a Ky, and one without must not have one.
+        has_yield = c.economics.yield_typical > 0
+        if has_yield and not c.ky.is_known:
+            errs.append(f"{tag}: has a marketable yield but no ky")
+        if not has_yield and c.ky.is_known:
+            errs.append(f"{tag}: has no marketable yield but declares ky {c.ky.value}")
         if c.meta.confidence not in VALID_CONFIDENCE:
             errs.append(f"{tag}: confidence {c.meta.confidence!r} invalid")
         if not c.meta.sources:
