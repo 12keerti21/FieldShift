@@ -472,8 +472,13 @@ def _validate(reg: Registry) -> None:
                 f"{tag}: water contents out of order "
                 f"(wp={s.theta_wp} fc={s.theta_fc} sat={s.theta_sat})"
             )
-        if not 40.0 <= s.taw_mm_per_m <= 220.0:
-            errs.append(f"{tag}: TAW {s.taw_mm_per_m:.0f} mm/m outside plausible range")
+        derived_taw = 1000.0 * (s.theta_fc - s.theta_wp)
+        if not 40.0 <= derived_taw <= 220.0:
+            errs.append(f"{tag}: TAW {derived_taw:.0f} mm/m outside plausible range")
+        if s.measured_awc_mm_per_m is not None and not 20.0 <= s.measured_awc_mm_per_m <= 350.0:
+            errs.append(
+                f"{tag}: measured AWC {s.measured_awc_mm_per_m:.0f} mm/m implausible"
+            )
         if not 2.0 <= s.rew_mm <= 12.0:
             errs.append(f"{tag}: REW {s.rew_mm} outside FAO-56 Table 19 range")
         if s.ksat_mm_h <= 0:

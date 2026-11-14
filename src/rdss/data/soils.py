@@ -29,13 +29,34 @@ class SoilTexture:
     notes: str
     confidence: str
     measured_fractions: bool = False
+    measured_awc_mm_per_m: float | None = None
+    organic_carbon_pct: float | None = None
+    source: str = "USDA texture class centroid"
 
     # ---- derived water properties (FAO-56 chapter 8) ----
 
     @property
     def taw_mm_per_m(self) -> float:
-        """Total available water: the store a crop can draw on, mm per metre of root."""
+        """Total available water: the store a crop can draw on, mm per metre of root.
+
+        A measured value always wins over one derived from texture. This is not a
+        marginal preference: at the Finney County pilot point SSURGO reports
+        212 mm/m against the silt-loam centroid's 140 mm/m, so using the centroid
+        understated root-zone storage by 52 percent and inflated both modelled
+        water stress and irrigation demand.
+        """
+        if self.measured_awc_mm_per_m is not None:
+            return self.measured_awc_mm_per_m
         return 1000.0 * (self.theta_fc - self.theta_wp)
+
+    @property
+    def taw_is_measured(self) -> bool:
+        """Whether available water came from a survey or from a class centroid.
+
+        Read by the evidence card: a farmer being shown an irrigation figure should
+        be able to see whether the soil behind it was measured on their field.
+        """
+        return self.measured_awc_mm_per_m is not None
 
     def taw_mm(self, root_depth_m: float) -> float:
         return self.taw_mm_per_m * root_depth_m

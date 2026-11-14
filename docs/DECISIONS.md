@@ -243,6 +243,43 @@ finding, and for one run it was reported as exactly that.
   back with 30 years and no error - silently truncated. The adapter chunks by
   decade and de-duplicates.
 
+## 2026-11-14 - SSURGO wired in; measured soil overrides centroids
+
+`rdss/io/ssurgo.py` fetches the dominant soil component at a point from USDA Soil
+Data Access (SQL over REST, no credentials) and builds a `SoilTexture` backed by
+measurements.
+
+- **A measured AWC always beats one derived from texture.** `SoilTexture.taw_mm_per_m`
+  returns `measured_awc_mm_per_m` when present. At the pilot point that is
+  212 mm/m against the silt-loam centroid's 140 - the centroid understated
+  root-zone storage by 52 percent (318 mm vs 210 mm over a 1.5 m maize root zone).
+- **Two different depths, deliberately.** Available water is weighted over the root
+  zone (150 cm); the texture CLASS comes from the FAO-56 surface evaporation layer
+  (Ze = 15 cm), because that is the layer the class actually parameterises - TEW,
+  REW and surface drying. The distinction is not cosmetic here: the top 16 cm is a
+  silt loam, but anything weighted past ~20 cm becomes a silty clay loam because the
+  next horizon reaches 39 percent clay. A test demonstrates the sensitivity.
+- **SSURGO's hydrologic group is taken as authoritative** over the centroid's, since
+  NRCS assigns it from the limiting layer and measured infiltration rather than from
+  texture. Here SSURGO says group B where the profile-weighted centroid would have
+  said D - a material difference in runoff.
+- **Organic matter is converted to carbon explicitly** (/1.724, van Bemmelen), not
+  folded in silently, because that factor is itself an approximation. This is what
+  initialises the RothC pools instead of a guess.
+- `taw_is_measured` is exposed so an evidence card can tell a farmer whether the
+  soil behind an irrigation figure was measured on their field.
+
+Measured effect at Finney County, maize over 40 seasons: dryland deficit 0.56 ->
+0.50 and stress days 127 -> 121 (more real storage to draw on); irrigated gross
+demand 693 -> 661 mm. The irrigated change is modest because seasonal ET is set by
+atmospheric demand, not by storage - extra storage buys fewer, larger applications
+rather than much less total water.
+
+**Still outstanding:** the irrigated-corn reference figure (470-590 mm) is recalled,
+not sourced, and must not be calibrated against further. We now hold a working
+OpenET key, which gives field-scale actual ET for the western US - that is the
+proper, citable reference and the next validation to run.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer
