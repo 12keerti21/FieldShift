@@ -723,6 +723,47 @@ mean skill by site is Finney 0.51, Sedgwick 0.46, Holt 0.44, Hale 0.34, and the
 driest site has the lowest skill, which is the opposite of that hypothesis. So no
 explanation is offered.
 
+## 2026-11-14 - Sensitivity sweep, and OpenET unavailable
+
+### The headline claim is robust
+One-at-a-time sweep over the most leveraged parameters, each moved to the edge of
+its plausible range, re-simulating the key rotations. **The claim holds under 18 of
+18 perturbations** - continuous wheat beats wheat-fallow on production, carbon and
+bare ground simultaneously in every case. No single parameter can flip it.
+
+Most leveraged, by how far they move the fallow advantage: wheat Ky (5.5 points),
+attainable yield (2.9), depletion fraction (2.0), straw C:N (1.4). That is the list
+to put in front of an agronomist first.
+
+Notably, soil available water at plus or minus 20 percent barely moves the answer
+(+18.3 against +17.5 percent) even though the SSURGO correction changed absolute
+values by half - because it changes both rotations in the same direction.
+
+### A diagnostic that came out of it
+The modelled fallow advantage ranges **+14.7 to +23.5 percent** across every
+perturbation and never reaches the observed +10.8. The bias is one-directional and
+parameter uncertainty cannot account for it, which **rules out parameter error** and
+confirms the structural cause already suspected: a modelled summer fallow is
+perfectly bare, while a real one loses water to weeds and imperfect control.
+
+This is why the gap was never closed by tuning. Adding a weed water-use term with a
+cover fraction chosen to make the number match would be fitting, and the sweep now
+shows there is nothing to fit - the residual is structural.
+
+Limitation stated: one-at-a-time cannot find interactions. What it gives is a
+ranking of what the answer depends on.
+
+### OpenET is unavailable
+The intended fix for the open crop-ET validation gap. The account authenticates
+(Tier 1, 100 requests/month, 0 used) but every timeseries request returns HTTP 408
+with a server-side Google Earth Engine credential error: "The credentials do not
+contain the necessary fields need to refresh the access token." Reproduced across
+the Ensemble, SSEBop and eeMETRIC models and both the point and polygon endpoints.
+
+This is an OpenET service fault, not an authentication problem here. The crop-ET
+validation gap therefore stays open, and the recalled Kansas figure stays withdrawn
+rather than being quietly reinstated. Retry if the service recovers.
+
 ## Open decisions
 - [x] Target region(s) — decided 2026-11-14: US (Ogallala) primary, one Indian district secondary
 - [ ] Team composition / who owns which layer

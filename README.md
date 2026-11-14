@@ -186,6 +186,29 @@ weather.
 Dryland corn yield penalty, absolute magnitude across three sites: mean absolute
 error **6.0%** (observed 57-69%, predicted 45-67%).
 
+### And it is robust to parameter uncertainty
+
+There are roughly forty parameters per crop, many tagged medium or low confidence,
+so the headline claim is worth only as much as its robustness. Each of the most
+leveraged parameters was moved to the edge of its plausible range and the key
+rotations re-simulated:
+
+**The claim holds under 18 of 18 perturbations.** No single parameter can flip it.
+The most leveraged are wheat Ky (moves the fallow advantage 5.5 points), attainable
+yield (2.9), and depletion fraction (2.0) - which is the list an agronomist should
+check first.
+
+The sweep also produced a diagnostic. The modelled fallow advantage ranges
+**+14.7% to +23.5%** across every perturbation and never reaches the observed
++10.8%. So the over-prediction is **structural, not parametric** - parameter error
+is ruled out, which confirms the stated mechanism (a modelled fallow is perfectly
+bare; a real one loses water to weeds) rather than leaving it a guess. The right
+response is to name it, not to tune a weed parameter until the number matches.
+
+```bash
+PYTHONPATH=src ./.venv/bin/python scripts/sensitivity.py
+```
+
 | Our output | Independent reference | Result |
 |---|---|---|
 | FAO-56 Penman-Monteith ET0 | gridMET published 4 km grass ETo | **-3.2%** over 40 yr, daily r = 0.966, RMSE 0.70 mm/d |
