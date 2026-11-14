@@ -22,9 +22,12 @@ from ..data import load_registry
 from ..decide.evidence import NASADEM, build_card
 from ..decide.guardrails import Level, Verdict
 from ..report.fieldplan import render_field_plan
+from . import jobs
 from .bundle import SITES_BY_ID, available_sites, load_bundle
-from .regions import region
+from .jobs import suggest_region
+from .regions import REGIONS, RegionError, region
 from .schemas import (
+    AnalyseStarted,
     AnalyseRequest,
     RankRequest,
     RankResponse,
@@ -130,9 +133,18 @@ def rank(request: RankRequest) -> RankResponse:
     Cheap by design: the simulation is already done, so moving a priority slider
     re-ranks in milliseconds rather than re-running forty-one years of physics.
     """
+    return rank_bundle(_bundle(request.site_id), request)
+
+
+def rank_bundle(data: dict, request: RankRequest) -> RankResponse:
+    """Rank one already-simulated bundle.
+
+    Takes the bundle rather than a site id so an on-demand analysis, whose result
+    has the same shape but lives in memory rather than on disk, re-ranks through
+    exactly the same code.
+    """
     if request.priorities.total() <= 0:
         raise HTTPException(422, "at least one priority must be above zero")
-    data = _bundle(request.site_id)
     try:
         ranked = rank_site(
             request.site_id, request.priorities.as_weights(),
@@ -175,10 +187,13 @@ def rank(request: RankRequest) -> RankResponse:
 @app.get("/api/site/{site_id}/rotation/{index}/tradeoff", response_model=TradeOffResponse)
 def tradeoff(site_id: str, index: int) -> TradeOffResponse:
     """What switching from the current rotation to this one costs and gains."""
-    data = _bundle(site_id)
+    return _tradeoff_for(_bundle(site_id), site_id, index)
+
+
+def _tradeoff_for(data: dict, site_id: str, index: int) -> TradeOffResponse:
+    """Trade-off from a bundle, so on-demand results use the same comparison."""
     try:
-        ranked = rank_site(site_id, {k: 1.0 for k in data["objectives"] and
-                                     [o["key"] for o in data["objectives"]]},
+        ranked = rank_site(site_id, {o["key"]: 1.0 for o in data["objectives"]},
                            front_only=False, bundle=data)
         target = next(
             (i for i, r in enumerate(ranked.rows) if r["index"] == index), None
@@ -195,8 +210,16 @@ def tradeoff(site_id: str, index: int) -> TradeOffResponse:
 
 @app.get("/api/site/{site_id}/rotation/{index}/evidence")
 def evidence(site_id: str, index: int) -> dict:
-    """The full evidence card: datasets, equations, validation, unknowns."""
-    data = _bundle(site_id)
+    return _evidence_for(_bundle(site_id), index)
+
+
+def _evidence_for(data: dict, index: int, extra_unknowns=()) -> dict:
+    """The full evidence card: datasets, equations, validation, unknowns.
+
+    Takes the bundle rather than a site id so an on-demand result, which lives in
+    memory rather than on disk, produces its card through exactly the same path
+    as a precomputed site.
+    """
     row = next((r for r in data["rotations"] if r["index"] == index), None)
     if row is None:
         raise HTTPException(404, f"no rotation with index {index}")
@@ -252,7 +275,7 @@ def evidence(site_id: str, index: int) -> dict:
         sources=tuple(sources),
         model_keys=("et0", "water", "carbon", "nitrogen", "erosion", "rotation"),
         guardrails=tuple(_verdicts_from_screen(data["guardrails"])),
-        extra_unknowns=tuple(extra),
+        extra_unknowns=tuple(extra) + tuple(extra_unknowns),
     )
     return {"card": card.to_dict(), "rendered": card.render()}
 
@@ -297,46 +320,156 @@ def fieldplan(site_id: str, index: int) -> str:
     return render_field_plan(data, row, registry)
 
 
-@app.post("/api/analyse")
-def analyse(request: AnalyseRequest) -> dict:
-    """A point with no precomputed bundle.
+@app.get("/api/regions")
+def regions() -> dict:
+    """The cropping calendars available, and what each one can grow.
 
-    Honest about cost rather than blocking a request for a minute and timing out
-    somewhere unhelpful.
+    A caller has to pick one before an on-demand run, because a calendar is not
+    global: the same engine with the wrong sowing dates produces confident
+    nonsense. Every pattern is listed so the choice can be made on what is
+    actually grown rather than on a region name.
     """
-    nearest = min(
-        SITES_BY_ID.values(),
-        key=lambda s: (s.latitude - request.latitude) ** 2
-        + (s.longitude - request.longitude) ** 2,
-    )
-    distance_deg = (
-        (nearest.latitude - request.latitude) ** 2
-        + (nearest.longitude - request.longitude) ** 2
-    ) ** 0.5
     return {
-        "accepted": False,
-        "reason": (
-            "A full analysis fetches 41 years of weather, reads the soil survey, and "
-            "simulates about 80 candidate rotations through every year - roughly a "
-            "minute of computation. That is done ahead of time rather than inside a "
-            "request."
-        ),
-        "nearest_precomputed": {
-            "id": nearest.id,
-            "name": nearest.name,
-            "approx_degrees_away": round(distance_deg, 2),
-        },
-        "how_to_add_this_point": (
-            "Add a SiteSpec to fieldshift/api/bundle.py and run "
-            "PYTHONPATH=src python -m fieldshift.api.bundle <site_id>"
-        ),
-        "what_would_be_needed": [
-            "NASA POWER daily weather for the point, 1984-2024 (no credentials)",
-            "USDA SSURGO soil at the point (US only, no credentials)",
-            "a NASADEM tile for slope (Earthdata login)",
-            "USDA NASS county yields to validate against (free API key)",
+        "regions": [
+            {
+                "id": r.id,
+                "name": r.name,
+                "tier": r.tier,
+                "validated": r.is_validated,
+                "note": r.note,
+                "soil_source": r.soil_source,
+                "patterns": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "notes": p.notes,
+                        "crops": list(p.crop_ids),
+                        "irrigated": p.is_irrigated,
+                        "fallow": p.is_fallow_year,
+                    }
+                    for p in r.patterns
+                ],
+            }
+            for r in REGIONS
         ],
+        "note": (
+            "Sowing dates belong to the region, not to the point. Running a "
+            "calendar far from where it was written is a demonstration, not a "
+            "recommendation, and the result will say so."
+        ),
     }
+
+
+@app.post("/api/analyse", response_model=AnalyseStarted)
+def analyse(request: AnalyseRequest) -> AnalyseStarted:
+    """Start an on-demand analysis for any point on Earth.
+
+    Returns immediately with a job id. A fresh point costs roughly a minute of
+    weather download and a minute of simulation, which is too long to hold a
+    request open, so the client polls ``/api/analyse/{job_id}``.
+    """
+    region_id = request.region
+    suggested, km, confidence = suggest_region(request.latitude, request.longitude)
+    if region_id is None:
+        region_id = suggested
+    try:
+        job = jobs.start(
+            request.latitude, request.longitude, region_id,
+            existing_rotation=tuple(request.current_rotation),
+            field_hectares=request.field_hectares,
+            cycle_years=request.cycle_years,
+        )
+    except RegionError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    except jobs.JobError as exc:
+        raise HTTPException(429, str(exc)) from exc
+
+    where = (
+        f"Using the {region(region_id).name} calendar. "
+        f"The nearest field we have run is {km:,.0f} km away - {confidence}."
+    )
+    return AnalyseStarted(
+        job_id=job.id,
+        status=job.status,
+        message=where,
+        poll=f"/api/analyse/{job.id}",
+    )
+
+
+@app.get("/api/analyse/{job_id}")
+def analyse_status(job_id: str) -> dict:
+    """Progress, then the finished bundle.
+
+    The finished result has the same shape as a precomputed site bundle, so every
+    other endpoint and the whole interface can read it without a special case.
+    """
+    try:
+        return jobs.get(job_id).public()
+    except jobs.JobError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@app.post("/api/analyse/{job_id}/rank", response_model=RankResponse)
+def analyse_rank(job_id: str, request: RankRequest) -> RankResponse:
+    """Rank a finished on-demand analysis against stated priorities."""
+    job = _finished_job(job_id)
+    return rank_bundle(job.result, request)
+
+
+@app.get("/api/analyse/{job_id}/rotation/{index}/evidence")
+def analyse_evidence(job_id: str, index: int) -> dict:
+    """The evidence card for an on-demand result.
+
+    An on-demand run carries an extra source the precomputed sites do not: it was
+    produced for a point chosen by the user, possibly far from anywhere the
+    calendar was written for, and that has to appear on the card rather than in a
+    tooltip somebody closed.
+    """
+    job = _finished_job(job_id)
+    extra = [
+        "This field was analysed on demand. No one has checked its cropping "
+        "calendar, its sowing dates or its nitrogen rates against local practice.",
+    ]
+    return _evidence_for(job.result, index, extra_unknowns=extra)
+
+
+@app.get("/api/analyse/{job_id}/rotation/{index}/fieldplan",
+         response_class=HTMLResponse)
+def analyse_fieldplan(job_id: str, index: int) -> str:
+    """The printable plan for an on-demand result.
+
+    The paper artefact is the point of the whole tool, so it must not be a
+    privilege of the five precomputed fields.
+    """
+    job = _finished_job(job_id)
+    row = next((r for r in job.result["rotations"] if r["index"] == index), None)
+    if row is None:
+        raise HTTPException(404, f"no rotation with index {index}")
+    return render_field_plan(job.result, row, load_registry())
+
+
+@app.get("/api/analyse/{job_id}/rotation/{index}/tradeoff",
+         response_model=TradeOffResponse)
+def analyse_tradeoff(job_id: str, index: int) -> TradeOffResponse:
+    """What an on-demand option gives and takes against the current rotation."""
+    job = _finished_job(job_id)
+    return _tradeoff_for(job.result, job.result["site"]["id"], index)
+
+
+def _finished_job(job_id: str):
+    try:
+        job = jobs.get(job_id)
+    except jobs.JobError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    if job.status == "failed":
+        raise HTTPException(409, f"that analysis failed: {job.error}")
+    if job.status != "done":
+        raise HTTPException(
+            409,
+            f"that analysis is still {job.status} ({job.progress:.0%}). "
+            f"Poll /api/analyse/{job_id} until it reports done.",
+        )
+    return job
 
 
 # ---------------------------------------------------------------- the web app

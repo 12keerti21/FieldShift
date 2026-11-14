@@ -21,7 +21,7 @@ round.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Sequence
 
@@ -126,16 +126,28 @@ SITES: tuple[SiteSpec, ...] = (
 SITES_BY_ID = {s.id: s for s in SITES}
 
 
+def _key(spec: SiteSpec) -> str:
+    """Cache key for this field.
+
+    Named sites keep their state/county filenames so existing caches stay valid.
+    A live point has neither, so it keys on rounded coordinates - which also means
+    two people analysing the same field reuse one download instead of two.
+    """
+    if spec.state and spec.county:
+        return f"{spec.state}_{spec.county}".lower()
+    return f"pt_{spec.latitude:.3f}_{spec.longitude:.3f}".replace("-", "m")
+
+
 def _power_path(spec: SiteSpec) -> Path:
-    return RAW_DIR / f"power_{spec.state}_{spec.county}.json".lower()
+    return RAW_DIR / f"power_{_key(spec)}.json"
 
 
 def _ssurgo_path(spec: SiteSpec) -> Path:
-    return RAW_DIR / f"ssurgo_{spec.state}_{spec.county}.json".lower()
+    return RAW_DIR / f"ssurgo_{_key(spec)}.json"
 
 
 def _soilgrids_path(spec: SiteSpec) -> Path:
-    return RAW_DIR / f"soilgrids_{spec.state}_{spec.county}.json".lower()
+    return RAW_DIR / f"soilgrids_{_key(spec)}.json"
 
 
 def _load_soil(spec: SiteSpec, registry):
@@ -170,18 +182,49 @@ def _load_soil(spec: SiteSpec, registry):
     raise ValueError(f"unknown soil source {source!r}")
 
 
-def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 90) -> dict:
-    """Run the whole pipeline for one site and return a serialisable bundle."""
+def build_bundle(
+    spec: SiteSpec,
+    *,
+    cycle_years: int = 3,
+    max_candidates: int = 90,
+    on_stage=None,
+) -> dict:
+    """Run the whole pipeline for one site and return a serialisable bundle.
+
+    ``on_stage`` is called with a short stage name as the work moves between
+    fetching weather, fetching soil, simulating and scoring. It exists so an
+    on-demand analysis can report honest progress instead of a spinner: the stages
+    have very different costs and a user waiting a minute deserves to know which
+    one they are in.
+    """
     registry = load_registry()
 
+    def stage(name: str) -> None:
+        if on_stage is not None:
+            on_stage(name)
+
+    stage("weather")
     path = _power_path(spec)
     if path.exists():
-        weather, report = parse_power_daily(json.loads(path.read_text()), site=spec.site)
+        payload = json.loads(path.read_text())
+        weather, report = parse_power_daily(payload, site=spec.site)
     else:
         weather, report = load_power_daily(
             spec.site, "1984-01-01", "2024-12-31", cache_path=str(path)
         )
-    et0 = et0_penman_monteith(spec.site, weather)
+        payload = json.loads(path.read_text()) if path.exists() else {}
+
+    # POWER reports the elevation of the cell as the third coordinate, which is
+    # the only globally available elevation this pipeline needs. A live point has
+    # no hand-entered elevation, and guessing zero would bias ET0 through the
+    # atmospheric pressure term.
+    site = spec.site
+    coords = (payload.get("geometry") or {}).get("coordinates") or []
+    if len(coords) >= 3 and spec.elevation_m == 0.0:
+        site = replace(site, elevation_m=float(coords[2]))
+
+    et0 = et0_penman_monteith(site, weather)
+    stage("soil")
 
     soil, soil_meta = _load_soil(spec, registry)
     soc = soc_from_organic_carbon_pct(
@@ -215,6 +258,7 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
                 patterns, name="EXISTING: " + " - ".join(p.name for p in patterns)
             )
 
+    stage("simulate")
     result = search_rotations(
         patterns_all,
         registry=registry, soil=soil, weather=weather, et0_mm=et0.values_mm,
@@ -225,6 +269,7 @@ def build_bundle(spec: SiteSpec, *, cycle_years: int = 3, max_candidates: int = 
         extra_plans=[existing_plan] if existing_plan else (),
     )
 
+    stage("rank")
     years = np.unique(weather.year)[1:-1]
     rainfall = float(np.mean([weather.precip_mm[weather.year == y].sum() for y in years]))
 

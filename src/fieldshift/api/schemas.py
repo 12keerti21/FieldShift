@@ -116,11 +116,55 @@ class TradeOffResponse(BaseModel):
 class AnalyseRequest(BaseModel):
     """A live run for a point with no precomputed bundle.
 
-    Deliberately limited. A full search is about a minute of simulation, so this
-    endpoint reports what it would take rather than blocking a request for that
-    long and timing out somewhere unhelpful.
+    A fresh point costs roughly a minute of weather download and a minute of
+    simulation, so this starts a job and returns immediately rather than blocking
+    a request long enough to time out behind any normal proxy.
     """
 
     latitude: float = Field(..., ge=-90.0, le=90.0)
     longitude: float = Field(..., ge=-180.0, le=180.0)
-    field_hectares: float = Field(65.0, gt=0.0, le=10_000.0)
+    field_hectares: float = Field(10.0, gt=0.0, le=10_000.0)
+    region: str | None = Field(
+        None,
+        description=(
+            "Which region's cropping calendar to apply. Left out, the nearest "
+            "region is suggested - but a calendar is not global, and sowing winter "
+            "wheat in October is right in Kansas and wrong in Punjab."
+        ),
+    )
+    current_rotation: list[str] = Field(
+        default_factory=list,
+        description=(
+            "The year patterns the farmer grows now, in order. This is what every "
+            "alternative gets compared against, so without it the tool can rank "
+            "options but cannot tell anyone whether to change."
+        ),
+    )
+    cycle_years: int = Field(3, ge=1, le=4)
+
+    @field_validator("current_rotation")
+    @classmethod
+    def _not_too_long(cls, v: list[str]) -> list[str]:
+        if len(v) > 6:
+            raise ValueError("a current rotation of more than six years is not a cycle")
+        return v
+
+
+class AnalyseStarted(BaseModel):
+    job_id: str
+    status: str
+    message: str
+    poll: str
+    estimated_seconds: int = 120
+
+
+class RegionSummary(BaseModel):
+    """What a caller needs to pick a region before starting a run."""
+
+    id: str
+    name: str
+    tier: int
+    validated: bool
+    note: str
+    soil_source: str
+    patterns: list[dict]

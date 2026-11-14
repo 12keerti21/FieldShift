@@ -1,6 +1,6 @@
 # Resources — challenge list, assessed
 
-Received 2026-11-14. Assessed for what each dataset does for *this* architecture,
+Assessed for what each dataset does for *this* architecture,
 not just what it contains.
 
 ## The decisive finding: the list is two lists

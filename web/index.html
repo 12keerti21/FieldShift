@@ -302,6 +302,45 @@ pre{white-space:pre-wrap;font:11.5px/1.55 ui-monospace,SFMono-Regular,Menlo,mono
 .cmp .m b.best{color:var(--good)}
 .cmp .m b small{color:var(--faint);font-weight:400}
 
+/* ================================================================= analyse */
+.form{display:grid;gap:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px}
+.field .help{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.45}
+input[type=text],input[type=number],select{font:inherit;font-size:13px;width:100%;
+  padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-sm);
+  background:var(--panel);color:var(--ink)}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:2px solid var(--accent);
+  outline-offset:-1px;border-color:var(--accent)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#pickmap{height:300px;border-radius:var(--r);border:1px solid var(--line);
+  overflow:hidden;position:relative;z-index:1}
+.rotpick{display:flex;flex-wrap:wrap;gap:6px}
+.rotpick button{font-size:12.3px;padding:7px 11px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink-2);border-radius:999px;cursor:pointer}
+.rotpick button:hover{border-color:var(--accent);color:var(--accent)}
+.chosen{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;
+  min-height:32px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.3px;padding:6px 10px;
+  border-radius:999px;background:var(--sage);color:var(--brand);font-weight:550}
+.chip b{font-weight:700;opacity:.6}
+.chip button{background:none;border:0;color:inherit;cursor:pointer;font-size:14px;
+  line-height:1;padding:0;opacity:.6}
+.chip button:hover{opacity:1}
+.prog{height:8px;background:var(--line-2);border-radius:999px;overflow:hidden;
+  margin:10px 0 7px}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:999px;
+  transition:width .4s ease}
+.stages{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.stg{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+.stg .tick{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);
+  flex-shrink:0;display:grid;place-items:center;font-size:10px}
+.stg.done{color:var(--ink-2)}
+.stg.done .tick{background:var(--good);border-color:var(--good);color:#fff}
+.stg.now{color:var(--accent);font-weight:600}
+.stg.now .tick{border-color:var(--accent);border-top-color:transparent;
+  animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* ===================================================================== map */
 #map{height:min(56vh,540px);min-height:310px;border-radius:var(--r);
   border:1px solid var(--line);overflow:hidden;position:relative;z-index:1}
@@ -389,6 +428,7 @@ button.ghost:hover{border-color:var(--accent);color:var(--accent)}
 
 const KEYS = ["production","downside","irrigation","carbon","wind_exposure","bare_ground"];
 const SCREENS = [
+  {id:"analyse",    icon:"✛", name:"Analyse a field"},
   {id:"field",      icon:"◉", name:"Field"},
   {id:"rotations",  icon:"⌘", name:"Rotations"},
   {id:"compare",    icon:"⇄", name:"Compare"},
@@ -398,6 +438,27 @@ const SCREENS = [
 const state = {
   sites:[], siteId:null, bundle:null, rank:null, selected:null,
   screen:"field", weights:{}, goal:"balanced", validation:null,
+  // Where the currently displayed bundle came from. A precomputed site and an
+  // on-demand job produce identically shaped bundles, so every screen reads
+  // state.bundle and only the URLs differ.
+  source:{kind:"site", id:null},
+  regions:[], draft:{lat:null, lon:null, region:null, rotation:[], hectares:3},
+  job:null, poll:null,
+};
+
+// One place that knows which endpoints to hit for the current bundle.
+const api = {
+  rank:  () => state.source.kind === "job"
+    ? `/api/analyse/${state.source.id}/rank` : "/api/rank",
+  evidence: i => state.source.kind === "job"
+    ? `/api/analyse/${state.source.id}/rotation/${i}/evidence`
+    : `/api/site/${state.siteId}/rotation/${i}/evidence`,
+  tradeoff: i => state.source.kind === "job"
+    ? `/api/analyse/${state.source.id}/rotation/${i}/tradeoff`
+    : `/api/site/${state.siteId}/rotation/${i}/tradeoff`,
+  fieldplan: i => state.source.kind === "job"
+    ? `/api/analyse/${state.source.id}/rotation/${i}/fieldplan`
+    : `/api/site/${state.siteId}/rotation/${i}/fieldplan`,
 };
 
 const $ = s => document.querySelector(s);
@@ -497,11 +558,14 @@ function go(id){
 
 async function boot(){
   try{
-    const [sites, val] = await Promise.all([
+    const [sites, val, regs] = await Promise.all([
       get("/api/sites"), get("/api/validation").catch(()=>null),
+      get("/api/regions").catch(()=>({regions:[]})),
     ]);
     state.sites = sites.sites;
     state.validation = val;
+    state.regions = regs.regions || [];
+    if(state.regions.length) state.draft.region = state.regions[0].id;
     if(!state.sites.length) throw new Error("no bundles on disk");
     renderNav();
     await selectSite(state.sites[0].id);
@@ -514,15 +578,18 @@ async function boot(){
 
 async function selectSite(id){
   state.siteId = id; state.selected = null;
+  state.source = {kind:"site", id};
+  stopPolling();
   state.bundle = await get("/api/site/" + id);
   renderNav();
   await rerank();
 }
 
 async function rerank(){
-  state.rank = await get("/api/rank", {
+  state.rank = await get(api.rank(), {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({site_id:state.siteId, priorities:state.weights, limit:8}),
+    body: JSON.stringify({site_id:state.siteId || "live",
+                          priorities:state.weights, limit:8}),
   });
   render();
 }
@@ -548,15 +615,26 @@ function setWeight(k,v){
 
 /* ------------------------------------------------------------- render */
 function render(){
-  const b = state.bundle, s = b.site, reg = b.region || {tier:1, validated:true};
+  const b = state.bundle;
+  if(!b){
+    $("#bar-title").textContent = "Analyse a field";
+    $("#bar-sub").textContent = "";
+    $("#bar-pill").innerHTML = "";
+    $("#screens").innerHTML = `<div class="screen">${screenAnalyse()}</div>`;
+    mountPicker();
+    return;
+  }
+  const s = b.site, reg = b.region || {tier:1, validated:true};
   const sc = SCREENS.find(x=>x.id===state.screen);
   $("#bar-title").textContent = sc ? sc.name : "Field";
   $("#bar-sub").textContent = s.name;
   $("#bar-pill").innerHTML = `<span class="pill t${reg.tier}"><span class="dot"></span>
     Tier ${reg.tier} · ${reg.validated?"validated":"transferred"}</span>`;
-  const fn = {field:screenField, rotations:screenRotations, compare:screenCompare,
-              evidence:screenEvidence, validation:screenValidation}[state.screen];
+  const fn = {analyse:screenAnalyse, field:screenField, rotations:screenRotations,
+              compare:screenCompare, evidence:screenEvidence,
+              validation:screenValidation}[state.screen];
   $("#screens").innerHTML = `<div class="screen">${fn()}</div>`;
+  if(state.screen === "analyse") mountPicker();
   if(state.screen === "field") mountMap();
   if(state.screen === "rotations") mountScatter();
   if(state.screen === "evidence") loadEvidence();
@@ -571,6 +649,276 @@ function tierBanner(reg){
     only: a predicted soil instead of a survey, and no observed yield series to
     check against. Read what follows as a hypothesis to test locally, not as a
     prediction. The <b>Validation</b> screen says exactly what is missing.</div>`;
+}
+
+/* ------------------------------------------------------ 0. Analyse */
+function screenAnalyse(){
+  const d = state.draft;
+  const regions = state.regions;
+  const reg = regions.find(r => r.id === d.region);
+
+  if(state.job){
+    return analysePanel();
+  }
+
+  const patterns = reg ? reg.patterns : [];
+  return `
+    <p class="lede">Pick any field on Earth, tell FieldShift what you grow there now,
+      and it will fetch forty-one years of weather for that point, look up the soil,
+      and simulate every workable rotation against it. That takes a minute or two,
+      which is why the five fields in the sidebar are precomputed — but nothing
+      stops you running a new one.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="sec"><h3>1. Where is the field?</h3><div class="rule"></div></div>
+        <div id="pickmap"></div>
+        <p class="srcnote">Click the map, or type coordinates below.</p>
+        <div class="twocol" style="margin-top:10px">
+          <div class="field"><label for="in-lat">Latitude</label>
+            <input type="number" id="in-lat" step="0.0001" min="-90" max="90"
+              value="${d.lat===null?"":d.lat}" placeholder="30.9010"
+              oninput="setPoint(this.value, null)"></div>
+          <div class="field"><label for="in-lon">Longitude</label>
+            <input type="number" id="in-lon" step="0.0001" min="-180" max="180"
+              value="${d.lon===null?"":d.lon}" placeholder="75.8573"
+              oninput="setPoint(null, this.value)"></div>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <label for="in-ha">Field size (hectares)</label>
+          <input type="number" id="in-ha" step="0.5" min="0.1" max="10000"
+            value="${d.hectares}" oninput="state.draft.hectares=Number(this.value)">
+          <div class="help">Used to show how much coarser each dataset is than your
+            field. One NASA POWER cell covers about 270,000 ha.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec"><h3>2. Which cropping calendar?</h3><div class="rule"></div></div>
+        <div class="field">
+          <label for="in-reg">Region</label>
+          <select id="in-reg" onchange="setRegion(this.value)">
+            ${regions.map(r => `<option value="${esc(r.id)}" ${r.id===d.region?"selected":""}>
+              ${esc(r.name)} — tier ${r.tier}, ${r.validated?"validated":"transferred"}
+            </option>`).join("")}
+          </select>
+          <div class="help">Sowing dates belong to the region, not to the point.
+            Sowing winter wheat in October is right in Kansas and wrong in Punjab,
+            and no amount of weather data can infer which applies. Pick the calendar
+            that matches how the field is actually farmed.</div>
+        </div>
+        ${d.lat!==null && d.lon!==null ? `<div id="regionhint"></div>` : ""}
+
+        <div class="sec"><h3>3. What do you grow there now?</h3><div class="rule"></div></div>
+        <div class="field">
+          <div class="rotpick">${patterns.map(pt =>
+            `<button onclick="addYear('${esc(pt.id)}')" title="${esc(pt.notes||"")}">
+              + ${esc(pt.name)}</button>`).join("")}</div>
+          <div class="chosen">${d.rotation.length
+            ? d.rotation.map((id,i) => {
+                const pt = patterns.find(x=>x.id===id);
+                return `<span class="chip"><b>yr ${i+1}</b>${esc(pt?pt.name:id)}
+                  <button onclick="dropYear(${i})" aria-label="remove">×</button></span>`;
+              }).join("")
+            : `<span style="color:var(--muted);font-size:12.5px">
+                Nothing selected yet — add one entry per year of your cycle.</span>`}
+          </div>
+          <div class="help">This is what every alternative gets compared against.
+            Without it FieldShift can still rank options, but it cannot tell you
+            whether changing is worth it — which is the only question that matters.</div>
+        </div>
+
+        <div class="row">
+          <button class="primary" ${d.lat===null||d.lon===null?"disabled":""}
+            onclick="runAnalysis()">Analyse this field</button>
+          <button class="ghost" onclick="useExample()">Use an example</button>
+        </div>
+        <p class="srcnote">Roughly 1–2 minutes: weather download, soil lookup, then
+          simulating every candidate rotation through 41 years.</p>
+      </div>
+    </div>`;
+}
+
+function analysePanel(){
+  const j = state.job;
+  const stages = [
+    ["weather", "Fetching 41 years of NASA POWER weather"],
+    ["soil", "Looking up the soil at this point"],
+    ["simulate", "Simulating every candidate rotation"],
+    ["rank", "Scoring and finding the trade-off front"],
+  ];
+  const order = stages.map(x=>x[0]);
+  const at = order.indexOf(j.stage);
+
+  if(j.status === "failed"){
+    return `<div class="alert"><b>That analysis failed.</b><br>
+      <code style="font-size:12px">${esc(j.error||"unknown error")}</code>
+      <br><br>The most common causes are a point in the sea, or ISRIC SoilGrids
+      throttling — it answers HTTP 200 with empty values when it is busy, and the
+      adapter retries before giving up.</div>
+      <div class="row"><button class="ghost" onclick="resetAnalysis()">
+        Try again</button></div>`;
+  }
+
+  if(j.status === "done"){
+    return `<div class="finding"><b>Analysis complete</b> in
+      ${fmt(j.elapsed_seconds,0)} seconds. Showing it now in the other screens —
+      this field behaves like any other, except that nobody has checked its
+      calendar against local practice.</div>
+      <div class="row">
+        <button class="primary" onclick="go('rotations')">See the rotations</button>
+        <button class="ghost" onclick="resetAnalysis()">Analyse another field</button>
+      </div>`;
+  }
+
+  return `
+    <div class="card">
+      <h3>Analysing ${fmt(j.latitude,4)}, ${fmt(j.longitude,4)}</h3>
+      <div class="prog"><i style="width:${Math.max(j.progress*100,3)}%"></i></div>
+      <div style="font-size:12.5px;color:var(--muted)">
+        ${fmt(j.elapsed_seconds,0)}s elapsed · ${esc(j.message)}</div>
+      <div class="stages">${stages.map(([key,label],i) =>
+        `<div class="stg ${i<at?"done":i===at?"now":""}">
+          <span class="tick">${i<at?"✓":""}</span>${esc(label)}</div>`).join("")}</div>
+      <p class="srcnote">${esc(j.note||"")}</p>
+    </div>
+    <div class="row"><button class="ghost" onclick="resetAnalysis()">Cancel</button></div>`;
+}
+
+function setPoint(lat, lon){
+  if(lat !== null && lat !== "") state.draft.lat = Number(lat);
+  if(lon !== null && lon !== "") state.draft.lon = Number(lon);
+  updateRegionHint();
+}
+
+function setRegion(id){ state.draft.region = id; state.draft.rotation = []; render(); }
+function addYear(id){ state.draft.rotation.push(id); render(); }
+function dropYear(i){ state.draft.rotation.splice(i,1); render(); }
+
+function useExample(){
+  // Ludhiana: a real Punjab district we have not precomputed, 78 km from Sangrur.
+  state.draft = {lat:30.9010, lon:75.8573, region:"in_punjab",
+                 rotation:["rice_wheat"], hectares:3};
+  render();
+}
+
+function updateRegionHint(){
+  const host = document.getElementById("regionhint");
+  if(!host || state.draft.lat===null || state.draft.lon===null) return;
+  const near = state.sites.map(s => ({s, km: haversine(state.draft.lat,
+    state.draft.lon, s.latitude, s.longitude)})).sort((a,b)=>a.km-b.km)[0];
+  if(!near) return;
+  const far = near.km > 1500;
+  host.innerHTML = `<div class="${far?"alert":"finding"}" style="margin-top:10px">
+    Nearest field we have actually run: <b>${esc(near.s.name)}</b>,
+    ${fmt(near.km,0)} km away. ${far
+      ? "That is far enough that the cropping calendar almost certainly does not "
+        + "apply here. The physics still does, so treat the result as a "
+        + "demonstration rather than a recommendation."
+      : near.km > 300
+        ? "The sowing dates are borrowed from that region and should be checked "
+          + "before anyone acts on the result."
+        : "The calendar for this region is likely to apply."}</div>`;
+}
+
+function haversine(a,b,c,d){
+  const R=6371, r=x=>x*Math.PI/180;
+  const h = Math.sin(r(c-a)/2)**2 + Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+let pickMarker = null;
+function mountPicker(){
+  const el = document.getElementById("pickmap");
+  if(!el || !window.L) return;
+  const d = state.draft;
+  const map = L.map(el, {scrollWheelZoom:true, worldCopyJump:true})
+    .setView(d.lat!==null ? [d.lat,d.lon] : [25,30], d.lat!==null ? 8 : 2);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {maxZoom:14, attribution:"&copy; OpenStreetMap"}).addTo(map);
+  state.sites.forEach(s => {
+    L.marker([s.latitude, s.longitude], {icon: L.divIcon({className:"",
+      iconSize:[14,14], iconAnchor:[7,7],
+      html:`<div class="pinwrap" style="width:14px;height:14px">
+        <div class="pin t${s.tier}" style="border-width:2px"></div></div>`})})
+      .addTo(map).bindTooltip(esc(s.name), {direction:"top"});
+  });
+  const place = (lat, lon) => {
+    if(pickMarker) map.removeLayer(pickMarker);
+    pickMarker = L.marker([lat,lon]).addTo(map);
+  };
+  if(d.lat!==null && d.lon!==null) place(d.lat, d.lon);
+  map.on("click", e => {
+    state.draft.lat = Math.round(e.latlng.lat*10000)/10000;
+    state.draft.lng = null;
+    state.draft.lon = Math.round(e.latlng.lng*10000)/10000;
+    place(state.draft.lat, state.draft.lon);
+    const la = document.getElementById("in-lat"), lo = document.getElementById("in-lon");
+    if(la) la.value = state.draft.lat;
+    if(lo) lo.value = state.draft.lon;
+    const btn = document.querySelector("button.primary[disabled]");
+    if(btn) btn.removeAttribute("disabled");
+    updateRegionHint();
+  });
+  setTimeout(()=>map.invalidateSize(), 60);
+  updateRegionHint();
+}
+
+async function runAnalysis(){
+  const d = state.draft;
+  if(d.lat === null || d.lon === null) return;
+  try{
+    const started = await get("/api/analyse", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({latitude:d.lat, longitude:d.lon,
+        field_hectares:d.hectares, region:d.region,
+        current_rotation:d.rotation}),
+    });
+    state.job = {job_id:started.job_id, status:"running", stage:"weather",
+      message:started.message, progress:0, elapsed_seconds:0,
+      latitude:d.lat, longitude:d.lon};
+    render();
+    poll(started.job_id);
+  }catch(e){
+    state.job = {status:"failed", error:e.message, stage:"failed",
+      latitude:d.lat, longitude:d.lon, progress:0, elapsed_seconds:0};
+    render();
+  }
+}
+
+function stopPolling(){
+  if(state.poll){ clearInterval(state.poll); state.poll = null; }
+}
+
+function poll(jobId){
+  stopPolling();
+  state.poll = setInterval(async () => {
+    try{
+      const j = await get(`/api/analyse/${jobId}`);
+      state.job = j;
+      if(j.status === "done"){
+        stopPolling();
+        state.bundle = j.result;
+        state.source = {kind:"job", id:jobId};
+        state.siteId = null;
+        state.selected = null;
+        await rerank();
+        return;
+      }
+      if(j.status === "failed"){ stopPolling(); }
+      if(state.screen === "analyse") render();
+    }catch(e){
+      stopPolling();
+      state.job = {...(state.job||{}), status:"failed", error:e.message};
+      if(state.screen === "analyse") render();
+    }
+  }, 2500);
+}
+
+function resetAnalysis(){
+  stopPolling();
+  state.job = null;
+  render();
 }
 
 /* --------------------------------------------------------- 1. Field */
@@ -920,7 +1268,7 @@ function screenCompare(){
 
     <div class="row">
       ${state.selected!==null ? `<button class="primary"
-        onclick="window.open('/api/site/${state.siteId}/rotation/${state.selected}/fieldplan','_blank')">
+        onclick="window.open(api.fieldplan(${state.selected}),'_blank')">
         Print the field plan</button>` : ""}
       <button class="ghost" onclick="go('evidence')">See the evidence behind this</button>
       <button class="ghost" onclick="go('rotations')">Back to all rotations</button>
@@ -956,7 +1304,7 @@ async function loadEvidence(){
   if(idx === null) return;
   const host = () => document.getElementById("evbody");
   try{
-    const ev = await get(`/api/site/${state.siteId}/rotation/${idx}/evidence`);
+    const ev = await get(api.evidence(idx));
     if(!host()) return;
     const c = ev.card;
     const conf = c.confidence;

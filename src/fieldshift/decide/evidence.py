@@ -319,6 +319,24 @@ QUICKSTATS = DataSource(
     confidence="high",
     caveat="county averages, so they bound the model rather than describe this field",
 )
+INDIAWRIS = DataSource(
+    name="CGWB observation wells (India-WRIS)",
+    variables="depth to water table",
+    role=(
+        "the only independent check available on the Punjab tier: in a fully "
+        "irrigated system the weather shows up in water demand rather than yield, "
+        "and a closed aquifer records that demand"
+    ),
+    period="1994-2024, manual wells read a few times a year",
+    pixel_metres=None,
+    confidence="high",
+    caveat=(
+        "it confirms the direction but not the magnitude: the modelled field-scale "
+        "draft is 5-13x larger than the observed district decline can account for, "
+        "which a one-field water balance cannot resolve without a district budget "
+        "including canal supply and lateral inflow"
+    ),
+)
 SOILGRIDS = DataSource(
     name="ISRIC SoilGrids v2.0",
     variables="texture, water retention, organic carbon, bulk density",

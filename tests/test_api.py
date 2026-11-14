@@ -14,6 +14,8 @@ move, and precomputing the preferences instead would have been the wrong way rou
 
 import pathlib
 
+import time
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -275,14 +277,113 @@ def test_crop_labels_are_readable_not_truncated(client, site_id):
 # --- a point with no bundle -------------------------------------------------------
 
 
-def test_an_unknown_point_is_declined_with_the_reason(client):
-    body = client.post(
-        "/api/analyse", json={"latitude": 39.1, "longitude": -101.3}
-    ).json()
-    assert body["accepted"] is False
-    assert "minute" in body["reason"]
-    assert body["nearest_precomputed"]["id"]
-    assert body["what_would_be_needed"]
+def test_an_unknown_region_is_refused_before_any_work_starts(client):
+    """Validation happens before the thread is spawned.
+
+    A job that starts and then fails a minute later on an input we could have
+    rejected immediately wastes the user's time and a core.
+    """
+    from fieldshift.api import jobs
+
+    before = jobs.active_count()
+    response = client.post("/api/analyse", json={
+        "latitude": 39.1, "longitude": -101.3, "region": "atlantis",
+    })
+    assert response.status_code == 400
+    assert "unknown region" in response.json()["detail"]
+    assert jobs.active_count() == before, "no work should have been started"
+
+
+def test_a_rotation_the_region_cannot_grow_is_refused(client):
+    """Asking for rice on the High Plains is a question, not a job."""
+    from fieldshift.api import jobs
+
+    before = jobs.active_count()
+    response = client.post("/api/analyse", json={
+        "latitude": 39.1, "longitude": -101.3,
+        "region": "us_high_plains", "current_rotation": ["rice_wheat"],
+    })
+    assert response.status_code == 400
+    assert jobs.active_count() == before
+
+
+def test_the_region_is_suggested_from_the_point_with_the_distance(client):
+    """The suggestion has to come with how big a stretch it is.
+
+    A calendar is not global, and borrowing one from 4,000 km away is a very
+    different act from using one from 50 km away.
+    """
+    from fieldshift.api.jobs import suggest_region
+
+    region_id, km, note = suggest_region(30.90, 75.85)  # Ludhiana, near Sangrur
+    assert region_id == "in_punjab"
+    assert km < 150
+    assert "likely to apply" in note
+
+    region_id, km, note = suggest_region(-33.9, 151.2)  # Sydney
+    assert km > 5000
+    assert "demonstration" in note
+
+
+def test_a_finished_job_is_ranked_and_evidenced_through_the_same_code(
+    client, monkeypatch
+):
+    """An on-demand result must not get a second, less careful code path.
+
+    The physics is stubbed here with a real precomputed bundle: what is being
+    tested is the job machinery and the shared ranking and evidence paths, not
+    the simulation, which has its own tests.
+    """
+    from fieldshift.api import bundle as bundle_mod
+    from fieldshift.api import jobs
+
+    precomputed = bundle_mod.load_bundle("sangrur_pb")
+
+    def fake_build(spec, **kw):
+        on_stage = kw.get("on_stage")
+        if on_stage:
+            for stage in ("weather", "soil", "simulate", "rank"):
+                on_stage(stage)
+        return precomputed
+
+    monkeypatch.setattr(jobs, "build_bundle", fake_build)
+
+    started = client.post("/api/analyse", json={
+        "latitude": 30.90, "longitude": 75.85,
+        "region": "in_punjab", "current_rotation": ["rice_wheat"],
+        "field_hectares": 3.0,
+    })
+    assert started.status_code == 200
+    job_id = started.json()["job_id"]
+    assert "Indian Punjab" in started.json()["message"]
+
+    for _ in range(200):
+        status = client.get(f"/api/analyse/{job_id}").json()
+        if status["status"] in ("done", "failed"):
+            break
+        time.sleep(0.05)
+    assert status["status"] == "done", status.get("error")
+    assert status["result"]["site"]["name"]
+
+    ranked = client.post(f"/api/analyse/{job_id}/rank",
+                         json={"site_id": "live"})
+    assert ranked.status_code == 200
+    assert ranked.json()["ranked"]
+
+    card = client.get(f"/api/analyse/{job_id}/rotation/0/evidence").json()["card"]
+    assert card["confidence"] == "low"
+    assert any("analysed on demand" in u.lower() for u in card["unknowns"]), (
+        "an on-demand result must say that nobody checked its calendar"
+    )
+
+    plan = client.get(f"/api/analyse/{job_id}/rotation/0/fieldplan")
+    assert plan.status_code == 200 and "<html" in plan.text.lower()
+
+
+def test_polling_an_unfinished_job_explains_rather_than_erroring(client):
+    response = client.post(f"/api/analyse/{'0' * 32}/rank", json={"site_id": "x"})
+    assert response.status_code == 404
+    assert "no job" in response.json()["detail"]
 
 
 def test_impossible_coordinates_are_refused(client):

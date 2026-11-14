@@ -36,6 +36,7 @@ from ..decide.evidence import (
     CROP_TABLE,
     DataSource,
     GRIDMET,
+    INDIAWRIS,
     NASADEM,
     NO_YIELD_DATA,
     POWER,
@@ -320,9 +321,13 @@ IN_PUNJAB = Region(
         enforce_return_intervals=True,
     ),
     soil_source="soilgrids",
-    sources=(POWER, SOILGRIDS, CROP_TABLE, NO_YIELD_DATA),
+    sources=(POWER, SOILGRIDS, INDIAWRIS, CROP_TABLE, NO_YIELD_DATA),
     yield_validation=None,
     review_first=(
+        "Canal supply. This model assumes every millimetre of irrigation is "
+        "lifted from the aquifer. Sangrur receives canal water too, and canal "
+        "seepage recharges the aquifer, which is the largest single candidate for "
+        "the 5-13x gap between modelled draft and observed water-table decline.",
         "Transplanting and sowing dates. These are central-Punjab practice in "
         "round numbers; a two-week shift in the rice transplanting date changes "
         "seasonal water use materially, and the state's own date restrictions have "

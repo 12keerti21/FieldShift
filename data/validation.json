@@ -14,12 +14,16 @@
   "1": {
    "name": "Validated",
    "summary": "Checked against independent observations at field and county scale.",
-   "regions": ["us_high_plains"]
+   "regions": [
+    "us_high_plains"
+   ]
   },
   "2": {
    "name": "Transferred",
    "summary": "Same engine, global-only inputs, no local observations to check against.",
-   "regions": ["in_punjab"]
+   "regions": [
+    "in_punjab"
+   ]
   }
  },
  "checks": [
@@ -101,14 +105,25 @@
    "tier": 1
   },
   {
-   "id": "punjab_unvalidated",
-   "title": "The Punjab transfer has no yield validation",
-   "question": "Is the Indian tier validated?",
+   "id": "punjab_groundwater",
+   "title": "Punjab water demand against the aquifer",
+   "question": "Is the model's irrigation demand reconcilable with the observed water table?",
+   "against": "CGWB observation wells via India-WRIS, 20 manual wells in Sangrur district, records up to 27 years",
+   "result": "direction confirmed by 20 of 20 wells (table falling 1.167 m/yr); magnitude unreconciled by 5-13x",
+   "verdict": "partial",
+   "detail": "The US method - correlating modelled water stress against detrended yield - cannot work here, and for a physical reason rather than a practical one. Punjab rice is continuously submerged and wheat is irrigated on demand, so the model says every year is unstressed: over 39 seasons the relative transpiration of ponded rice has a standard deviation of exactly zero and irrigated wheat 0.0008. Correlating that against yield would be correlating a constant, and district yield statistics would not have changed it. But the weather has moved from yield into water demand, where modelled rice irrigation ranges 895 to 2,338 mm, and a closed aquifer records that. Every one of the 20 wells shows a falling table, median 1.167 m/yr, IQR 0.397. The sign agrees. The magnitude does not: modelled net draft is 957-1,197 mm/yr against an observed 93-187 mm/yr across the whole plausible range of specific yield and return flow. The gap is almost certainly canal supply (our model has no canal and assumes every millimetre is pumped), lateral inflow across the district boundary, and possibly a high rice ET we have no independent product to check. What survives is the comparison between rotations, where a systematic bias largely cancels; what does not survive is any absolute claim about the aquifer's remaining life.",
+   "reproduce": "python scripts/validate_punjab.py",
+   "tier": 2
+  },
+  {
+   "id": "punjab_no_yield",
+   "title": "Punjab yields are still unvalidated",
+   "question": "Has any Punjab yield been checked against observation?",
    "against": "nothing - no district yield series was obtained",
-   "result": "not validated, and the interface says so on every card",
+   "result": "not validated; the tier-2 confidence cap stands",
    "verdict": "fail",
-   "detail": "The US sites were checked against 41 years of county yields. We obtained nothing equivalent for Sangrur, so the Punjab numbers are the engine's output rather than a validated prediction. The one partial check available is that our Penman-Monteith ET0 sits +6.4% above Hargreaves-Samani there, against +16.9% at Finney County where Penman-Monteith is independently confirmed good to -3.2% - so the Indian ET0 is not anomalously high relative to the site we can actually check. That is weak evidence and it is offered as weak evidence.",
-   "reproduce": "python -m pytest tests/test_regions.py",
+   "detail": "Finding groundwater data did not validate the yields. The engine's yield path in Punjab rests on FAO-33 Ky values, regional recommended nitrogen rates and sowing dates entered as district practice in round numbers, none of which has been checked against a Punjab observation. The Punjab region therefore still declares a low-confidence source and no card there can read above LOW. A data trap found along the way is worth recording: India-WRIS reports manual well depths as POSITIVE metres below ground and telemetric depths as NEGATIVE. Combining them unnormalised does not produce a noisy trend, it produces a meaningless one, because half the stations would appear to move opposite to the other half for identical physical behaviour.",
+   "reproduce": "python -m pytest tests/test_indiawris.py",
    "tier": 2
   }
  ],
@@ -162,6 +177,16 @@
    "title": "Puddling water spilled the bund on day one",
    "effect": "80 mm of a 180 mm paddy establishment application booked as runoff",
    "how": "Found by a test. Puddling water wets and saturates the profile before anything stands on the surface; it was being routed straight into the pond."
+  },
+  {
+   "title": "Groundwater depth sign flips between acquisition modes",
+   "effect": "would have produced a meaningless district trend, not merely a noisy one",
+   "how": "India-WRIS reports CGWB manual well depths as positive metres below ground and telemetric piezometer depths as negative. A naive combination has half the stations appearing to rise while the other half fall, for identical physical behaviour. Depth is now normalised per acquisition mode explicitly rather than with abs(), which would also have silently swallowed genuinely artesian readings instead of rejecting them."
+  },
+  {
+   "title": "A year-long groundwater query silently returned only telemetric data",
+   "effect": "every long-record manual well was crowded out of the result",
+   "how": "The endpoint caps a response at 50,000 rows and the telemetric piezometers report every few minutes, so a single 1994-2024 request came back entirely full of GPRS readings from 20 stations with zero manual wells. The adapter now fetches year by year, falls back to month by month when a year still hits the cap, and refuses rather than accepting a response at the page limit."
   }
  ]
 }
