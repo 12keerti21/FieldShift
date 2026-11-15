@@ -1,0 +1,5680 @@
+{
+ "site": {
+  "id": "finney_ks",
+  "name": "Finney County, Kansas",
+  "latitude": 38.03,
+  "longitude": -100.74,
+  "elevation_m": 858.0,
+  "state": "KS",
+  "county": "FINNEY",
+  "note": "Semi-arid High Plains over the Ogallala aquifer. Irrigated corn against dryland wheat and sorghum, with a declining water table.",
+  "dem_tile": "nasadem_n38w101/n38w101.hgt",
+  "field_hectares": 65.0,
+  "region": "us_high_plains",
+  "existing_rotation": [
+   "wheat",
+   "fallow"
+  ],
+  "rainfall_mm_yr": 541.0297435897436,
+  "soil": {
+   "component": "Richfield",
+   "component_pct": 93.0,
+   "texture": "Silt loam",
+   "available_water_mm_per_m": 212.26666666666668,
+   "measured": true,
+   "provenance": "survey",
+   "organic_carbon_pct": 0.9319412219644239,
+   "hydrologic_group": "C",
+   "source": "SSURGO Richfield (93% of map unit)"
+  },
+  "terrain": {
+   "slope_percent": 0.25105754013866577,
+   "ls_factor": 0.06039132630118412,
+   "note": "slope 0.25% from NASADEM, fitted over 300 m"
+  },
+  "weather": {
+   "years": 39,
+   "first_year": 1984,
+   "last_year": 2024,
+   "et0_confidence": "high",
+   "et0_method": "fao56_penman_monteith",
+   "record_confidence": "high",
+   "annual_et0_mm": 1581.553783352319
+  },
+  "starting_carbon_t_ha": 25.721577726218097
+ },
+ "region": {
+  "id": "us_high_plains",
+  "name": "US High Plains",
+  "tier": 1,
+  "validated": true,
+  "yield_validation": "USDA NASS county yields, 1984-2024, four counties in three states: modelled water stress against detrended yield, 11/11 positive, 8/11 significant, mean r = +0.447",
+  "soil_source": "ssurgo",
+  "review_first": [],
+  "note": "Semi-arid cropping over the Ogallala aquifer. Water is the binding constraint and the aquifer is finite."
+ },
+ "objectives": [
+  {
+   "key": "production",
+   "label": "production (dry matter)",
+   "units": "t DM/ha/yr",
+   "maximise": true,
+   "note": "summed as dry matter, because marketed weight cannot be added across crops holding different amounts of water - 25 t/ha of potato is about 5 t/ha of dry matter. Becomes margin when local prices are supplied."
+  },
+  {
+   "key": "downside",
+   "label": "production in a bad year",
+   "units": "t DM/ha/yr",
+   "maximise": true,
+   "note": "tenth percentile across simulated years for THIS FIELD, including years it produces nothing. A farmer staggering the rotation across several fields sees a steadier farm-level income; compare with production for that view."
+  },
+  {
+   "key": "irrigation",
+   "label": "irrigation demand",
+   "units": "mm/yr",
+   "maximise": false,
+   "note": "at the field gate, including application losses; the binding constraint where groundwater is declining"
+  },
+  {
+   "key": "carbon",
+   "label": "soil carbon change",
+   "units": "t C/ha/yr",
+   "maximise": true,
+   "note": "RothC over the simulated period, 0-23 cm"
+  },
+  {
+   "key": "wind_exposure",
+   "label": "wind erosion exposure",
+   "units": "index",
+   "maximise": false,
+   "note": "ordinal, for comparing rotations at one site; not a mass flux"
+  },
+  {
+   "key": "bare_ground",
+   "label": "bare ground",
+   "units": "fraction of time",
+   "maximise": false,
+   "note": "the clearest single explanation behind carbon loss and erosion exposure"
+  }
+ ],
+ "rotations": [
+  {
+   "index": 0,
+   "name": "fallow - winter wheat - winter wheat",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "3 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.38576502680604,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.07656394005258686,
+    "wind_exposure": 633.066876575937,
+    "bare_ground": 0.4630045655482281
+   },
+   "detail": {
+    "crops_per_decade": 6.882020436263498,
+    "evaporation_fraction": 0.5783048496676065,
+    "nitrogen_limited_seasons": 3,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 15.777168558850274,
+    "seasons_simulated": 26,
+    "years": 37.779603011635864
+   }
+  },
+  {
+   "index": 1,
+   "name": "fallow - winter wheat - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.0631487273324245,
+    "downside": 0.0,
+    "irrigation": 216.42552955670277,
+    "carbon": 0.12941104584424043,
+    "wind_exposure": 415.7542706871603,
+    "bare_ground": 0.4630045655482281
+   },
+   "detail": {
+    "crops_per_decade": 6.882020436263498,
+    "evaporation_fraction": 0.5058278591643949,
+    "nitrogen_limited_seasons": 5,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 21.24314078899482,
+    "seasons_simulated": 26,
+    "years": 37.779603011635864
+   }
+  },
+  {
+   "index": 2,
+   "name": "fallow - winter wheat (irrigated) - winter wheat",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "1 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.0341476719079674,
+    "downside": 0.0,
+    "irrigation": 203.9693839707055,
+    "carbon": 0.17122263689180434,
+    "wind_exposure": 505.67024403132837,
+    "bare_ground": 0.4630045655482281
+   },
+   "detail": {
+    "crops_per_decade": 6.882020436263498,
+    "evaporation_fraction": 0.5206591202522733,
+    "nitrogen_limited_seasons": 1,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 24.079280598821676,
+    "seasons_simulated": 26,
+    "years": 37.779603011635864
+   }
+  },
+  {
+   "index": 3,
+   "name": "fallow - winter wheat (irrigated) - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 2.6682071571526738,
+    "downside": 0.0,
+    "irrigation": 396.2611314545386,
+    "carbon": 0.2114647738253415,
+    "wind_exposure": 307.43274928221064,
+    "bare_ground": 0.4630045655482281
+   },
+   "detail": {
+    "crops_per_decade": 6.882020436263498,
+    "evaporation_fraction": 0.46069570028798945,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 50.785397831474484,
+    "seasons_simulated": 26,
+    "years": 37.779603011635864
+   }
+  },
+  {
+   "index": 4,
+   "name": "fallow - grain sorghum - winter wheat",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "10 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.36006308498799,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.07719141361220716,
+    "wind_exposure": 657.3228837523279,
+    "bare_ground": 0.6171252065225199
+   },
+   "detail": {
+    "crops_per_decade": 6.821708210617054,
+    "evaporation_fraction": 0.6035317386633655,
+    "nitrogen_limited_seasons": 10,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5.459946120407211,
+    "seasons_simulated": 26,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 5,
+   "name": "fallow - grain sorghum - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "7 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.0863670391711095,
+    "downside": 0.0,
+    "irrigation": 215.3005193169862,
+    "carbon": 0.14351951742358324,
+    "wind_exposure": 481.953598841385,
+    "bare_ground": 0.6171252065225199
+   },
+   "detail": {
+    "crops_per_decade": 6.821708210617054,
+    "evaporation_fraction": 0.5281739781165714,
+    "nitrogen_limited_seasons": 7,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 7.618425122785035,
+    "seasons_simulated": 26,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 6,
+   "name": "fallow - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "16 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.434545368408117,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.12076664238086968,
+    "wind_exposure": 863.6350620839303,
+    "bare_ground": 0.7617127355377961
+   },
+   "detail": {
+    "crops_per_decade": 6.962753867585599,
+    "evaporation_fraction": 0.6104136139692514,
+    "nitrogen_limited_seasons": 16,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2401251337077236,
+    "seasons_simulated": 26,
+    "years": 37.34154688569473
+   }
+  },
+  {
+   "index": 7,
+   "name": "corn (irrigated) - fallow - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "3 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.4683072350340782,
+    "downside": 0.0,
+    "irrigation": 238.86159366825407,
+    "carbon": 0.22811355964028354,
+    "wind_exposure": 869.2891207314012,
+    "bare_ground": 0.7452251995438997
+   },
+   "detail": {
+    "crops_per_decade": 6.767745153933865,
+    "evaporation_fraction": 0.4989940043358735,
+    "nitrogen_limited_seasons": 3,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5.191810389617842,
+    "seasons_simulated": 26,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 8,
+   "name": "fallow - grain sorghum - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.4392867500798558,
+    "downside": 0.0,
+    "irrigation": 235.66963953730246,
+    "carbon": -0.019368357337858688,
+    "wind_exposure": 1248.5971209678582,
+    "bare_ground": 0.7474710453012755
+   },
+   "detail": {
+    "crops_per_decade": 6.961222694619558,
+    "evaporation_fraction": 0.5042796018396548,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1483.5032637748754,
+    "nitrogen_leached_kg_ha": 8.454359679154052,
+    "seasons_simulated": 26,
+    "years": 37.34976043805612
+   }
+  },
+  {
+   "index": 9,
+   "name": "fallow - grain sorghum - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.4476228931212296,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.22426169667882398,
+    "wind_exposure": 1074.928409366759,
+    "bare_ground": 0.6967930029154519
+   },
+   "detail": {
+    "crops_per_decade": 10.382470845481048,
+    "evaporation_fraction": 0.5907159435276585,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2469242030771711,
+    "seasons_simulated": 39,
+    "years": 37.56331279945243
+   }
+  },
+  {
+   "index": 10,
+   "name": "fallow - grain sorghum - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.2922962388074817,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.10036811242553252,
+    "wind_exposure": 1201.4975067112828,
+    "bare_ground": 0.7851476421330983
+   },
+   "detail": {
+    "crops_per_decade": 6.975539885412076,
+    "evaporation_fraction": 0.6189382540333441,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.0,
+    "seasons_simulated": 26,
+    "years": 37.27310061601643
+   }
+  },
+  {
+   "index": 11,
+   "name": "corn (irrigated) - winter wheat - fallow",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 3.3624490770837014,
+    "downside": 0.0,
+    "irrigation": 242.5932915283828,
+    "carbon": 0.21855935136414703,
+    "wind_exposure": 616.9379800517677,
+    "bare_ground": 0.5945945945945946
+   },
+   "detail": {
+    "crops_per_decade": 6.808014911463187,
+    "evaporation_fraction": 0.4925381026109369,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 29.91744903677975,
+    "seasons_simulated": 26,
+    "years": 38.19028062970568
+   }
+  },
+  {
+   "index": 12,
+   "name": "corn (irrigated) - winter wheat (irrigated) - fallow",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 3.948623192513412,
+    "downside": 0.0,
+    "irrigation": 422.8054509494672,
+    "carbon": 0.24284199533849615,
+    "wind_exposure": 473.64823468295947,
+    "bare_ground": 0.5945945945945946
+   },
+   "detail": {
+    "crops_per_decade": 6.808014911463187,
+    "evaporation_fraction": 0.45178011926146217,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 116.61542572103555,
+    "seasons_simulated": 26,
+    "years": 38.19028062970568
+   }
+  },
+  {
+   "index": 13,
+   "name": "corn (irrigated) - grain sorghum - fallow",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 3.531903271613882,
+    "downside": 0.0,
+    "irrigation": 249.956959442883,
+    "carbon": 0.26021522044598405,
+    "wind_exposure": 601.0276327657955,
+    "bare_ground": 0.7384210141216068
+   },
+   "detail": {
+    "crops_per_decade": 6.948489061242409,
+    "evaporation_fraction": 0.5049841092498721,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2.589168488166611,
+    "seasons_simulated": 26,
+    "years": 37.41820670773443
+   }
+  },
+  {
+   "index": 14,
+   "name": "corn (irrigated) - corn (irrigated) - fallow",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 5.358609786612772,
+    "downside": 0.0,
+    "irrigation": 488.1949376896754,
+    "carbon": 0.2774386828297504,
+    "wind_exposure": 756.231489830942,
+    "bare_ground": 0.7145993413830956
+   },
+   "detail": {
+    "crops_per_decade": 6.949506037321624,
+    "evaporation_fraction": 0.43158903051948666,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 81.6525975173339,
+    "seasons_simulated": 26,
+    "years": 37.412731006160165
+   }
+  },
+  {
+   "index": 15,
+   "name": "corn (irrigated) - soybean (irrigated) - fallow",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.579085981225472,
+    "downside": 0.0,
+    "irrigation": 499.79158399019093,
+    "carbon": 0.1061615424982475,
+    "wind_exposure": 1061.8376041923195,
+    "bare_ground": 0.7242136064374542
+   },
+   "detail": {
+    "crops_per_decade": 6.946964155084126,
+    "evaporation_fraction": 0.4408243993686573,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1483.5777924172437,
+    "nitrogen_leached_kg_ha": 38.45703369019193,
+    "seasons_simulated": 26,
+    "years": 37.426420260095824
+   }
+  },
+  {
+   "index": 16,
+   "name": "corn (irrigated) - sorghum + rye cover - fallow",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 3.50916471375103,
+    "downside": 0.0,
+    "irrigation": 257.86103647161514,
+    "carbon": 0.34620675450946925,
+    "wind_exposure": 913.9192068908314,
+    "bare_ground": 0.6737707302880419
+   },
+   "detail": {
+    "crops_per_decade": 10.361325283677626,
+    "evaporation_fraction": 0.501356436696993,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 1.4018411573573422,
+    "seasons_simulated": 39,
+    "years": 37.63997262149213
+   }
+  },
+  {
+   "index": 17,
+   "name": "corn (irrigated) - pearl millet - fallow",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.374729967300051,
+    "downside": 0.0,
+    "irrigation": 261.43958536354006,
+    "carbon": 0.24030786602267784,
+    "wind_exposure": 925.2695773075054,
+    "bare_ground": 0.7617651370766749
+   },
+   "detail": {
+    "crops_per_decade": 6.961222694619558,
+    "evaporation_fraction": 0.5190733314761915,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 1.6840960220976045,
+    "seasons_simulated": 26,
+    "years": 37.34976043805612
+   }
+  },
+  {
+   "index": 18,
+   "name": "fallow - soybean (irrigated) - winter wheat",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "soybean",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.2924149013990418,
+    "downside": 0.0,
+    "irrigation": 248.24436539225812,
+    "carbon": -0.06310188082315463,
+    "wind_exposure": 1058.7988087002545,
+    "bare_ground": 0.6034594129046149
+   },
+   "detail": {
+    "crops_per_decade": 6.81583291466303,
+    "evaporation_fraction": 0.4994345215795432,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1483.0521721959178,
+    "nitrogen_leached_kg_ha": 17.076325760055866,
+    "seasons_simulated": 26,
+    "years": 38.14647501711157
+   }
+  },
+  {
+   "index": 19,
+   "name": "fallow - soybean (irrigated) - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "soybean",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.062103462023356,
+    "downside": 0.0,
+    "irrigation": 467.291136269595,
+    "carbon": 0.009489566757110999,
+    "wind_exposure": 907.9031553638064,
+    "bare_ground": 0.6034594129046149
+   },
+   "detail": {
+    "crops_per_decade": 6.81583291466303,
+    "evaporation_fraction": 0.4617617871902843,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1483.6341836890551,
+    "nitrogen_leached_kg_ha": 38.021773719949174,
+    "seasons_simulated": 26,
+    "years": 38.14647501711157
+   }
+  },
+  {
+   "index": 20,
+   "name": "fallow - soybean (irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "20 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.5153906376662494,
+    "downside": 0.0,
+    "irrigation": 253.4324265677895,
+    "carbon": -0.013771242943874256,
+    "wind_exposure": 994.1427339405834,
+    "bare_ground": 0.7476375357116695
+   },
+   "detail": {
+    "crops_per_decade": 6.956633213683979,
+    "evaporation_fraction": 0.5036026754203502,
+    "nitrogen_limited_seasons": 20,
+    "nitrogen_fixed_kg_ha": 1483.4347957399434,
+    "nitrogen_leached_kg_ha": 13.201574841376157,
+    "seasons_simulated": 26,
+    "years": 37.374401095140314
+   }
+  },
+  {
+   "index": 21,
+   "name": "corn (irrigated) - fallow - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.50489305620631,
+    "downside": 0.0,
+    "irrigation": 484.7884440824675,
+    "carbon": 0.08180167374890912,
+    "wind_exposure": 1140.536170459497,
+    "bare_ground": 0.7313858211613823
+   },
+   "detail": {
+    "crops_per_decade": 6.766298539365871,
+    "evaporation_fraction": 0.4488042575340144,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1484.4392870644094,
+    "nitrogen_leached_kg_ha": 33.11523278742305,
+    "seasons_simulated": 26,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 22,
+   "name": "fallow - soybean (irrigated) - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "soybean",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "20 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.5360168897974038,
+    "downside": 0.0,
+    "irrigation": 260.7538648890447,
+    "carbon": 0.0840702209683842,
+    "wind_exposure": 1304.8577585140065,
+    "bare_ground": 0.6828575589863094
+   },
+   "detail": {
+    "crops_per_decade": 10.373397902709002,
+    "evaporation_fraction": 0.49828958080823,
+    "nitrogen_limited_seasons": 20,
+    "nitrogen_fixed_kg_ha": 1482.7686112967763,
+    "nitrogen_leached_kg_ha": 15.43795989434194,
+    "seasons_simulated": 39,
+    "years": 37.596167008898014
+   }
+  },
+  {
+   "index": 23,
+   "name": "fallow - soybean (irrigated) - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "soybean",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.388209294003964,
+    "downside": 0.0,
+    "irrigation": 260.68023010331507,
+    "carbon": -0.029488669694022352,
+    "wind_exposure": 1367.849452562741,
+    "bare_ground": 0.7710259797446058
+   },
+   "detail": {
+    "crops_per_decade": 6.969396741523559,
+    "evaporation_fraction": 0.5117682718668805,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1483.0738741707123,
+    "nitrogen_leached_kg_ha": 13.313427257622436,
+    "seasons_simulated": 26,
+    "years": 37.30595482546201
+   }
+  },
+  {
+   "index": 24,
+   "name": "fallow - sorghum + rye cover - winter wheat",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "10 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.3728620638290878,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.125489763444018,
+    "wind_exposure": 911.3577912635387,
+    "bare_ground": 0.5517563393434379
+   },
+   "detail": {
+    "crops_per_decade": 10.23256231592558,
+    "evaporation_fraction": 0.5845908508557573,
+    "nitrogen_limited_seasons": 10,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5.2442888042205436,
+    "seasons_simulated": 39,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 25,
+   "name": "fallow - sorghum + rye cover - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.115912464816717,
+    "downside": 0.0,
+    "irrigation": 230.73424830028273,
+    "carbon": 0.18925151654643455,
+    "wind_exposure": 765.1587097625011,
+    "bare_ground": 0.5517563393434379
+   },
+   "detail": {
+    "crops_per_decade": 10.23256231592558,
+    "evaporation_fraction": 0.5233905338771875,
+    "nitrogen_limited_seasons": 6,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 6.950801399264668,
+    "seasons_simulated": 39,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 26,
+   "name": "fallow - sorghum + rye cover - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.4552103596365458,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.17481168388847138,
+    "wind_exposure": 1014.7635726935517,
+    "bare_ground": 0.6949923014883789
+   },
+   "detail": {
+    "crops_per_decade": 10.4441308013784,
+    "evaporation_fraction": 0.5892539990950502,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2951228414873435,
+    "seasons_simulated": 39,
+    "years": 37.34154688569473
+   }
+  },
+  {
+   "index": 27,
+   "name": "corn (irrigated) - fallow - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "2 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.455021159895762,
+    "downside": 0.0,
+    "irrigation": 251.95324711050722,
+    "carbon": 0.32028538058739453,
+    "wind_exposure": 1100.2703050151351,
+    "bare_ground": 0.6822078934315879
+   },
+   "detail": {
+    "crops_per_decade": 10.093353645575002,
+    "evaporation_fraction": 0.49457504162718346,
+    "nitrogen_limited_seasons": 2,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4.290427633387485,
+    "seasons_simulated": 39,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 28,
+   "name": "fallow - sorghum + rye cover - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.4632851710449384,
+    "downside": 0.0,
+    "irrigation": 248.14772145256083,
+    "carbon": 0.01952399662775585,
+    "wind_exposure": 1423.6803222122612,
+    "bare_ground": 0.6807652836827445
+   },
+   "detail": {
+    "crops_per_decade": 10.441834041929337,
+    "evaporation_fraction": 0.49685431103785355,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1483.6960737123354,
+    "nitrogen_leached_kg_ha": 5.836798993995886,
+    "seasons_simulated": 39,
+    "years": 37.34976043805612
+   }
+  },
+  {
+   "index": 29,
+   "name": "fallow - sorghum + rye cover - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.4664558641544707,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.2792571802180508,
+    "wind_exposure": 1232.7897389880932,
+    "bare_ground": 0.630466472303207
+   },
+   "detail": {
+    "crops_per_decade": 13.843294460641399,
+    "evaporation_fraction": 0.5711673927076439,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2979674810824039,
+    "seasons_simulated": 52,
+    "years": 37.56331279945243
+   }
+  },
+  {
+   "index": 30,
+   "name": "fallow - sorghum + rye cover - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.3095639175800458,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.1539091693353857,
+    "wind_exposure": 1343.9284379431,
+    "bare_ground": 0.7183046863522844
+   },
+   "detail": {
+    "crops_per_decade": 10.463309828118113,
+    "evaporation_fraction": 0.5961340119273193,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.04401954020507316,
+    "seasons_simulated": 39,
+    "years": 37.27310061601643
+   }
+  },
+  {
+   "index": 31,
+   "name": "fallow - pearl millet - winter wheat",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.2007346166664148,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.05198389500679675,
+    "wind_exposure": 902.3178735806473,
+    "bare_ground": 0.6404712305150492
+   },
+   "detail": {
+    "crops_per_decade": 6.821708210617054,
+    "evaporation_fraction": 0.6165227310052975,
+    "nitrogen_limited_seasons": 11,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 6.06806000540791,
+    "seasons_simulated": 26,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 32,
+   "name": "fallow - pearl millet - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.94411559208371,
+    "downside": 0.0,
+    "irrigation": 227.64750250362337,
+    "carbon": 0.12627811341096673,
+    "wind_exposure": 726.83898164823,
+    "bare_ground": 0.6404712305150492
+   },
+   "detail": {
+    "crops_per_decade": 6.821708210617054,
+    "evaporation_fraction": 0.5434670817186499,
+    "nitrogen_limited_seasons": 6,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 8.421853895114198,
+    "seasons_simulated": 26,
+    "years": 38.11362080766598
+   }
+  },
+  {
+   "index": 33,
+   "name": "fallow - pearl millet - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.3166741165964522,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.1080795685850397,
+    "wind_exposure": 950.420945751855,
+    "bare_ground": 0.7855414619840164
+   },
+   "detail": {
+    "crops_per_decade": 6.962753867585599,
+    "evaporation_fraction": 0.622648090433929,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.1457408400636389,
+    "seasons_simulated": 26,
+    "years": 37.34154688569473
+   }
+  },
+  {
+   "index": 34,
+   "name": "corn (irrigated) - fallow - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.3426286518621318,
+    "downside": 0.0,
+    "irrigation": 245.42350673402797,
+    "carbon": 0.217552101577364,
+    "wind_exposure": 980.7371694970187,
+    "bare_ground": 0.7679731562790033
+   },
+   "detail": {
+    "crops_per_decade": 6.779824373527522,
+    "evaporation_fraction": 0.507543423287523,
+    "nitrogen_limited_seasons": 2,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5.153600087483989,
+    "seasons_simulated": 26,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 35,
+   "name": "fallow - pearl millet - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.299263328156837,
+    "downside": 0.0,
+    "irrigation": 241.58751833090326,
+    "carbon": -0.03103747035993423,
+    "wind_exposure": 1349.8688395552463,
+    "bare_ground": 0.771294531593608
+   },
+   "detail": {
+    "crops_per_decade": 6.961222694619558,
+    "evaporation_fraction": 0.5158055053864361,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1484.7370090768989,
+    "nitrogen_leached_kg_ha": 7.083944215580174,
+    "seasons_simulated": 26,
+    "years": 37.34976043805612
+   }
+  },
+  {
+   "index": 36,
+   "name": "fallow - pearl millet - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.332025537158752,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.21499836780779097,
+    "wind_exposure": 1175.1276781251622,
+    "bare_ground": 0.7204810495626822
+   },
+   "detail": {
+    "crops_per_decade": 10.382470845481048,
+    "evaporation_fraction": 0.6026502420743616,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.1504804629903719,
+    "seasons_simulated": 39,
+    "years": 37.56331279945243
+   }
+  },
+  {
+   "index": 37,
+   "name": "fallow - pearl millet - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.169672423384944,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": 0.0874336347703091,
+    "wind_exposure": 1287.7573071149463,
+    "bare_ground": 0.8090201263405318
+   },
+   "detail": {
+    "crops_per_decade": 6.975539885412076,
+    "evaporation_fraction": 0.630723034715592,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.0,
+    "seasons_simulated": 26,
+    "years": 37.27310061601643
+   }
+  },
+  {
+   "index": 38,
+   "name": "winter wheat - winter wheat - winter wheat",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 0,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "8 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.9900686093621025,
+    "downside": 1.3805472009866941,
+    "irrigation": 0.0,
+    "carbon": 0.26950059568876644,
+    "wind_exposure": 391.3211588659951,
+    "bare_ground": 0.215319449346982
+   },
+   "detail": {
+    "crops_per_decade": 10.056300741263678,
+    "evaporation_fraction": 0.44864904490438245,
+    "nitrogen_limited_seasons": 8,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 20.982971521426553,
+    "seasons_simulated": 39,
+    "years": 38.78165639972622
+   }
+  },
+  {
+   "index": 39,
+   "name": "winter wheat - winter wheat - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 0,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.6477225514895104,
+    "downside": 1.5269303030626529,
+    "irrigation": 212.35024189697057,
+    "carbon": 0.2942265845182642,
+    "wind_exposure": 289.03257936072856,
+    "bare_ground": 0.215319449346982
+   },
+   "detail": {
+    "crops_per_decade": 10.056300741263678,
+    "evaporation_fraction": 0.41281895738552216,
+    "nitrogen_limited_seasons": 5,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 27.532107540552005,
+    "seasons_simulated": 39,
+    "years": 38.78165639972622
+   }
+  },
+  {
+   "index": 40,
+   "name": "winter wheat - winter wheat (irrigated) - winter wheat (irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 0,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 100.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "8 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.2231375325879856,
+    "downside": 1.7267799881075687,
+    "irrigation": 390.57276634621377,
+    "carbon": 0.3599427656154998,
+    "wind_exposure": 179.43048391157322,
+    "bare_ground": 0.215319449346982
+   },
+   "detail": {
+    "crops_per_decade": 10.056300741263678,
+    "evaporation_fraction": 0.38323244079724306,
+    "nitrogen_limited_seasons": 8,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 34.001186954744554,
+    "seasons_simulated": 39,
+    "years": 38.78165639972622
+   }
+  },
+  {
+   "index": 41,
+   "name": "grain sorghum - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "34 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.9537538568701294,
+    "downside": 1.7673937689619599,
+    "irrigation": 0.0,
+    "carbon": 0.289401557026939,
+    "wind_exposure": 577.3577103624906,
+    "bare_ground": 0.6519100321313817
+   },
+   "detail": {
+    "crops_per_decade": 10.171188861121028,
+    "evaporation_fraction": 0.48599738229950634,
+    "nitrogen_limited_seasons": 34,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.16778069449116048,
+    "seasons_simulated": 39,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 42,
+   "name": "corn (irrigated) - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.091685029716229,
+    "downside": 1.9068170402979427,
+    "irrigation": 242.68950382319406,
+    "carbon": 0.418419298965206,
+    "wind_exposure": 448.3970457120912,
+    "bare_ground": 0.629418472063854
+   },
+   "detail": {
+    "crops_per_decade": 10.151617730900798,
+    "evaporation_fraction": 0.41149404299473274,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2961080448780701,
+    "seasons_simulated": 39,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 43,
+   "name": "grain sorghum - grain sorghum - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "31 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.037696555247233,
+    "downside": 1.729198352559207,
+    "irrigation": 232.67383553363214,
+    "carbon": 0.12870320624140485,
+    "wind_exposure": 815.4202148856576,
+    "bare_ground": 0.6380639634494575
+   },
+   "detail": {
+    "crops_per_decade": 10.169010565391204,
+    "evaporation_fraction": 0.41666167639953505,
+    "nitrogen_limited_seasons": 31,
+    "nitrogen_fixed_kg_ha": 1483.6099979846178,
+    "nitrogen_leached_kg_ha": 11.749492393979114,
+    "seasons_simulated": 39,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 44,
+   "name": "sorghum + rye cover - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "33 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 1.9968810662068954,
+    "downside": 1.786628679867555,
+    "irrigation": 0.0,
+    "carbon": 0.3506791899070249,
+    "wind_exposure": 628.9343410545997,
+    "bare_ground": 0.5869332381292396
+   },
+   "detail": {
+    "crops_per_decade": 13.56158514816137,
+    "evaporation_fraction": 0.4678268462751698,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.1819279795039992,
+    "seasons_simulated": 52,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 45,
+   "name": "pearl millet - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.84257165864173,
+    "downside": 1.3808708745977554,
+    "irrigation": 0.0,
+    "carbon": 0.2709376740928498,
+    "wind_exposure": 709.7433508290792,
+    "bare_ground": 0.6751160299892895
+   },
+   "detail": {
+    "crops_per_decade": 10.171188861121028,
+    "evaporation_fraction": 0.4940375109727689,
+    "nitrogen_limited_seasons": 35,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.20228729914210933,
+    "seasons_simulated": 39,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 46,
+   "name": "corn (irrigated) - corn (irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "2 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 6.089115254665365,
+    "downside": 2.3390817515131572,
+    "irrigation": 471.5985310886044,
+    "carbon": 0.49967320363532564,
+    "wind_exposure": 352.6116140460704,
+    "bare_ground": 0.6062571265678449
+   },
+   "detail": {
+    "crops_per_decade": 10.151617730900798,
+    "evaporation_fraction": 0.3567084856193409,
+    "nitrogen_limited_seasons": 2,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 16.995454652547874,
+    "seasons_simulated": 39,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 47,
+   "name": "corn (irrigated) - soybean (irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "18 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.147963239153649,
+    "downside": 2.043231384821056,
+    "irrigation": 470.89609609733446,
+    "carbon": 0.2577425233357067,
+    "wind_exposure": 638.1787501617139,
+    "bare_ground": 0.6155216647662486
+   },
+   "detail": {
+    "crops_per_decade": 10.151617730900798,
+    "evaporation_fraction": 0.360332609462196,
+    "nitrogen_limited_seasons": 18,
+    "nitrogen_fixed_kg_ha": 1483.6615851886438,
+    "nitrogen_leached_kg_ha": 20.239535174401745,
+    "seasons_simulated": 39,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 48,
+   "name": "corn (irrigated) - sorghum + rye cover - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.10554001999428,
+    "downside": 1.9307465436992226,
+    "irrigation": 242.68950382319406,
+    "carbon": 0.46449373430842494,
+    "wind_exposure": 609.2679889180604,
+    "bare_ground": 0.5645667046750285
+   },
+   "detail": {
+    "crops_per_decade": 13.53549030786773,
+    "evaporation_fraction": 0.4012932977361553,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.41913981954475477,
+    "seasons_simulated": 52,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 49,
+   "name": "corn (irrigated) - pearl millet - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.9719160884617066,
+    "downside": 1.8400539654522694,
+    "irrigation": 242.68950382319406,
+    "carbon": 0.4036503416022208,
+    "wind_exposure": 540.84750340431,
+    "bare_ground": 0.6525798175598632
+   },
+   "detail": {
+    "crops_per_decade": 10.151617730900798,
+    "evaporation_fraction": 0.41907568252095734,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.15089682969582058,
+    "seasons_simulated": 39,
+    "years": 38.417522245037645
+   }
+  },
+  {
+   "index": 50,
+   "name": "corn (irrigated) - grain sorghum - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.087249384118826,
+    "downside": 1.9205331754598187,
+    "irrigation": 479.3619209165411,
+    "carbon": 0.24277837450788817,
+    "wind_exposure": 700.9161724949419,
+    "bare_ground": 0.6156038475240471
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.37289335136499585,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1483.4922294280755,
+    "nitrogen_leached_kg_ha": 10.415494521594487,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 51,
+   "name": "sorghum + rye cover - grain sorghum - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "30 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.074191141218489,
+    "downside": 1.75756025109843,
+    "irrigation": 231.89783565581988,
+    "carbon": 0.17279710061147782,
+    "wind_exposure": 904.5332554512313,
+    "bare_ground": 0.5731010850942319
+   },
+   "detail": {
+    "crops_per_decade": 13.55868075385494,
+    "evaporation_fraction": 0.4043618578777209,
+    "nitrogen_limited_seasons": 30,
+    "nitrogen_fixed_kg_ha": 1483.8870708836391,
+    "nitrogen_leached_kg_ha": 12.120995484997684,
+    "seasons_simulated": 52,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 52,
+   "name": "pearl millet - grain sorghum - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.9254772339580593,
+    "downside": 1.71772928013486,
+    "irrigation": 231.89141944776244,
+    "carbon": 0.11809123762048038,
+    "wind_exposure": 928.5568130106548,
+    "bare_ground": 0.6612649914334666
+   },
+   "detail": {
+    "crops_per_decade": 10.169010565391204,
+    "evaporation_fraction": 0.422046767930562,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 1483.8628214993682,
+    "nitrogen_leached_kg_ha": 8.748744344050472,
+    "seasons_simulated": 39,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 53,
+   "name": "corn (irrigated) - grain sorghum - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.085045850534491,
+    "downside": 1.9278640862590932,
+    "irrigation": 251.95324711050722,
+    "carbon": 0.5112537997704413,
+    "wind_exposure": 629.7489535799962,
+    "bare_ground": 0.5670658258343372
+   },
+   "detail": {
+    "crops_per_decade": 13.45780486076667,
+    "evaporation_fraction": 0.4072748178494001,
+    "nitrogen_limited_seasons": 12,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.2929438839696879,
+    "seasons_simulated": 52,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 54,
+   "name": "sorghum + rye cover - soybean (irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "31 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.069033494716348,
+    "downside": 1.7428455324949914,
+    "irrigation": 257.10717952776344,
+    "carbon": 0.17189644313604086,
+    "wind_exposure": 808.7144983415251,
+    "bare_ground": 0.5730096394144948
+   },
+   "detail": {
+    "crops_per_decade": 13.56158514816137,
+    "evaporation_fraction": 0.40778290565177244,
+    "nitrogen_limited_seasons": 31,
+    "nitrogen_fixed_kg_ha": 1482.6775257987115,
+    "nitrogen_leached_kg_ha": 9.589980984865612,
+    "seasons_simulated": 52,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 55,
+   "name": "sorghum + rye cover - sorghum + rye cover - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "33 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.033616839078593,
+    "downside": 1.8068466996603338,
+    "irrigation": 0.0,
+    "carbon": 0.41133287206845653,
+    "wind_exposure": 760.2668226493399,
+    "bare_ground": 0.5219564441270975
+   },
+   "detail": {
+    "crops_per_decade": 16.951981435201713,
+    "evaporation_fraction": 0.4524369905769281,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.3203124727158566,
+    "seasons_simulated": 65,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 56,
+   "name": "pearl millet - grain sorghum - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.8686720028723378,
+    "downside": 1.4032020448225633,
+    "irrigation": 0.0,
+    "carbon": 0.3815962291787373,
+    "wind_exposure": 873.3795977491758,
+    "bare_ground": 0.6123810876047139
+   },
+   "detail": {
+    "crops_per_decade": 13.483600738321737,
+    "evaporation_fraction": 0.47644848782677424,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.20919800978253272,
+    "seasons_simulated": 52,
+    "years": 38.56536618754278
+   }
+  },
+  {
+   "index": 57,
+   "name": "corn (irrigated) - grain sorghum - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.953857091793848,
+    "downside": 1.469167585418881,
+    "irrigation": 250.79214594383484,
+    "carbon": 0.3998991804157367,
+    "wind_exposure": 594.5715421225516,
+    "bare_ground": 0.6519597344185051
+   },
+   "detail": {
+    "crops_per_decade": 10.169736560291284,
+    "evaporation_fraction": 0.42053477128467703,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.1676299514542658,
+    "seasons_simulated": 39,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 58,
+   "name": "pearl millet - soybean (irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.9072740498515985,
+    "downside": 1.3284501261292259,
+    "irrigation": 255.45688571694836,
+    "carbon": 0.10632503291771846,
+    "wind_exposure": 891.9263101065708,
+    "bare_ground": 0.6611924312745449
+   },
+   "detail": {
+    "crops_per_decade": 10.171188861121028,
+    "evaporation_fraction": 0.42542642374389467,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 1483.392281218446,
+    "nitrogen_leached_kg_ha": 10.829824410772424,
+    "seasons_simulated": 39,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 59,
+   "name": "pearl millet - sorghum + rye cover - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.8793680618434063,
+    "downside": 1.418083248133381,
+    "irrigation": 0.0,
+    "carbon": 0.33103210902298474,
+    "wind_exposure": 842.5727883457732,
+    "bare_ground": 0.6101392359871475
+   },
+   "detail": {
+    "crops_per_decade": 13.56158514816137,
+    "evaporation_fraction": 0.4775247951680673,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.3124151270775208,
+    "seasons_simulated": 52,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 60,
+   "name": "pearl millet - pearl millet - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "pearl_millet",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.7213472458154468,
+    "downside": 1.3596409064326775,
+    "irrigation": 0.0,
+    "carbon": 0.25087144308812775,
+    "wind_exposure": 807.4389410958798,
+    "bare_ground": 0.6983220278471974
+   },
+   "detail": {
+    "crops_per_decade": 10.171188861121028,
+    "evaporation_fraction": 0.5047392578129077,
+    "nitrogen_limited_seasons": 34,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.14107729105048183,
+    "seasons_simulated": 39,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 61,
+   "name": "corn (irrigated) - corn (irrigated) - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "1 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 6.057245839755508,
+    "downside": 2.3389937420793947,
+    "irrigation": 482.59322860441574,
+    "carbon": 0.5822171105113136,
+    "wind_exposure": 586.4368518089443,
+    "bare_ground": 0.544037412314887
+   },
+   "detail": {
+    "crops_per_decade": 13.45780486076667,
+    "evaporation_fraction": 0.3580716930736212,
+    "nitrogen_limited_seasons": 1,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 20.69738809678342,
+    "seasons_simulated": 52,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 62,
+   "name": "corn (irrigated) - corn (irrigated) - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 5.963332059567763,
+    "downside": 2.0177218568725097,
+    "irrigation": 476.2749927557232,
+    "carbon": 0.49141211848773686,
+    "wind_exposure": 479.36569712959147,
+    "bare_ground": 0.6287570500464054
+   },
+   "detail": {
+    "crops_per_decade": 10.169736560291284,
+    "evaporation_fraction": 0.36294232295957835,
+    "nitrogen_limited_seasons": 2,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 22.071220054247135,
+    "seasons_simulated": 39,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 63,
+   "name": "corn (irrigated) - soybean (irrigated) - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "18 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.151142736437124,
+    "downside": 2.092248590385037,
+    "irrigation": 480.45749879446527,
+    "carbon": 0.3511255839056237,
+    "wind_exposure": 860.3712637818444,
+    "bare_ground": 0.553248777722667
+   },
+   "detail": {
+    "crops_per_decade": 13.45780486076667,
+    "evaporation_fraction": 0.3605382928257019,
+    "nitrogen_limited_seasons": 18,
+    "nitrogen_fixed_kg_ha": 1483.5543717659557,
+    "nitrogen_leached_kg_ha": 19.67315633979389,
+    "seasons_simulated": 52,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 64,
+   "name": "corn (irrigated) - soybean (irrigated) - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 4.033401555189651,
+    "downside": 1.910262145426465,
+    "irrigation": 477.1456851201834,
+    "carbon": 0.25006661156513504,
+    "wind_exposure": 750.5914424364871,
+    "bare_ground": 0.6380381237952453
+   },
+   "detail": {
+    "crops_per_decade": 10.169736560291284,
+    "evaporation_fraction": 0.36676457738298135,
+    "nitrogen_limited_seasons": 19,
+    "nitrogen_fixed_kg_ha": 1483.6612732123192,
+    "nitrogen_leached_kg_ha": 20.591492546407263,
+    "seasons_simulated": 39,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 65,
+   "name": "corn (irrigated) - sorghum + rye cover - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.108033780870262,
+    "downside": 1.9663579739682653,
+    "irrigation": 490.63407721437653,
+    "carbon": 0.2774558348299952,
+    "wind_exposure": 876.6887292037402,
+    "bare_ground": 0.5507659422871393
+   },
+   "detail": {
+    "crops_per_decade": 13.532597078731742,
+    "evaporation_fraction": 0.37089121534684294,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1483.7163454693673,
+    "nitrogen_leached_kg_ha": 7.167135487531667,
+    "seasons_simulated": 52,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 66,
+   "name": "corn (irrigated) - sorghum + rye cover - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.097577191058113,
+    "downside": 1.9543408365264625,
+    "irrigation": 251.95324711050722,
+    "carbon": 0.5565417517722862,
+    "wind_exposure": 793.4844214659724,
+    "bare_ground": 0.5025862679798767
+   },
+   "detail": {
+    "crops_per_decade": 16.822256075958336,
+    "evaporation_fraction": 0.39757855601517966,
+    "nitrogen_limited_seasons": 12,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.3564375829104639,
+    "seasons_simulated": 65,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 67,
+   "name": "corn (irrigated) - sorghum + rye cover - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "cereal_rye_cover",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.9642193763608833,
+    "downside": 1.5031069207449042,
+    "irrigation": 250.025197485291,
+    "carbon": 0.44599313365628107,
+    "wind_exposure": 742.2594154476665,
+    "bare_ground": 0.586992218176626
+   },
+   "detail": {
+    "crops_per_decade": 13.559648747055045,
+    "evaporation_fraction": 0.4091016949974095,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.24219638921793918,
+    "seasons_simulated": 52,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 68,
+   "name": "corn (irrigated) - pearl millet - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.951280810527412,
+    "downside": 1.7839982022574976,
+    "irrigation": 484.3518628501811,
+    "carbon": 0.22808479116533417,
+    "wind_exposure": 802.3247384971654,
+    "bare_ground": 0.6387602422515141
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.38131523929519767,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1484.3791818679897,
+    "nitrogen_leached_kg_ha": 9.518380731154984,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 69,
+   "name": "corn (irrigated) - pearl millet - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.9692235068647226,
+    "downside": 1.8362725313067292,
+    "irrigation": 251.95324711050722,
+    "carbon": 0.4975635468582109,
+    "wind_exposure": 731.2726754571703,
+    "bare_ground": 0.5900942393537872
+   },
+   "detail": {
+    "crops_per_decade": 13.45780486076667,
+    "evaporation_fraction": 0.4150080008707412,
+    "nitrogen_limited_seasons": 11,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.15720141919524347,
+    "seasons_simulated": 52,
+    "years": 38.639288158795345
+   }
+  },
+  {
+   "index": 70,
+   "name": "corn (irrigated) - pearl millet - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "pearl_millet",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 125,
+     "duration_days": 150,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 200.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 3.8357899129195956,
+    "downside": 1.523972199319166,
+    "irrigation": 250.025197485291,
+    "carbon": 0.3879601620489,
+    "wind_exposure": 675.0341007162205,
+    "bare_ground": 0.6751624187906047
+   },
+   "detail": {
+    "crops_per_decade": 10.169736560291284,
+    "evaporation_fraction": 0.4270772788178344,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.0,
+    "seasons_simulated": 39,
+    "years": 38.34907597535934
+   }
+  },
+  {
+   "index": 71,
+   "name": "sorghum + rye cover - sorghum + rye cover - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "29 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.1107627215389,
+    "downside": 1.8068783715185421,
+    "irrigation": 241.58815710659042,
+    "carbon": 0.2142708091541783,
+    "wind_exposure": 1042.1197557669161,
+    "bare_ground": 0.5081382067390063
+   },
+   "detail": {
+    "crops_per_decade": 16.948350942318676,
+    "evaporation_fraction": 0.399968671024444,
+    "nitrogen_limited_seasons": 29,
+    "nitrogen_fixed_kg_ha": 1483.6943757432343,
+    "nitrogen_leached_kg_ha": 7.119374040132116,
+    "seasons_simulated": 65,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 72,
+   "name": "pearl millet - soybean (irrigated) - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "soybean",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.924840088729058,
+    "downside": 1.34669814507348,
+    "irrigation": 253.3084532951368,
+    "carbon": 0.20762619393947,
+    "wind_exposure": 1100.646311778025,
+    "bare_ground": 0.5985375550191679
+   },
+   "detail": {
+    "crops_per_decade": 13.483600738321737,
+    "evaporation_fraction": 0.41428045997376206,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 1483.2587702945502,
+    "nitrogen_leached_kg_ha": 11.876108364155517,
+    "seasons_simulated": 52,
+    "years": 38.56536618754278
+   }
+  },
+  {
+   "index": 73,
+   "name": "pearl millet - sorghum + rye cover - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.965746571670459,
+    "downside": 1.7589931439544522,
+    "irrigation": 241.58328321846426,
+    "carbon": 0.1581548160080576,
+    "wind_exposure": 1070.6966806640658,
+    "bare_ground": 0.596302113078241
+   },
+   "detail": {
+    "crops_per_decade": 13.55868075385494,
+    "evaporation_fraction": 0.4167156011344891,
+    "nitrogen_limited_seasons": 31,
+    "nitrogen_fixed_kg_ha": 1483.692330312385,
+    "nitrogen_leached_kg_ha": 6.869402655365471,
+    "seasons_simulated": 52,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 74,
+   "name": "pearl millet - pearl millet - soybean (irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "pearl_millet",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 140,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.7941769500056586,
+    "downside": 1.4266409380248903,
+    "irrigation": 240.0323411145008,
+    "carbon": 0.09513498271037174,
+    "wind_exposure": 1038.461617079797,
+    "bare_ground": 0.6844660194174758
+   },
+   "detail": {
+    "crops_per_decade": 10.169010565391204,
+    "evaporation_fraction": 0.4348256402878103,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 1483.5861815386259,
+    "nitrogen_leached_kg_ha": 9.05733149675531,
+    "seasons_simulated": 39,
+    "years": 38.351813826146476
+   }
+  },
+  {
+   "index": 75,
+   "name": "sorghum + rye cover - sorghum + rye cover - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "32 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.057188500427782,
+    "downside": 1.8175790520640613,
+    "irrigation": 0.0,
+    "carbon": 0.5218766045166208,
+    "wind_exposure": 947.1107245774632,
+    "bare_ground": 0.46010222916370863
+   },
+   "detail": {
+    "crops_per_decade": 20.225401107482607,
+    "evaporation_fraction": 0.43805526747825824,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.32352031474126713,
+    "seasons_simulated": 78,
+    "years": 38.56536618754278
+   }
+  },
+  {
+   "index": 76,
+   "name": "pearl millet - sorghum + rye cover - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.9042848909856984,
+    "downside": 1.439887085207733,
+    "irrigation": 0.0,
+    "carbon": 0.4417589579134556,
+    "wind_exposure": 1012.2796251652917,
+    "bare_ground": 0.5477779355388329
+   },
+   "detail": {
+    "crops_per_decade": 16.854500922902172,
+    "evaporation_fraction": 0.46106637090774016,
+    "nitrogen_limited_seasons": 32,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.3154102643753802,
+    "seasons_simulated": 65,
+    "years": 38.56536618754278
+   }
+  },
+  {
+   "index": 77,
+   "name": "pearl millet - pearl millet - sorghum + rye cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "pearl_millet",
+    "sorghum",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 50.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 288,
+     "duration_days": 70,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.7497107468101996,
+    "downside": 1.358858987639044,
+    "irrigation": 0.0,
+    "carbon": 0.36205319060068825,
+    "wind_exposure": 980.0228541480795,
+    "bare_ground": 0.6354536419139571
+   },
+   "detail": {
+    "crops_per_decade": 13.483600738321737,
+    "evaporation_fraction": 0.4869143559669786,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.14391714809752718,
+    "seasons_simulated": 52,
+    "years": 38.56536618754278
+   }
+  },
+  {
+   "index": 78,
+   "name": "pearl millet - pearl millet - pearl millet",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "pearl_millet",
+    "pearl_millet",
+    "pearl_millet"
+   ],
+   "schedule": [
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 0,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 1,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "pearl_millet",
+     "crop_name": "Pearl millet (bajra)",
+     "year_offset": 2,
+     "start_doy": 152,
+     "duration_days": 100,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 40.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
+   ],
+   "objectives": {
+    "production": 1.607009836400301,
+    "downside": 1.4236577356911635,
+    "irrigation": 0.0,
+    "carbon": 0.23893177359549345,
+    "wind_exposure": 938.0144538726777,
+    "bare_ground": 0.721030042918455
+   },
+   "detail": {
+    "crops_per_decade": 10.189377682403434,
+    "evaporation_fraction": 0.5101657982115048,
+    "nitrogen_limited_seasons": 33,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 0.0,
+    "seasons_simulated": 39,
+    "years": 38.275154004106774
+   }
+  },
+  {
+   "index": 79,
+   "name": "EXISTING: fallow - winter wheat",
+   "is_existing": true,
+   "on_front": false,
+   "cycle_years": 2,
+   "crops": [
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 274,
+     "duration_days": 285,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 70.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 0.8996245224614907,
+    "downside": 0.0,
+    "irrigation": 0.0,
+    "carbon": -0.04998399679640365,
+    "wind_exposure": 774.3681758853336,
+    "bare_ground": 0.5975713075402429
+   },
+   "detail": {
+    "crops_per_decade": 5.157441400734256,
+    "evaporation_fraction": 0.6830422942345203,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4.252184433020042,
+    "seasons_simulated": 20,
+    "years": 38.77891854893908
+   }
+  }
+ ],
+ "front": [
+  2,
+  7,
+  11,
+  12,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  46,
+  47,
+  48,
+  51,
+  53,
+  55,
+  61,
+  63,
+  66,
+  71,
+  75
+ ],
+ "search": {
+  "examined": 176,
+  "feasible": 79,
+  "simulated": 80,
+  "on_front": 22,
+  "rejections": {
+   "no marketable crop": 1,
+   "too much fallow": 7,
+   "impossible calendar": 80,
+   "breaks a pathogen return interval": 4,
+   "exceeds the irrigation limit": 5
+  }
+ },
+ "guardrails": {
+  "wheat_winter": {
+   "crop": "Winter wheat",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 2400 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 35 C during flowering in 90% of years (mean 15.9 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.9,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 1 of 40 years, on a crop with waterlogging tolerance 1/5",
+     "frequency": 0.025,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "sorghum": {
+   "crop": "Sorghum (grain)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "warn",
+     "message": "falls short of maturity heat in 5 of 41 years",
+     "frequency": 0.12195121951219512,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "warn",
+     "message": "damaging frost during flowering or grain fill in 5 of 41 years; shifting the sowing date may avoid it",
+     "frequency": 0.12195121951219512,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "heat stress above 40 C during flowering in 3 of 41 years (mean 1.7 days)",
+     "frequency": 0.07317073170731707,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "no damaging rainfall extremes in the record",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "maize": {
+   "crop": "Maize (grain)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 1550 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "warn",
+     "message": "damaging frost during flowering or grain fill in 4 of 41 years; shifting the sowing date may avoid it",
+     "frequency": 0.0975609756097561,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 38 C during flowering in 63% of years (mean 9.4 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.6341463414634146,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "no damaging rainfall extremes in the record",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "soybean": {
+   "crop": "Soybean",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 1500 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "warn",
+     "message": "damaging frost during flowering or grain fill in 7 of 41 years; shifting the sowing date may avoid it",
+     "frequency": 0.17073170731707318,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 38 C during flowering in 63% of years (mean 9.4 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.6341463414634146,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "no damaging rainfall extremes in the record",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "cereal_rye_cover": {
+   "crop": "Cereal rye (cover crop)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "growth window",
+     "level": "pass",
+     "message": "terminated before maturity by design; accumulates 505 degree days in the window (56% of a full season)",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost termination",
+     "level": "pass",
+     "message": "no harvest to lose; frost may be the intended way to terminate this cover rather than a risk to it",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "pass",
+     "message": "mean 0.0 days above 32 C during flowering",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "no damaging rainfall extremes in the record",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "pass",
+     "message": "no marketable product; the benefit is entirely soil-side",
+     "frequency": null,
+     "needs_local_review": false
+    }
+   ]
+  },
+  "pearl_millet": {
+   "crop": "Pearl millet (bajra)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "warn",
+     "message": "falls short of maturity heat in 23 of 41 years",
+     "frequency": 0.5609756097560976,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "heat stress above 42 C during flowering in 1 of 41 years (mean 0.5 days)",
+     "frequency": 0.024390243902439025,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "no damaging rainfall extremes in the record",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  }
+ }
+}

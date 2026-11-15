@@ -1,0 +1,4624 @@
+{
+ "site": {
+  "id": "arkansas_ar",
+  "name": "Arkansas County, Arkansas",
+  "latitude": 34.29,
+  "longitude": -91.37,
+  "elevation_m": 62.0,
+  "state": "AR",
+  "county": "ARKANSAS",
+  "note": "Grand Prairie rice and soybean on a clay-pan soil. Humid where every other field here is semi-arid, and flooded exactly the way Punjab is - which is what lets the paddy water balance be checked against an observed record for the first time.",
+  "dem_tile": null,
+  "field_hectares": 65.0,
+  "region": "us_mid_south",
+  "existing_rotation": [
+   "rice",
+   "soy"
+  ],
+  "rainfall_mm_yr": 1283.2456410256411,
+  "soil": {
+   "component": "Dewitt",
+   "component_pct": 80.0,
+   "soil_source": "ssurgo",
+   "texture": "Silt loam",
+   "available_water_mm_per_m": 180.0,
+   "measured": true,
+   "provenance": "survey",
+   "organic_carbon_pct": 0.7830626450116009,
+   "hydrologic_group": "C",
+   "source": "SSURGO Dewitt (80% of map unit)"
+  },
+  "terrain": {
+   "slope_percent": null,
+   "ls_factor": 0.25,
+   "note": "no DEM tile downloaded for this site, so the slope-length factor uses a placeholder of 0.25; the erosion figure here is indicative only"
+  },
+  "weather": {
+   "years": 39,
+   "first_year": 1984,
+   "last_year": 2024,
+   "et0_confidence": "high",
+   "et0_method": "fao56_penman_monteith",
+   "record_confidence": "high",
+   "annual_et0_mm": 1182.4704655996075
+  },
+  "starting_carbon_t_ha": 25.754930394431554
+ },
+ "scenario": {
+  "name": "observed weather",
+  "warming_c": 0.0,
+  "rain_scale": 1.0,
+  "is_baseline": true,
+  "caveats": []
+ },
+ "region": {
+  "id": "us_mid_south",
+  "name": "US Mid-South",
+  "tier": 1,
+  "validated": true,
+  "yield_validation": "USDA NASS: county rice yields from 1938, and state irrigation water applied to rice (2013, 2018, 2023) - the only observed record we have found anywhere against which the ponded paddy water balance can be checked directly",
+  "soil_source": "ssurgo",
+  "review_first": [
+   "Percolation under the permanent flood, declared at 2.0 mm/day against Punjab's 4.0. The Grand Prairie is rice country precisely because a dense clay subsoil holds water, so a lower figure is expected - but it is the single number the irrigation estimate turns on and it is swept rather than asserted in scripts/validate_paddy.py.",
+   "Flood timing, now modelled as a window rather than the whole season - dry from drilling to about the four-leaf stage, flooded for 95 days, drained before harvest. Correcting this was the first thing the Arkansas test demanded; it did NOT close the gap, which is what sent the search to crop water use instead."
+  ],
+  "note": "Grand Prairie rice and soybean on a clay-pan soil. Humid where every other field we run is semi-arid, and flooded exactly as Punjab is - which is what makes the paddy model testable here."
+ },
+ "objectives": [
+  {
+   "key": "production",
+   "label": "production (dry matter)",
+   "units": "t DM/ha/yr",
+   "maximise": true,
+   "note": "summed as dry matter, because marketed weight cannot be added across crops holding different amounts of water - 25 t/ha of potato is about 5 t/ha of dry matter. Becomes margin when local prices are supplied."
+  },
+  {
+   "key": "downside",
+   "label": "production in a bad year",
+   "units": "t DM/ha/yr",
+   "maximise": true,
+   "note": "tenth percentile across simulated years for THIS FIELD, including years it produces nothing. A farmer staggering the rotation across several fields sees a steadier farm-level income; compare with production for that view."
+  },
+  {
+   "key": "irrigation",
+   "label": "irrigation demand",
+   "units": "mm/yr",
+   "maximise": false,
+   "note": "at the field gate, including application losses; the binding constraint where groundwater is declining"
+  },
+  {
+   "key": "carbon",
+   "label": "soil carbon change",
+   "units": "t C/ha/yr",
+   "maximise": true,
+   "note": "RothC over the simulated period, 0-23 cm"
+  },
+  {
+   "key": "wind_exposure",
+   "label": "wind erosion exposure",
+   "units": "index",
+   "maximise": false,
+   "note": "ordinal, for comparing rotations at one site; not a mass flux"
+  },
+  {
+   "key": "bare_ground",
+   "label": "bare ground",
+   "units": "fraction of time",
+   "maximise": false,
+   "note": "the clearest single explanation behind carbon loss and erosion exposure"
+  }
+ ],
+ "rotations": [
+  {
+   "index": 0,
+   "name": "rice (flooded) - rice (flooded) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.7656129902382385,
+    "downside": 2.24972300151101,
+    "irrigation": 1110.0961045747083,
+    "carbon": -0.2220745014382364,
+    "wind_exposure": 4.1226898934625105,
+    "bare_ground": 0.6105563480741797
+   },
+   "detail": {
+    "crops_per_decade": 10.160306704707562,
+    "evaporation_fraction": 0.28191793868356957,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5115.599459381581,
+    "seasons_simulated": 39,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 1,
+   "name": "rice (flooded) - rice (flooded) - soybean",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.2412543579110116,
+    "downside": 0.8877076537959557,
+    "irrigation": 743.8009582627748,
+    "carbon": -0.21892492548117576,
+    "wind_exposure": 8.208516168517184,
+    "bare_ground": 0.6203703703703703
+   },
+   "detail": {
+    "crops_per_decade": 10.145833333333334,
+    "evaporation_fraction": 0.3544960791805003,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 904.9614030254999,
+    "nitrogen_leached_kg_ha": 3681.9486333742275,
+    "seasons_simulated": 39,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 2,
+   "name": "rice (flooded) - rice (flooded) - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.48433612048588,
+    "downside": 1.7295612992502116,
+    "irrigation": 920.3094827708184,
+    "carbon": -0.23742619862611442,
+    "wind_exposure": 7.503688525901447,
+    "bare_ground": 0.6203703703703703
+   },
+   "detail": {
+    "crops_per_decade": 10.145833333333334,
+    "evaporation_fraction": 0.32956983213228463,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 1491.774841543268,
+    "nitrogen_leached_kg_ha": 3760.8305132278865,
+    "seasons_simulated": 39,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 3,
+   "name": "corn (furrow irrigated) - rice (flooded) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.749099583831031,
+    "downside": 2.8124736805347896,
+    "irrigation": 895.483910063752,
+    "carbon": -0.06985964249182025,
+    "wind_exposure": 3.525757683952277,
+    "bare_ground": 0.6062009978617249
+   },
+   "detail": {
+    "crops_per_decade": 10.153064861012117,
+    "evaporation_fraction": 0.30885575469564985,
+    "nitrogen_limited_seasons": 27,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4102.653417242117,
+    "seasons_simulated": 39,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 4,
+   "name": "grain sorghum - rice (flooded) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.0059224078990976,
+    "downside": 2.5501133199139607,
+    "irrigation": 743.5421435858074,
+    "carbon": -0.1238848014933308,
+    "wind_exposure": 3.914553962794642,
+    "bare_ground": 0.6239285714285714
+   },
+   "detail": {
+    "crops_per_decade": 10.174821428571429,
+    "evaporation_fraction": 0.3438780294033537,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3621.65443381103,
+    "seasons_simulated": 39,
+    "years": 38.32991101984942
+   }
+  },
+  {
+   "index": 5,
+   "name": "rice (flooded) - rice (flooded) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.812861075744242,
+    "downside": 2.332667766913722,
+    "irrigation": 1101.4501474022138,
+    "carbon": -0.15052437945762853,
+    "wind_exposure": 5.897916826162982,
+    "bare_ground": 0.5399858457183297
+   },
+   "detail": {
+    "crops_per_decade": 13.441613588110403,
+    "evaporation_fraction": 0.27388922635799257,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5159.917732139361,
+    "seasons_simulated": 52,
+    "years": 38.68583162217659
+   }
+  },
+  {
+   "index": 6,
+   "name": "corn (furrow irrigated) - rice (flooded) - soybean",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.153204933840595,
+    "downside": 0.974070813753382,
+    "irrigation": 536.9714719940711,
+    "carbon": -0.06302141876247845,
+    "wind_exposure": 7.646151438852449,
+    "bare_ground": 0.6160142348754448
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.39447988666995365,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 907.3530248807388,
+    "nitrogen_leached_kg_ha": 2651.7602959407195,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 7,
+   "name": "grain sorghum - rice (flooded) - soybean",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.404725598585655,
+    "downside": 0.9280887045308114,
+    "irrigation": 376.66408431814733,
+    "carbon": -0.12091434878594907,
+    "wind_exposure": 8.007177869701081,
+    "bare_ground": 0.6337375178316691
+   },
+   "detail": {
+    "crops_per_decade": 10.160306704707562,
+    "evaporation_fraction": 0.4418835486062885,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 906.3681116691051,
+    "nitrogen_leached_kg_ha": 2167.5861557405365,
+    "seasons_simulated": 39,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 8,
+   "name": "rice (flooded) - soybean - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.3317602585001156,
+    "downside": 1.0093158462816132,
+    "irrigation": 727.6987992116149,
+    "carbon": -0.14909335714979455,
+    "wind_exposure": 8.228850411794594,
+    "bare_ground": 0.5491861288039632
+   },
+   "detail": {
+    "crops_per_decade": 13.441613588110403,
+    "evaporation_fraction": 0.34220808100918687,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 894.7158239233763,
+    "nitrogen_leached_kg_ha": 3665.3819617293866,
+    "seasons_simulated": 52,
+    "years": 38.68583162217659
+   }
+  },
+  {
+   "index": 9,
+   "name": "corn (furrow irrigated) - rice (flooded) - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.399059172379185,
+    "downside": 1.8729409520822071,
+    "irrigation": 714.4106925268259,
+    "carbon": -0.09092238197160286,
+    "wind_exposure": 6.889497557500876,
+    "bare_ground": 0.6160142348754448
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.364990892129613,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1492.0947773947396,
+    "nitrogen_leached_kg_ha": 2726.6679905645324,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 10,
+   "name": "grain sorghum - rice (flooded) - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.6487250337937347,
+    "downside": 1.8078832029902496,
+    "irrigation": 553.4949435936867,
+    "carbon": -0.14535716810720542,
+    "wind_exposure": 7.402248381178351,
+    "bare_ground": 0.6337375178316691
+   },
+   "detail": {
+    "crops_per_decade": 10.160306704707562,
+    "evaporation_fraction": 0.4055249861827877,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1491.9368547067745,
+    "nitrogen_leached_kg_ha": 2245.907363847376,
+    "seasons_simulated": 39,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 11,
+   "name": "rice (flooded) - soybean (furrow irrigated) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.563998502364722,
+    "downside": 1.7628634480302339,
+    "irrigation": 899.7804189701747,
+    "carbon": -0.1682435432416709,
+    "wind_exposure": 8.09081120056759,
+    "bare_ground": 0.5491861288039632
+   },
+   "detail": {
+    "crops_per_decade": 13.441613588110403,
+    "evaporation_fraction": 0.31729962294261965,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 1491.907174865413,
+    "nitrogen_leached_kg_ha": 3783.721785106999,
+    "seasons_simulated": 52,
+    "years": 38.68583162217659
+   }
+  },
+  {
+   "index": 12,
+   "name": "corn (furrow irrigated) - soybean - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.218606965681901,
+    "downside": 1.1972410760185257,
+    "irrigation": 519.1496882640834,
+    "carbon": -0.06547981652074801,
+    "wind_exposure": 5.789098563480312,
+    "bare_ground": 0.6154668567355667
+   },
+   "detail": {
+    "crops_per_decade": 10.153064861012117,
+    "evaporation_fraction": 0.3841397760974769,
+    "nitrogen_limited_seasons": 27,
+    "nitrogen_fixed_kg_ha": 900.5609130058572,
+    "nitrogen_leached_kg_ha": 2505.0385177171042,
+    "seasons_simulated": 39,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 13,
+   "name": "corn (furrow irrigated) - soybean (furrow irrigated) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.4518010674749195,
+    "downside": 1.978841139517967,
+    "irrigation": 686.9056782112357,
+    "carbon": -0.09374311618009744,
+    "wind_exposure": 5.686600441397977,
+    "bare_ground": 0.6154668567355667
+   },
+   "detail": {
+    "crops_per_decade": 10.153064861012117,
+    "evaporation_fraction": 0.35465086506383015,
+    "nitrogen_limited_seasons": 27,
+    "nitrogen_fixed_kg_ha": 1492.0103756207454,
+    "nitrogen_leached_kg_ha": 2617.4617302122397,
+    "seasons_simulated": 39,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 14,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 6.532658340807793,
+    "downside": 3.4753215134210107,
+    "irrigation": 667.5451695713355,
+    "carbon": 0.09294148439056106,
+    "wind_exposure": 2.527836849166743,
+    "bare_ground": 0.601568068424804
+   },
+   "detail": {
+    "crops_per_decade": 10.153064861012117,
+    "evaporation_fraction": 0.3371825933298994,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3191.385811804268,
+    "seasons_simulated": 39,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 15,
+   "name": "corn (furrow irrigated) - grain sorghum - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.832057361120318,
+    "downside": 2.7842330911716076,
+    "irrigation": 519.1567549153783,
+    "carbon": 0.044193608405332124,
+    "wind_exposure": 2.619280947073644,
+    "bare_ground": 0.6200997861724875
+   },
+   "detail": {
+    "crops_per_decade": 10.153064861012117,
+    "evaporation_fraction": 0.37788022131415683,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2652.3658807725087,
+    "seasons_simulated": 39,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 16,
+   "name": "corn (furrow irrigated) - rice + winter cover - rice (flooded)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.804127252203904,
+    "downside": 2.8781827152893213,
+    "irrigation": 895.4787278728965,
+    "carbon": -0.021970855176763966,
+    "wind_exposure": 2.4754302151564387,
+    "bare_ground": 0.5320741268709908
+   },
+   "detail": {
+    "crops_per_decade": 13.537419814682822,
+    "evaporation_fraction": 0.29807008792193496,
+    "nitrogen_limited_seasons": 27,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4140.90723515489,
+    "seasons_simulated": 52,
+    "years": 38.41204654346338
+   }
+  },
+  {
+   "index": 17,
+   "name": "grain sorghum - soybean - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "soybean",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.4995676175349932,
+    "downside": 1.0416928634306795,
+    "irrigation": 366.33367699193485,
+    "carbon": -0.12096144484484811,
+    "wind_exposure": 6.0780779211314275,
+    "bare_ground": 0.6332142857142857
+   },
+   "detail": {
+    "crops_per_decade": 10.174821428571429,
+    "evaporation_fraction": 0.4310106698690209,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 902.1695166528243,
+    "nitrogen_leached_kg_ha": 2099.562697609594,
+    "seasons_simulated": 39,
+    "years": 38.32991101984942
+   }
+  },
+  {
+   "index": 18,
+   "name": "grain sorghum - soybean (furrow irrigated) - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "soybean",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.735883776246774,
+    "downside": 1.8101166119991958,
+    "irrigation": 532.0415797404927,
+    "carbon": -0.14423063445523102,
+    "wind_exposure": 5.934136403420629,
+    "bare_ground": 0.6332142857142857
+   },
+   "detail": {
+    "crops_per_decade": 10.174821428571429,
+    "evaporation_fraction": 0.395005578271011,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1492.1222035152018,
+    "nitrogen_leached_kg_ha": 2205.3630272909836,
+    "seasons_simulated": 39,
+    "years": 38.32991101984942
+   }
+  },
+  {
+   "index": 19,
+   "name": "corn (furrow irrigated) - rice (flooded) - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.853728651163024,
+    "downside": 2.6190823304141166,
+    "irrigation": 516.7259827002371,
+    "carbon": 0.033055926160458264,
+    "wind_exposure": 3.0748675246732486,
+    "bare_ground": 0.6202351264695405
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.3763707075223582,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2668.86789465068,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 20,
+   "name": "grain sorghum - grain sorghum - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.1418822033174134,
+    "downside": 2.570874887604732,
+    "irrigation": 366.3424700245054,
+    "carbon": -0.005505391223755998,
+    "wind_exposure": 2.9219040752653536,
+    "bare_ground": 0.6378571428571429
+   },
+   "detail": {
+    "crops_per_decade": 10.174821428571429,
+    "evaporation_fraction": 0.4237641504762193,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2135.3848566513443,
+    "seasons_simulated": 39,
+    "years": 38.32991101984942
+   }
+  },
+  {
+   "index": 21,
+   "name": "grain sorghum - rice + winter cover - rice (flooded)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.059616090854675,
+    "downside": 2.5894801987950657,
+    "irrigation": 743.5367744626765,
+    "carbon": -0.07599419259568108,
+    "wind_exposure": 2.7235282504355958,
+    "bare_ground": 0.5496428571428571
+   },
+   "detail": {
+    "crops_per_decade": 13.56642857142857,
+    "evaporation_fraction": 0.3309394605846405,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3657.614865484953,
+    "seasons_simulated": 52,
+    "years": 38.32991101984942
+   }
+  },
+  {
+   "index": 22,
+   "name": "rice (flooded) - rice + winter cover - soybean",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.294231593382342,
+    "downside": 0.8863958715017706,
+    "irrigation": 743.795520109041,
+    "carbon": -0.1709599488981222,
+    "wind_exposure": 6.829470526847311,
+    "bare_ground": 0.5462962962962963
+   },
+   "detail": {
+    "crops_per_decade": 13.527777777777779,
+    "evaporation_fraction": 0.3438833741454173,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 897.4733006854818,
+    "nitrogen_leached_kg_ha": 3712.193036933155,
+    "seasons_simulated": 52,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 23,
+   "name": "rice (flooded) - rice + winter cover - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.5380496250822184,
+    "downside": 1.7392357733952188,
+    "irrigation": 923.3771872196245,
+    "carbon": -0.19046319689008517,
+    "wind_exposure": 6.099275281656881,
+    "bare_ground": 0.5462962962962963
+   },
+   "detail": {
+    "crops_per_decade": 13.527777777777779,
+    "evaporation_fraction": 0.32085507353696013,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 1491.8171768878055,
+    "nitrogen_leached_kg_ha": 3790.955345632568,
+    "seasons_simulated": 52,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 24,
+   "name": "corn (furrow irrigated) - rice (flooded) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.767987707916581,
+    "downside": 2.8500345232065145,
+    "irrigation": 893.6837750198567,
+    "carbon": 0.0010180595229532807,
+    "wind_exposure": 5.473719596314053,
+    "bare_ground": 0.5357142857142857
+   },
+   "detail": {
+    "crops_per_decade": 13.432107496463932,
+    "evaporation_fraction": 0.3040598291350905,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4166.198763365259,
+    "seasons_simulated": 52,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 25,
+   "name": "grain sorghum - rice (flooded) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.0170776682891995,
+    "downside": 2.602403466173513,
+    "irrigation": 737.7455198819965,
+    "carbon": -0.05224164154632543,
+    "wind_exposure": 5.782567777649691,
+    "bare_ground": 0.5531537916371367
+   },
+   "detail": {
+    "crops_per_decade": 13.46066619418852,
+    "evaporation_fraction": 0.3380410877753147,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3664.7440557373416,
+    "seasons_simulated": 52,
+    "years": 38.63107460643395
+   }
+  },
+  {
+   "index": 26,
+   "name": "rice (flooded) - rice + winter cover - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.880027526679704,
+    "downside": 2.407029094835135,
+    "irrigation": 1101.4442734072936,
+    "carbon": -0.10307717120053311,
+    "wind_exposure": 4.672090912351091,
+    "bare_ground": 0.46638358103326255
+   },
+   "detail": {
+    "crops_per_decade": 16.802016985138003,
+    "evaporation_fraction": 0.2635100493050705,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5194.783631134361,
+    "seasons_simulated": 65,
+    "years": 38.68583162217659
+   }
+  },
+  {
+   "index": 27,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 5.826587797956962,
+    "downside": 1.4476754785091361,
+    "irrigation": 314.55693950177937,
+    "carbon": 0.10258295217698327,
+    "wind_exposure": 6.817751707174976,
+    "bare_ground": 0.6113879003558719
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.4302485725398156,
+    "nitrogen_limited_seasons": 12,
+    "nitrogen_fixed_kg_ha": 908.6362853977178,
+    "nitrogen_leached_kg_ha": 1536.1348726308563,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 28,
+   "name": "corn (furrow irrigated) - grain sorghum - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.160261253289388,
+    "downside": 1.2330448715899975,
+    "irrigation": 161.1779359430605,
+    "carbon": 0.052958224705878826,
+    "wind_exposure": 6.797450180208642,
+    "bare_ground": 0.6298932384341637
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.48453211171094207,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 910.277663612848,
+    "nitrogen_leached_kg_ha": 1051.4794724985854,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 29,
+   "name": "corn (furrow irrigated) - rice + winter cover - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.189078952114011,
+    "downside": 0.9735178856447559,
+    "irrigation": 536.9714717871794,
+    "carbon": -0.012752050081739142,
+    "wind_exposure": 6.639238891545336,
+    "bare_ground": 0.5419928825622776
+   },
+   "detail": {
+    "crops_per_decade": 13.518149466192172,
+    "evaporation_fraction": 0.3849669393333005,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 897.4746759804316,
+    "nitrogen_leached_kg_ha": 2684.947683925993,
+    "seasons_simulated": 52,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 30,
+   "name": "corn (furrow irrigated) - soybean - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "11 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.184069997652862,
+    "downside": 1.3356444481452177,
+    "irrigation": 143.13323833273958,
+    "carbon": 0.0327017289214347,
+    "wind_exposure": 5.737626673654962,
+    "bare_ground": 0.6294976843605272
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.4817284409520206,
+    "nitrogen_limited_seasons": 11,
+    "nitrogen_fixed_kg_ha": 900.5838704527324,
+    "nitrogen_leached_kg_ha": 978.2245737816294,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 31,
+   "name": "grain sorghum - grain sorghum - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.4727994912475233,
+    "downside": 1.1635019524538888,
+    "irrigation": 0.0,
+    "carbon": -0.0001924818478276847,
+    "wind_exposure": 7.169503354600761,
+    "bare_ground": 0.6476462196861626
+   },
+   "detail": {
+    "crops_per_decade": 10.160306704707562,
+    "evaporation_fraction": 0.549619865564182,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 910.2919938335684,
+    "nitrogen_leached_kg_ha": 584.1507490811011,
+    "seasons_simulated": 39,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 32,
+   "name": "grain sorghum - rice + winter cover - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.4424366602359764,
+    "downside": 0.9323698246604579,
+    "irrigation": 376.6640777745312,
+    "carbon": -0.07044433624694722,
+    "wind_exposure": 6.884287371459777,
+    "bare_ground": 0.5595577746077033
+   },
+   "detail": {
+    "crops_per_decade": 13.54707560627675,
+    "evaporation_fraction": 0.4293457901445885,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 897.474165133925,
+    "nitrogen_leached_kg_ha": 2198.961996020503,
+    "seasons_simulated": 52,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 33,
+   "name": "corn (furrow irrigated) - soybean - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.232811141705569,
+    "downside": 1.2521111266441638,
+    "irrigation": 520.2775304950992,
+    "carbon": 0.011255841111627599,
+    "wind_exposure": 8.013942167314893,
+    "bare_ground": 0.5449080622347949
+   },
+   "detail": {
+    "crops_per_decade": 13.432107496463932,
+    "evaporation_fraction": 0.37721036738290725,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 900.5702859623123,
+    "nitrogen_leached_kg_ha": 2530.505081916486,
+    "seasons_simulated": 52,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 34,
+   "name": "grain sorghum - soybean - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.502691346624745,
+    "downside": 1.0561884267472816,
+    "irrigation": 363.47786628347984,
+    "carbon": -0.0444943806641061,
+    "wind_exposure": 8.22311853854132,
+    "bare_ground": 0.5623671155209071
+   },
+   "detail": {
+    "crops_per_decade": 13.46066619418852,
+    "evaporation_fraction": 0.4226656615078275,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 901.8438476275508,
+    "nitrogen_leached_kg_ha": 2119.655759280667,
+    "seasons_simulated": 52,
+    "years": 38.63107460643395
+   }
+  },
+  {
+   "index": 35,
+   "name": "rice + winter cover - rice + winter cover - soybean",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.3617479161837465,
+    "downside": 0.9149485826857882,
+    "irrigation": 743.9538743216403,
+    "carbon": -0.12718082350606386,
+    "wind_exposure": 6.797938150605329,
+    "bare_ground": 0.4722222222222222
+   },
+   "detail": {
+    "crops_per_decade": 16.90972222222222,
+    "evaporation_fraction": 0.33232805104614255,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 897.4736015509809,
+    "nitrogen_leached_kg_ha": 3741.644202934764,
+    "seasons_simulated": 65,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 36,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 6.089667261990933,
+    "downside": 2.324144173139978,
+    "irrigation": 489.0105524988837,
+    "carbon": 0.06588420893410943,
+    "wind_exposure": 6.100577838270255,
+    "bare_ground": 0.6113879003558719
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.3966963560303876,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1491.919718044678,
+    "nitrogen_leached_kg_ha": 1605.1256431619317,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 37,
+   "name": "corn (furrow irrigated) - grain sorghum - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.418598056699622,
+    "downside": 2.1742979567359693,
+    "irrigation": 334.64620721321313,
+    "carbon": 0.010366688273075825,
+    "wind_exposure": 6.068212266025295,
+    "bare_ground": 0.6298932384341637
+   },
+   "detail": {
+    "crops_per_decade": 10.13861209964413,
+    "evaporation_fraction": 0.4430765326300503,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1491.7328244138712,
+    "nitrogen_leached_kg_ha": 1126.0167424785934,
+    "seasons_simulated": 39,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 38,
+   "name": "corn (furrow irrigated) - rice + winter cover - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.4376615649505,
+    "downside": 1.87871308223751,
+    "irrigation": 717.0089364021206,
+    "carbon": -0.04214405296934164,
+    "wind_exposure": 5.8312301628133465,
+    "bare_ground": 0.5419928825622776
+   },
+   "detail": {
+    "crops_per_decade": 13.518149466192172,
+    "evaporation_fraction": 0.35740835696789286,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1491.817274532215,
+    "nitrogen_leached_kg_ha": 2757.091713607421,
+    "seasons_simulated": 52,
+    "years": 38.46680355920602
+   }
+  },
+  {
+   "index": 39,
+   "name": "corn (furrow irrigated) - soybean (furrow irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.440675049581507,
+    "downside": 2.115972211354451,
+    "irrigation": 310.8136294379638,
+    "carbon": -0.0023346892031585508,
+    "wind_exposure": 5.625399567880395,
+    "bare_ground": 0.6294976843605272
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.4390236010456648,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1492.0134780738188,
+    "nitrogen_leached_kg_ha": 1095.3983962510454,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 40,
+   "name": "grain sorghum - grain sorghum - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.7270357918038237,
+    "downside": 2.045938639393299,
+    "irrigation": 174.0117331030622,
+    "carbon": -0.04026639546256101,
+    "wind_exposure": 6.550363579220757,
+    "bare_ground": 0.6476462196861626
+   },
+   "detail": {
+    "crops_per_decade": 10.160306704707562,
+    "evaporation_fraction": 0.49713209050746754,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1491.672591134748,
+    "nitrogen_leached_kg_ha": 664.9889969700383,
+    "seasons_simulated": 39,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 41,
+   "name": "grain sorghum - rice + winter cover - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.6887304002686316,
+    "downside": 1.8192161097913242,
+    "irrigation": 557.0872131729078,
+    "carbon": -0.0967819072659102,
+    "wind_exposure": 6.2207107241699555,
+    "bare_ground": 0.5595577746077033
+   },
+   "detail": {
+    "crops_per_decade": 13.54707560627675,
+    "evaporation_fraction": 0.3952672200704109,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1491.8172331975707,
+    "nitrogen_leached_kg_ha": 2276.189430529808,
+    "seasons_simulated": 52,
+    "years": 38.38466803559206
+   }
+  },
+  {
+   "index": 42,
+   "name": "corn (furrow irrigated) - soybean (furrow irrigated) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.465822304953812,
+    "downside": 2.0676382813316576,
+    "irrigation": 686.7201316362368,
+    "carbon": -0.019246184394190395,
+    "wind_exposure": 7.885563413118345,
+    "bare_ground": 0.5449080622347949
+   },
+   "detail": {
+    "crops_per_decade": 13.432107496463932,
+    "evaporation_fraction": 0.3491055074813949,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1492.0124801380666,
+    "nitrogen_leached_kg_ha": 2645.4535804787847,
+    "seasons_simulated": 52,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 43,
+   "name": "grain sorghum - soybean (furrow irrigated) - rice + winter cover",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "soybean",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.73799102704268,
+    "downside": 1.8771496244870642,
+    "irrigation": 528.0194534223158,
+    "carbon": -0.06981027956174403,
+    "wind_exposure": 8.056056343646949,
+    "bare_ground": 0.5623671155209071
+   },
+   "detail": {
+    "crops_per_decade": 13.46066619418852,
+    "evaporation_fraction": 0.3884494152419913,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 1492.0620220508458,
+    "nitrogen_leached_kg_ha": 2225.883419979739,
+    "seasons_simulated": 52,
+    "years": 38.63107460643395
+   }
+  },
+  {
+   "index": 44,
+   "name": "rice + winter cover - rice + winter cover - soybean (furrow irrigated)",
+   "is_existing": false,
+   "on_front": false,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 2,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.606689178265811,
+    "downside": 1.7832186717926228,
+    "irrigation": 923.5393478600151,
+    "carbon": -0.149556075282371,
+    "wind_exposure": 6.059649117197056,
+    "bare_ground": 0.4722222222222222
+   },
+   "detail": {
+    "crops_per_decade": 16.90972222222222,
+    "evaporation_fraction": 0.31057750821130137,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 1491.8171943590794,
+    "nitrogen_leached_kg_ha": 3817.86652555851,
+    "seasons_simulated": 65,
+    "years": 38.4394250513347
+   }
+  },
+  {
+   "index": 45,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - corn (furrow irrigated)",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "maize"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 2,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 7.937500237308679,
+    "downside": 7.801851014813192,
+    "irrigation": 445.331550802139,
+    "carbon": 0.20800480680912978,
+    "wind_exposure": 2.2568152915542212,
+    "bare_ground": 0.5967914438502674
+   },
+   "detail": {
+    "crops_per_decade": 10.15668449197861,
+    "evaporation_fraction": 0.3736381057293519,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2452.46106465193,
+    "seasons_simulated": 39,
+    "years": 38.39835728952772
+   }
+  },
+  {
+   "index": 46,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 6.342681283045599,
+    "downside": 2.819040758455026,
+    "irrigation": 294.07374421090134,
+    "carbon": 0.1868264318481744,
+    "wind_exposure": 2.6590049326836107,
+    "bare_ground": 0.6156038475240471
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.41578191929272856,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 1903.2244797365568,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 47,
+   "name": "corn (furrow irrigated) - corn (furrow irrigated) - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 1,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 6.517302885432505,
+    "downside": 3.5633951210473973,
+    "irrigation": 672.6845272666827,
+    "carbon": 0.16923567729231181,
+    "wind_exposure": 4.940019351085322,
+    "bare_ground": 0.5311173974540311
+   },
+   "detail": {
+    "crops_per_decade": 13.432107496463932,
+    "evaporation_fraction": 0.33386200602651367,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3263.766153327899,
+    "seasons_simulated": 52,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 48,
+   "name": "corn (furrow irrigated) - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 4.716277701024012,
+    "downside": 2.5152140936859624,
+    "irrigation": 140.53081581759886,
+    "carbon": 0.14518833919606117,
+    "wind_exposure": 2.513202697849102,
+    "bare_ground": 0.6341289633060206
+   },
+   "detail": {
+    "crops_per_decade": 10.149447809048807,
+    "evaporation_fraction": 0.4692336981094902,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 1321.6012699487696,
+    "seasons_simulated": 39,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 49,
+   "name": "corn (furrow irrigated) - grain sorghum - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.827647275456236,
+    "downside": 2.7842305902576823,
+    "irrigation": 520.2842484494771,
+    "carbon": 0.119987922139267,
+    "wind_exposure": 4.885334361086536,
+    "bare_ground": 0.5495049504950495
+   },
+   "detail": {
+    "crops_per_decade": 13.432107496463932,
+    "evaporation_fraction": 0.37187703270944555,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2720.6186023041996,
+    "seasons_simulated": 52,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 50,
+   "name": "corn (furrow irrigated) - rice + winter cover - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.867845091876948,
+    "downside": 2.6180991102214293,
+    "irrigation": 519.3284055325751,
+    "carbon": 0.08313260385814275,
+    "wind_exposure": 2.2068276235816113,
+    "bare_ground": 0.5461346633416458
+   },
+   "detail": {
+    "crops_per_decade": 13.532597078731742,
+    "evaporation_fraction": 0.36831856881260283,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2711.270984597889,
+    "seasons_simulated": 52,
+    "years": 38.42573579739904
+   }
+  },
+  {
+   "index": 51,
+   "name": "corn (furrow irrigated) - rice + winter cover - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "maize",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "maize",
+     "crop_name": "Maize (grain)",
+     "year_offset": 0,
+     "start_doy": 100,
+     "duration_days": 145,
+     "irrigation": "refill_on_stress",
+     "fertiliser_n_kg_ha": 220.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 4.821186923468834,
+    "downside": 2.933533731402243,
+    "irrigation": 893.6786813553596,
+    "carbon": 0.0507623198168664,
+    "wind_exposure": 4.55431566006256,
+    "bare_ground": 0.46216407355021216
+   },
+   "detail": {
+    "crops_per_decade": 16.790134370579914,
+    "evaporation_fraction": 0.29412002360969064,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 4201.960061267514,
+    "seasons_simulated": 65,
+    "years": 38.71321013004791
+   }
+  },
+  {
+   "index": 52,
+   "name": "grain sorghum - grain sorghum - grain sorghum",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "sorghum"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 2,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+   ],
+   "objectives": {
+    "production": 3.112254752154185,
+    "downside": 2.459243073042433,
+    "irrigation": 0.0,
+    "carbon": 0.10119605000727035,
+    "wind_exposure": 2.630004216336049,
+    "bare_ground": 0.6519100321313817
+   },
+   "detail": {
+    "crops_per_decade": 10.171188861121028,
+    "evaporation_fraction": 0.5319300277878455,
+    "nitrogen_limited_seasons": 0,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 762.6094376812568,
+    "seasons_simulated": 39,
+    "years": 38.34360027378508
+   }
+  },
+  {
+   "index": 53,
+   "name": "grain sorghum - grain sorghum - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 1,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.13211501060519,
+    "downside": 2.525594512283949,
+    "irrigation": 363.4865065466595,
+    "carbon": 0.07010052797031165,
+    "wind_exposure": 5.043864008090293,
+    "bare_ground": 0.5669737774627923
+   },
+   "detail": {
+    "crops_per_decade": 13.46066619418852,
+    "evaporation_fraction": 0.4160499671366493,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2184.2048561097076,
+    "seasons_simulated": 52,
+    "years": 38.63107460643395
+   }
+  },
+  {
+   "index": 54,
+   "name": "grain sorghum - rice + winter cover - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "sorghum",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "sorghum",
+     "crop_name": "Sorghum (grain)",
+     "year_offset": 0,
+     "start_doy": 130,
+     "duration_days": 125,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 3.0724979294515955,
+    "downside": 2.634143414011083,
+    "irrigation": 737.7404634371048,
+    "carbon": -0.0021376183175516963,
+    "wind_exposure": 4.72348770843943,
+    "bare_ground": 0.47944720056697376
+   },
+   "detail": {
+    "crops_per_decade": 16.82583274273565,
+    "evaporation_fraction": 0.32610397877661934,
+    "nitrogen_limited_seasons": 26,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 3697.8786824521076,
+    "seasons_simulated": 65,
+    "years": 38.63107460643395
+   }
+  },
+  {
+   "index": 55,
+   "name": "winter wheat - winter wheat - winter wheat",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "wheat_winter",
+    "wheat_winter",
+    "wheat_winter"
+   ],
+   "schedule": [
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 0,
+     "start_doy": 300,
+     "duration_days": 215,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 1,
+     "start_doy": 300,
+     "duration_days": 215,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "wheat_winter",
+     "crop_name": "Winter wheat",
+     "year_offset": 2,
+     "start_doy": 300,
+     "duration_days": 215,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 110.0,
+     "group": "cereal"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.1515749637382227,
+    "downside": 1.322842449327745,
+    "irrigation": 0.0,
+    "carbon": -0.05543965214907397,
+    "wind_exposure": 3.267847636072601,
+    "bare_ground": 0.4051081943951756
+   },
+   "detail": {
+    "crops_per_decade": 10.106243348705213,
+    "evaporation_fraction": 0.6901706195212186,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 2712.2244254527754,
+    "seasons_simulated": 39,
+    "years": 38.59000684462697
+   }
+  },
+  {
+   "index": 56,
+   "name": "rice + winter cover - rice + winter cover - rice + winter cover",
+   "is_existing": false,
+   "on_front": true,
+   "cycle_years": 3,
+   "crops": [
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover",
+    "rice_lowland",
+    "cereal_rye_cover"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 0,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 1,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 1,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    },
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 2,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "cereal_rye_cover",
+     "crop_name": "Cereal rye (cover crop)",
+     "year_offset": 2,
+     "start_doy": 280,
+     "duration_days": 80,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "cover_crop"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.9599867647455675,
+    "downside": 2.4881843381948734,
+    "irrigation": 1101.6065016423702,
+    "carbon": -0.05953713404147547,
+    "wind_exposure": 4.653730749767373,
+    "bare_ground": 0.39278131634819535
+   },
+   "detail": {
+    "crops_per_decade": 20.162420382165603,
+    "evaporation_fraction": 0.2546185504112052,
+    "nitrogen_limited_seasons": 39,
+    "nitrogen_fixed_kg_ha": 0.0,
+    "nitrogen_leached_kg_ha": 5231.917298687226,
+    "seasons_simulated": 78,
+    "years": 38.68583162217659
+   }
+  },
+  {
+   "index": 57,
+   "name": "EXISTING: rice (flooded) - soybean",
+   "is_existing": true,
+   "on_front": false,
+   "cycle_years": 2,
+   "crops": [
+    "rice_lowland",
+    "soybean"
+   ],
+   "schedule": [
+    {
+     "crop_id": "rice_lowland",
+     "crop_name": "Rice (puddled lowland)",
+     "year_offset": 0,
+     "start_doy": 110,
+     "duration_days": 140,
+     "irrigation": "ponded",
+     "fertiliser_n_kg_ha": 165.0,
+     "group": "cereal"
+    },
+    {
+     "crop_id": "soybean",
+     "crop_name": "Soybean",
+     "year_offset": 1,
+     "start_doy": 140,
+     "duration_days": 130,
+     "irrigation": "rainfed",
+     "fertiliser_n_kg_ha": 0.0,
+     "group": "grain_legume"
+    }
+   ],
+   "notes": [
+    "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
+    "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "40 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+   ],
+   "objectives": {
+    "production": 2.051236190769478,
+    "downside": 0.8789785317529091,
+    "irrigation": 559.7313565809013,
+    "carbon": -0.21261865210956887,
+    "wind_exposure": 9.321437531594867,
+    "bare_ground": 0.6251301631377993
+   },
+   "detail": {
+    "crops_per_decade": 10.142311697327317,
+    "evaporation_fraction": 0.39444661336162434,
+    "nitrogen_limited_seasons": 40,
+    "nitrogen_fixed_kg_ha": 1380.7188180663418,
+    "nitrogen_leached_kg_ha": 2960.96526170155,
+    "seasons_simulated": 40,
+    "years": 39.43874058863792
+   }
+  }
+ ],
+ "front": [
+  16,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  45,
+  46,
+  47,
+  48,
+  49,
+  50,
+  51,
+  52,
+  53,
+  54,
+  55,
+  56
+ ],
+ "search": {
+  "examined": 119,
+  "feasible": 57,
+  "simulated": 58,
+  "on_front": 22,
+  "rejections": {
+   "impossible calendar": 42,
+   "breaks a pathogen return interval": 20
+  }
+ },
+ "guardrails": {
+  "rice_lowland": {
+   "crop": "Rice (puddled lowland)",
+   "refused": true,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "refuse",
+     "message": "reaches maturity in only 15% of years (needs 2300 growing degree days above 10 C). This assumes the single cultivar in the crop table; a shorter-season hybrid may well succeed where this one cannot, so confirm locally before ruling the crop out",
+     "frequency": 0.8536585365853658,
+     "needs_local_review": true
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 38 C during flowering in 56% of years (mean 11.0 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.5609756097560976,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "pass",
+     "message": "tolerance 5/5; extreme rainfall is not a limiting concern",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "soybean": {
+   "crop": "Soybean",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 1500 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 38 C during flowering in 56% of years (mean 10.1 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.5609756097560976,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 4 of 41 years, on a crop with waterlogging tolerance 2/5",
+     "frequency": 0.0975609756097561,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "maize": {
+   "crop": "Maize (grain)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 1550 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "frequent heat stress: more than 5 days above 38 C during flowering in 56% of years (mean 10.6 days). This reduces yield rather than making the crop impossible, and is a cost a farmer may accept knowingly",
+     "frequency": 0.5609756097560976,
+     "needs_local_review": true
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 7 of 41 years, on a crop with waterlogging tolerance 1/5",
+     "frequency": 0.17073170731707318,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "sorghum": {
+   "crop": "Sorghum (grain)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "pass",
+     "message": "accumulates 1700 degree days in every year of the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "warn",
+     "message": "heat stress above 40 C during flowering in 12 of 41 years (mean 3.4 days)",
+     "frequency": 0.2926829268292683,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 4 of 41 years, on a crop with waterlogging tolerance 2/5",
+     "frequency": 0.0975609756097561,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "wheat_winter": {
+   "crop": "Winter wheat",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "thermal maturity",
+     "level": "warn",
+     "message": "falls short of maturity heat in 16 of 40 years",
+     "frequency": 0.4,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost at flowering",
+     "level": "pass",
+     "message": "no damaging frost during the reproductive window in the record",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "pass",
+     "message": "mean 0.2 days above 35 C during flowering",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 15 of 40 years, on a crop with waterlogging tolerance 1/5",
+     "frequency": 0.375,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "warn",
+     "message": "no local price, buyer or seed availability is known to this model; a crop with no nearby market is not an option however well it grows",
+     "frequency": null,
+     "needs_local_review": true
+    }
+   ]
+  },
+  "cereal_rye_cover": {
+   "crop": "Cereal rye (cover crop)",
+   "refused": false,
+   "verdicts": [
+    {
+     "rule": "growth window",
+     "level": "pass",
+     "message": "terminated before maturity by design; accumulates 957 degree days in the window (106% of a full season)",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "frost termination",
+     "level": "pass",
+     "message": "no harvest to lose; frost may be the intended way to terminate this cover rather than a risk to it",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "heat at flowering",
+     "level": "pass",
+     "message": "mean 0.0 days above 32 C during flowering",
+     "frequency": 0.0,
+     "needs_local_review": false
+    },
+    {
+     "rule": "waterlogging",
+     "level": "warn",
+     "message": "over 100 mm in three days during the season in 8 of 41 years, on a crop with waterlogging tolerance 2/5",
+     "frequency": 0.1951219512195122,
+     "needs_local_review": false
+    },
+    {
+     "rule": "water budget",
+     "level": "pass",
+     "message": "rainfed; no irrigation required",
+     "frequency": null,
+     "needs_local_review": false
+    },
+    {
+     "rule": "market pathway",
+     "level": "pass",
+     "message": "no marketable product; the benefit is entirely soil-side",
+     "frequency": null,
+     "needs_local_review": false
+    }
+   ]
+  }
+ }
+}

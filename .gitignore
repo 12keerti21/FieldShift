@@ -23,6 +23,8 @@ node_modules/
 dist/
 build/
 
-# Precomputed site bundles are derived from data/raw; rebuild with
-#   PYTHONPATH=src python -m fieldshift.api.bundle
-data/bundles/
+# Precomputed site bundles ARE committed, deliberately. They are small (about
+# 1 MB for all six fields) and without them a fresh clone starts with no sites
+# at all - the interface would show "no precomputed fields" and a reviewer would
+# need 118 MB of downloads and fifteen minutes before seeing anything. Rebuild
+# with:  PYTHONPATH=src python -m fieldshift.api.bundle

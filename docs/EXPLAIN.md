@@ -231,7 +231,7 @@ sharper than it is.
 
 A fair question, so here's the straight answer.
 
-**Claude (an AI) wrote most of the code**, working under human direction.
+**An AI coding assistant wrote most of the code**, working under human direction.
 
 **But no AI writes the farming advice.** That was deliberate. If an AI generates a
 sentence telling a farmer what to plant, an expert can't check *how* it decided —

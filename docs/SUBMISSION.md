@@ -346,7 +346,7 @@ ignoring the band would report a field that is never bare as 40 percent bare.
 
 ## Use of artificial intelligence
 
-This project was built in collaboration with **Claude (Anthropic)**, which wrote the
+This project was built in collaboration with an **AI coding assistant**, which wrote the
 large majority of the code, tests and documentation under human direction.
 
 Deliberately, **no AI model makes or influences a recommendation at runtime.** There
