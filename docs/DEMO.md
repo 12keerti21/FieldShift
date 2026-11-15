@@ -137,7 +137,7 @@ believable.
 
 Be straight.
 
-> "For these four fields, yes — you can print a plan right now. For a new field it's
+> "For these six fields, yes — you can print a plan right now. For a new field it's
 > a minute of computation, which we'd precompute rather than make someone wait.
 >
 > What it still needs before a farmer should act on it: an agronomist to check our

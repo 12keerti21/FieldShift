@@ -108,7 +108,7 @@ model wrong.**
   droughts. It independently flagged 2012, 2011, 2002, 1988 and 2022 as the worst
   water years. Those are exactly the famous drought years.
 
-### We found twelve mistakes in our own model
+### We found fourteen mistakes in our own model
 
 Every one of them was producing confident, believable, **wrong** answers before we
 caught it. A few examples in plain terms:
@@ -125,12 +125,40 @@ caught it. A few examples in plain terms:
 - It read a hillslope as **17 times steeper than it is**, because on nearly flat
   ground the wobble in satellite elevation data is bigger than the actual slope.
 
-We list all twelve in the app. A model whose builders can't tell you its past
+We list all fourteen in the app. A model whose builders can't tell you its past
 mistakes probably hasn't looked for them.
 
-### We tell you the one test we fail
+### We went looking for a way to break our own best result — and found one
 
-There's a well-known benefit to leaving a field empty for a year — it stores up
+The India result rests on a model of **flooded rice** we wrote specially. Nothing
+had ever checked it, because India doesn't publish the water records we'd need.
+
+So we found somewhere that floods rice the same way and *does* publish them:
+**Arkansas**. The US government reports how much water Arkansas rice farmers
+actually apply — about **610 to 640 mm** a season.
+
+**Our model asked for 1,135 mm. Nearly twice as much.**
+
+Then we worked out why. Arkansas rice is planted dry in April and only flooded
+about five weeks later — roughly 95 days under water. Our model floods the field
+for the whole 140-day season, so it pays for 45 days of evaporation and seepage
+that never happen. Correcting just that gets it to within 8%.
+
+**We did not make that correction and call it fixed.** Changing a model to match
+a number you already know isn't science, it's decorating. Doing it properly means
+rebuilding how we handle a rice crop that's dry for part of its life, and that's
+real work we haven't done yet.
+
+The Punjab rice is *transplanted* into a field that's already flooded, so this
+particular mistake doesn't apply there. But the honest summary is: the India
+water numbers come from a model we have now tested exactly once, which failed in
+a way we understand.
+
+That's more than we knew yesterday. It is not the same as being right.
+
+### And a second test we fail
+
+There's a second one too. There's a well-known benefit to leaving a field empty for a year — it stores up
 water for the next crop. Real harvest records say that benefit is about **+10.8%**.
 Our model says **+18%**. We over-predict it.
 
@@ -207,12 +235,12 @@ You can trace any sentence we show back to the calculation that produced it.
 
 ## What's actually built, right now
 
-- **5 fields** ready to explore — 4 in the US, 1 in India
+- **6 fields** ready to explore — 5 in the US, 1 in India
 - **Any field on Earth** can be analysed on demand. A judge can click a spot on
   the map and get a full answer in **about 30 seconds**
 - **A printable one-page field plan** — plain paper, no app needed, goes in the
   tractor cab
-- **791 automated tests** that run every time we change anything
+- **819 automated tests** that run every time we change anything
 
 ---
 

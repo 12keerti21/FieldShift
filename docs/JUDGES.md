@@ -76,7 +76,7 @@ soil-N measurement. Do not let a judge catch this before you say it.
 ## 2. CREATIVITY
 
 ### Opening line
-> "Most teams will show you a dashboard. We'll show you the twelve bugs we found
+> "Most teams will show you a dashboard. We'll show you the fourteen bugs we found
 > in our own model — and the one validation check we still fail."
 
 ### Why hasn't this been built?
@@ -188,7 +188,29 @@ only one of our six that nothing else could check.
 | **Rotation effect** | observed +10.8% vs modelled +18.0% — **we fail this** |
 | **Punjab groundwater** | direction **20/20 wells**, magnitude off **5–13×** |
 
-**9 checks: 6 pass, 2 partial, 1 fail. 791 tests. 12 bugs validation found in us.**
+**11 checks: 6 pass, 3 partial, 2 fail. 819 tests. 14 bugs validation found in us.**
+
+### The two failures — lead with these, don't bury them
+
+> "We built a flooded-rice water balance for Punjab and had no way to check it,
+> because India gave us no water record we could get. So we went and found a
+> place that floods rice exactly the same way and *does* publish the water
+> applied — Arkansas.
+>
+> **Our model failed. It asked for 1,135 millimetres against an observed 610 to
+> 640.** Seventy-seven percent over.
+>
+> Then we found out why. We flood for the whole 140-day season; Delta rice is
+> drilled dry and flooded only at four-leaf, about 95 days. Fixing just that
+> takes it to within eight percent.
+>
+> We did **not** apply the fix and call it validated — doing it properly means
+> splitting one rice crop into a dry phase and a ponded phase, and changing a
+> model against a number you already know is fitting, not modelling."
+
+**Why this wins rather than loses:** we are the team that went looking for a way
+to break our own flagship result, found one, and can tell you exactly what it
+costs. Nobody else will do that.
 
 ### The line that wins this criterion
 > "Our sensitivity sweep showed the fallow advantage ranges +14.7% to +23.5% and
@@ -272,7 +294,7 @@ scatter, rotation calendar strips. Responsive to 400 px.
 ## The three sentences that matter most
 
 1. **"Four rotations beat current practice on every measure — nothing given up."**
-2. **"Here are the twelve bugs validation found in our own model."**
+2. **"Here are the fourteen bugs validation found in our own model."**
 3. **"Here's the one check we still fail, and why we refused to tune it away."**
 
 Most teams will claim everything works. Being the team that says what doesn't is

@@ -194,6 +194,36 @@ Three external services we planned to use were unavailable: **OpenET** returns a
 server-side error on every request, the **USGS groundwater endpoint** has been
 retired, and **CropScape** timed out. Each is documented with the exact failure.
 
+### The flagship model, tested and failed
+
+The ponded paddy balance drives the whole Punjab result, and nothing had ever
+checked it — India gave us no water record we could obtain. So we found a place
+that floods rice the same way and does publish one: **Arkansas**, where USDA NASS
+reports 610–640 mm applied to gravity-irrigated rice.
+
+**The model asked for 1,135 mm. Seventy-seven percent over.**
+
+Percolation cannot rescue it — swept from 1 to 6 mm/day the closest approach is
+still 50% over, so the error is structural. The sweep is the method: it would
+have been trivial to pick the value reproducing 610 mm and call that validation,
+so the question is asked the other way round and the data allowed to answer.
+
+The diagnosis is the useful half. This model floods from establishment for all
+140 days; Delta rice is drill-seeded dry in April and flooded only at about the
+four-leaf stage — roughly 95 days. Correcting only the flood window takes it from
++77% to +49%; with clay-pan percolation and on-farm delivery it reaches 690 mm,
++8%.
+
+We did not apply those corrections and declare success. Simulating the flood
+window alone would silently drop the dry establishment phase, and changing a
+model against a target you already know is fitting rather than modelling.
+
+Punjab's rice is *transplanted* into an already-flooded field, so this failure
+mode is absent there by construction. The honest position: the Punjab water
+figures rest on a model tested once, failed in a way we can explain, and whose
+failure mode does not transfer. More than was known before; much less than
+validation.
+
 ### Does it transfer? One district in Indian Punjab says yes, with a caveat
 
 The engine is deliberately split from the region. A **region** supplies three things
@@ -258,7 +288,7 @@ live — because the expensive half does not depend on anyone's preferences, and
 cheap half is entirely preference and has to move the instant a slider does.
 
 Python engine (no heavy geospatial stack — NASADEM `.hgt` is read directly as raw
-int16), FastAPI, Leaflet, no build step. **773 tests.**
+int16), FastAPI, Leaflet, no build step. **819 tests.**
 
 ### What a farmer takes away
 
@@ -279,7 +309,7 @@ one.**
 |---|---|
 | **NASA POWER** | 41 years of daily temperature, humidity, wind, solar radiation and corrected precipitation at four sites — drives every water, carbon and nitrogen calculation. All six contract variables present, so evapotranspiration runs at full Penman-Monteith with no substitutions. |
 | **NASADEM** (SRTM) | 1-arc-second elevation for slope and slope length in the erosion model, read directly from `.hgt`. |
-| **MODIS MOD13Q1 NDVI**, via **NASA AppEEARS** | 16-day 250 m vegetation index, 2003-2024, at all five fields. Used as **evidence rather than decoration**: it validates our bare-ground measure, which was the only one of six that nothing else could check. A county yield statistic says nothing about when the soil was covered; a satellite does. |
+| **MODIS MOD13Q1 NDVI**, via **NASA AppEEARS** | 16-day 250 m vegetation index, 2003-2024, at all six fields. Used as **evidence rather than decoration**: it validates our bare-ground measure, which was the only one of six that nothing else could check. A county yield statistic says nothing about when the soil was covered; a satellite does. |
 
 Catalogued and assessed but not ingested, with reasons recorded: SMAP, GPM/IMERG,
 ECOSTRESS, Landsat, GEDI.
@@ -328,7 +358,7 @@ PYTHONPATH=src python scripts/validate_multisite.py # 4 sites
 PYTHONPATH=src python scripts/sensitivity.py        # 18 perturbations
 PYTHONPATH=src python scripts/search_rotations.py   # the rotation search
 PYTHONPATH=src python scripts/show_evidence.py      # an evidence card
-python -m pytest                                    # 708 tests
+python -m pytest                                    # 819 tests
 ```
 
 `docs/DECISIONS.md` is a dated log of every design decision, every alternative
