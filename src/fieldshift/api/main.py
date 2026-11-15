@@ -542,4 +542,18 @@ if WEB_DIR.exists():
 
     @app.get("/", response_class=HTMLResponse)
     def index() -> FileResponse:
-        return FileResponse(str(WEB_DIR / "index.html"))
+        """Serve the interface, never from cache.
+
+        The page is a single file that changes every time the interface does, and
+        a browser holding the previous copy shows stale work that looks exactly
+        like work that was never done. That wasted a round of review here, so the
+        response says plainly that it must not be stored.
+        """
+        return FileResponse(
+            str(WEB_DIR / "index.html"),
+            headers={
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )

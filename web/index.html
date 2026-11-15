@@ -108,6 +108,13 @@ nav{background:var(--forest);color:#D5E4DC;display:flex;flex-direction:column;
 
 .brand{display:flex;align-items:center;gap:11px;padding:20px 18px 18px;
   padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.navclose{display:none;margin-left:auto;background:none;border:0;color:#9FBCAE;
+  font-size:22px;line-height:1;cursor:pointer;padding:4px 6px;border-radius:var(--r-xs);
+  transition:background .18s var(--ease),color .18s var(--ease)}
+.navclose:hover{background:rgba(255,255,255,.1);color:#fff}
+#scrim{position:fixed;inset:0;background:rgba(6,14,11,.45);z-index:999;
+  opacity:0;pointer-events:none;transition:opacity .28s var(--ease);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .mark{width:32px;height:32px;border-radius:10px;flex-shrink:0;
   background:linear-gradient(140deg,#2FC184,#17764F);
   display:grid;place-items:center;color:#fff;font-weight:750;font-size:15px;
@@ -504,13 +511,14 @@ pre{white-space:pre-wrap;font:11.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monos
     transform:translateX(-100%);transition:transform .3s var(--ease-out);
     box-shadow:var(--sh-3)}
   nav.open{transform:none}
+  .navclose{display:block}
+  body.navopen #scrim{opacity:1;pointer-events:auto}
+  body.navopen{overflow:hidden}
   .navtoggle{display:inline-flex;align-items:center;justify-content:center;
     width:36px;height:36px;border:1px solid var(--line);background:var(--panel);
     border-radius:var(--r-sm);cursor:pointer;font-size:15px}
   .screen{padding:20px 18px 60px}
   .bar{padding:12px 18px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
-  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;
-    animation:fade .25s var(--ease) both}
 }
 @media (max-width:480px){
   .bar h2{font-size:15px} .bar .sub{display:none}
@@ -521,6 +529,7 @@ pre{white-space:pre-wrap;font:11.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monos
 </style>
 </head>
 <body>
+<div id="scrim" hidden></div>
 <div class="app">
 
 <nav id="nav">
@@ -530,6 +539,7 @@ pre{white-space:pre-wrap;font:11.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monos
       <h1>FieldShift</h1>
       <div class="tag">Rethink What Grows Next</div>
     </div>
+    <button class="navclose" id="navclose" aria-label="Close menu">&times;</button>
   </div>
   <div class="navsec">Field</div>
   <div class="fieldsel" id="fieldsel"></div>
@@ -634,6 +644,10 @@ const GROUP_COLOUR = {
 };
 const MONTHS = ["J","F","M","A","M","J","J","A","S","O","N","D"];
 
+/* The drawer's open/closed state has exactly one owner. Three different places
+   toggling a class is how it ended up openable with no way to close it. */
+let setNav = () => {};
+
 /* ───────────────────────────────────────────────────────────── chrome */
 (function(){
   let saved=null; try{ saved=localStorage.getItem("fs-theme"); }catch(e){}
@@ -646,7 +660,25 @@ const MONTHS = ["J","F","M","A","M","J","J","A","S","O","N","D"];
     document.documentElement.setAttribute("data-theme", next);
     try{ localStorage.setItem("fs-theme", next); }catch(e){}
   };
-  $("#navtoggle").onclick = () => $("#nav").classList.toggle("open");
+  // One function owns the drawer, because three places toggling a class is how
+  // it ended up openable with no way back.
+  const scrim = $("#scrim");
+  setNav = open => {
+    $("#nav").classList.toggle("open", open);
+    document.body.classList.toggle("navopen", open);
+    if(scrim) scrim.hidden = !open;
+  };
+  $("#navtoggle").onclick = () => setNav(!$("#nav").classList.contains("open"));
+  $("#navclose").onclick = () => setNav(false);
+  scrim.onclick = () => setNav(false);
+  document.addEventListener("keydown", e => {
+    if(e.key === "Escape") setNav(false);
+  });
+  // A drawer left open across a resize to desktop traps scrolling behind a
+  // scrim nobody can see.
+  window.addEventListener("resize", () => {
+    if(window.innerWidth > 900) setNav(false);
+  });
 })();
 
 async function get(url, opts){
@@ -708,7 +740,7 @@ function renderNav(){
 
 function go(id){
   state.screen = id;
-  $("#nav").classList.remove("open");
+  setNav(false);
   renderNav();
   render();
   window.scrollTo({top:0, behavior:"smooth"});
@@ -738,6 +770,7 @@ async function boot(){
 
 async function selectSite(id){
   state.siteId = id; state.selected = null;
+  setNav(false);
   state.source = {kind:"site", id};
   stopPolling(); stopScenarioPolling();
   state.scenarioJob = null; state.scenarioResult = null;
