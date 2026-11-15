@@ -84,13 +84,13 @@
   },
   {
    "id": "drought_recall",
-   "title": "Did it find the droughts without being told?",
+   "title": "Does the model find the bad years on its own?",
    "question": "Does the model independently identify the known drought years?",
-   "against": "the simulated stress series, compared with the historical record",
-   "result": "2012, 2011, 2002, 1988 and 2022 recovered as the most stressed years",
-   "verdict": "pass",
-   "detail": "Nothing in the model knows which years were droughts. These came out as the most water-stressed years in the simulation, in that order, from weather data alone.",
-   "reproduce": "python scripts/validate_yield.py",
+   "against": "USDA NASS non-irrigated county yields, detrended, Finney County wheat and Hale County sorghum",
+   "result": "weak but better than chance: 4 of 12 worst-year picks agree with the harvest record against 2.6 expected by chance; correlations +0.04 and +0.19",
+   "verdict": "partial",
+   "detail": "This claim was previously recorded as a clean pass, naming 2012, 2011, 2002, 1988 and 2022 as drought years the model recovered unprompted. That was wrong twice over and the correction matters more than the result. First, the 'reproduce' command pointed at a script that does not produce this output - nothing did, so the claim had never actually been run. Second, the comparison was against which years a person remembers as droughts, which is exactly the inadmissible kind of target this project withdrew an earlier claim over. It is now reproduced properly against a dataset: rank the years by modelled water stress, rank them by how far the non-irrigated county harvest fell below its own trend, and compare. The model picks 4 of the 12 genuinely worst harvest years against 2.6 expected from chance - real signal, but weak, and nothing like the clean recall previously claimed. A first run that included irrigated acres gave a NEGATIVE correlation at the pilot field, which says nothing about the model and everything about comparing a rainfall-driven stress estimate against a harvest deliberately insulated from rainfall. Part of the weakness is inherent: a harvest falls for hail, freeze, disease and abandonment as well as for drought, and this model represents none of those.",
+   "reproduce": "python scripts/validate_drought.py",
    "tier": 1
   },
   {
@@ -234,6 +234,11 @@
    "title": "Root growth was credited on days the regime changed",
    "effect": "leaked exactly one day's root growth at every drain",
    "how": "The root-growth bookkeeping ran before the flood-up and drain handlers, both of which reset the depletion - so the credit was kept and the matching depletion thrown away. The bookkeeping now runs after the transitions."
+  },
+  {
+   "title": "A validation claim that had never been run",
+   "effect": "an unsupported 'pass' displayed in the interface for days",
+   "how": "The drought-recall check named specific years and pointed at a reproduce command that does not produce them. Nothing in the repository did. It was caught only when someone asked where the claim was backed up. Writing the script that reproduces it downgraded the check from pass to partial. Every other entry has since been re-checked against its own command."
   }
  ]
 }
