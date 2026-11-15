@@ -1,101 +1,114 @@
-# Resources — challenge list, assessed
+# Data sources — assessed, used, and refused
 
-Assessed for what each dataset does for *this* architecture,
-not just what it contains.
+A record of what the challenge offered, what we actually ingested, and what we
+tried and could not get. The last of those three is the most useful: a dataset we
+attempted and failed to obtain tells you more than one we never looked at.
 
-## The decisive finding: the list is two lists
+---
 
-Thirteen of the offered datasets are **United States only**: SSURGO/STATSGO2, Web
-Soil Survey, Cropland Data Layer, NAIP, NLCD, PRISM, NASS QuickStats, AMS Market
-News, OpenET, CoCoRaHS, NWIS, Ag Data Commons, LANDFIRE.
+## The finding that shaped the architecture
 
-For a US field, those close a **complete validation loop** that exists nowhere else
-on earth:
+The offered resource list is really **two lists**.
 
-| Our model output | Ground truth available |
+Thirteen of them are **United States only** — SSURGO, Web Soil Survey, Cropland
+Data Layer, NAIP, NLCD, PRISM, NASS QuickStats, AMS Market News, OpenET, CoCoRaHS,
+NWIS, Ag Data Commons, LANDFIRE. For a US field those close a validation loop that
+exists almost nowhere else on earth. The rest — POWER, IMERG, SMAP, Landsat,
+MODIS, ECOSTRESS, SRTM, GEDI, Sentinel-2, ERA5, GAEZ — are global.
+
+That asymmetry is not a detail. It means a tool can be *validated* in the United
+States or *useful* everywhere, and the two are not the same claim.
+
+So we built both and made the engine say which one you are looking at:
+
+| | |
 |---|---|
-| Rotation history inferred from NDVI phenology | **CDL** — labelled 30 m annual crop classes |
-| Water balance ET | **OpenET** — field-scale ET (western US) |
-| Soil hydraulic parameters | **SSURGO** — field-scale, replaces our class centroids |
-| Yield / stress index | **NASS QuickStats** — county yields, multi-decade |
-| IMERG rainfall | **CoCoRaHS** — gauge observations |
-| Crop prices (which our table refuses to invent) | **AMS Market News** |
-| Satellite climate estimates | **PRISM** — topography-aware, 30-year normals |
-| Groundwater decline constraint | **NWIS** well records, *in situ* |
+| **Tier 1 — validated** | US fields. Checked against 41 years of county yields. |
+| **Tier 2 — transferred** | Anywhere else. Same engine, global inputs only, and an evidence card that cannot read above LOW confidence. |
 
-The remaining datasets are **global**: POWER, IMERG, SMAP, Landsat, MODIS/VIIRS,
-ECOSTRESS, SRTM, GEDI, Sentinel-2, ERA5, GAEZ.
+The tier is enforced in code, not asserted in prose: a tier-2 region is refused at
+construction if it tries to claim validation, and there is a test for it.
 
-### What this implies for the build
+---
 
-A **two-tier design**, where the tool knows which tier a field is in and says so:
+## Actually ingested
 
-- **Tier 1 (validated):** US field. Every layer is checked against ground truth, and
-  the numbers shown carry measured skill scores.
-- **Tier 2 (transferable):** anywhere else. Same engine, global inputs only, soil
-  from class centroids, no local price data — and the evidence card states the
-  downgrade explicitly.
+### NASA
 
-This is a stronger position than choosing either alone. "Validated where ground
-truth exists, transferable where it does not, and honest about which you are
-looking at" answers the challenge's own demand to explain uncertainty and data
-gaps, and it is a claim almost no other team will be able to substantiate.
-
-## Dataset assessment
-
-### Tier A — fetch first, API-fast, no granule wrangling
-| Dataset | Gives us | Resolution | Access | Status |
-|---|---|---|---|---|
-| **NASA POWER** | the entire weather contract: T2M_MAX/MIN, RH2M, WS2M, ALLSKY_SFC_SW_DWN, PRECTOTCORR | ~0.5°, daily, 1981– | REST JSON, no auth | **adapter built** |
-| GPM IMERG | precipitation, sub-daily intensity for RUSLE R / EI30 | 0.1°, 30 min | GES DISC / Earthdata | next |
-| SRTM / NASADEM | slope and length for RUSLE LS | 30 m | Earthdata | next |
-| PRISM | climate validation, frost dates, normals | 4 km, daily | direct download (US) | after |
-| NASS QuickStats | county yields for validation | county, annual | REST API, free key | after |
-
-### Tier B — slow orders, start them before they are needed
-| Dataset | Gives us | Why it is slow |
+| Dataset | What it does here | Access |
 |---|---|---|
-| SMAP | surface soil moisture; validates our water balance | AppEEARS / Earthdata order queue |
-| ECOSTRESS | land-surface temperature and ET at field scale | large granules, sparse revisit, order queue |
-| Landsat / Sentinel-2 | NDVI phenology → infer the existing rotation | many scenes, cloud masking |
-| CDL | **labelled** rotation history — our phenology ground truth | CropScape bulk download per state |
-| SSURGO | field-scale soil properties | per-survey-area downloads |
+| **NASA POWER** | The weather contract — `T2M_MAX`, `T2M_MIN`, `PRECTOTCORR`, `RH2M`, `WS2M`, `ALLSKY_SFC_SW_DWN`, daily, 1984–2024, at every field. Drives the water balance and through it yield, carbon, nitrogen and erosion. **Every number in the tool traces back to it.** | REST JSON, no auth |
+| **NASADEM** | 30 m elevation → slope → the RUSLE length-slope factor. `.hgt` read directly as raw big-endian int16, so no geospatial stack is needed. | Earthdata login |
+| **MODIS MOD13Q1 NDVI** | 16-day 250 m vegetation index, 2003–2024, as an **independent check** on modelled ground cover — the one objective nothing else could test. | NASA AppEEARS, Earthdata login |
 
-### Tier C — valuable, only if time allows
-OpenET (western US only), NWIS, CoCoRaHS, NLCD, NAIP, GAEZ, ERA5, Ag Data Commons,
-AMS Market News, LANDFIRE.
+### Partner and other
 
-### Deliberately deprioritised, with reasons
-- **GEDI** — the resource text itself concedes it is "most effective in areas with
-  taller vegetation". On cropland its canopy and biomass metrics add little, and
-  sparse-footprint sampling does not give field coverage. Not worth the ingest cost.
-- **LANDFIRE** — wildland fuels and vegetation condition. Interesting landscape
-  context, no path to a rotation decision.
-- **NAIP** — 1 m imagery is excellent for field boundaries, but boundary delineation
-  is a project in itself. Let the farmer draw the polygon instead.
+| Dataset | What it does here |
+|---|---|
+| **USDA SSURGO** | Field-scale soil for US sites. Measured available water capacity replaces our class centroid — at the pilot point the difference was 52%. |
+| **ISRIC SoilGrids v2.0** | Global soil, and the only reason the engine can leave the United States. Never presented as equivalent to a survey. |
+| **USDA NASS QuickStats** | County yields by production practice, and the irrigation census. The yields split by *preceding crop* are what made validating a rotation effect possible at all. |
+| **gridMET** | Published 4 km reference ET, used purely as an independent check on ours. |
+| **CGWB via India-WRIS** | Groundwater observation wells. 20 of them in Sangrur, records up to 27 years. |
 
-### Noted absence
-**GRACE / GRACE-FO is named in the challenge text but not in the Resources tab.**
-Still reachable via PO.DAAC (JPL mascon solutions). For a US field, **NWIS well
-records are the better instrument anyway** — in situ, long, and at the aquifer the
-farmer actually pumps from. Use NWIS as the primary groundwater-decline constraint
-and GRACE as the regional corroboration, which is a more defensible pairing than
-GRACE alone.
+---
 
-## Access routes to confirm
-- [ ] Earthdata Login created for every team member (needed for SMAP, ECOSTRESS,
-      IMERG, Landsat, SRTM, GEDI)
-- [ ] `earthaccess` or AppEEARS tested end-to-end on ONE small granule
-- [x] POWER confirmed to need no authentication
-- [ ] NASS QuickStats API key requested
-- [ ] CropScape / CDL bulk download path for the chosen state
+## Tried and could not get
 
-## Still needed, not in the list
-- [ ] Sowing windows / crop calendars for the chosen region (region config)
-- [ ] `Ky` FAO-33 yield response factors, to convert our stress index into yield
-- [ ] Local pathogen presence, to escalate the `regional` constraints we currently
-      report but do not enforce
+Each of these was attempted, and the failure is recorded rather than the dataset
+quietly dropped.
 
-## Open questions for mentors
-- [ ] Is a non-US pilot region acceptable given how US-centric the data offering is?
-- [ ] Any constraint on compute or on dataset size for the submission?
+| Dataset | What happened |
+|---|---|
+| **OpenET** | HTTP 408 with a server-side Earth Engine credential error, across all three models and both endpoints. Account authenticates; 0 of 100 requests consumed. |
+| **USGS NWIS groundwater** | The `gwlevels` service was retired. The replacement OGC API does not expose county historical levels. |
+| **CropScape / CDL** | Timed out over both HTTP and HTTPS. |
+| **GES DISC Data Rods** | Returns an empty shell page. |
+| **Indian district yield statistics** | Nothing obtainable. **This single gap is why Punjab is Tier 2 rather than Tier 1.** |
+
+---
+
+## Assessed and deliberately not used
+
+- **SMAP** — surface soil moisture would validate the water balance, and it is the
+  obvious next addition. Not reached.
+- **ECOSTRESS, Landsat, Sentinel-2** — order queues and cloud masking for a
+  capability we could reach more cheaply through MODIS.
+- **IMERG** — sub-daily intensity for a proper RUSLE R factor. We use the Renard
+  and Freimund regression instead, and say so on the erosion figure.
+- **PRISM** — 4 km and topography-aware, so better than POWER for US forcing. We
+  kept POWER everywhere instead, because using a different weather source in each
+  tier would make the Kansas–Punjab comparison meaningless.
+- **GEDI** — the resource text itself concedes it works best under taller
+  vegetation. On cropland, sparse footprints add little.
+- **LANDFIRE** — wildland fuels. No path to a rotation decision.
+- **NAIP** — excellent for field boundaries, but boundary delineation is a project
+  in itself. The farmer draws the polygon.
+- **AMS Market News** — prices. The crop table refuses to invent a price, and we
+  did not have time to wire real ones, so every marketed crop carries
+  `price_local_required: true` and the tool reports physical production only.
+
+### A noted absence
+
+**GRACE / GRACE-FO** is named in the challenge text but not in the Resources tab.
+For a specific field, in-situ well records are the better instrument anyway —
+longer, and measuring the aquifer the farmer actually pumps from. That is the route
+we took in Punjab, through CGWB.
+
+---
+
+## What the data could not supply, and we had to write ourselves
+
+- **Crop calendars** — sowing windows and durations for each region. Written per
+  region and listed for local review, because no dataset carries them.
+- **FAO-33 Ky yield response factors** — ten of the India-tier crops have no
+  published entry and use a documented analogue, tagged low confidence.
+- **Local pathogen presence** — reported as `regional` and never used to block a
+  rotation, because confirming it is a local question.
+
+---
+
+**Standing rule.** A validation target must be a dataset we fetched or a citation
+we can point at — never a remembered number. Adopted after an earlier claim of a
+"+18% ET0 bias" came from memory and gridMET showed −3.2%. It was withdrawn, and
+`docs/DECISIONS.md` records the retraction.
