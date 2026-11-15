@@ -2,360 +2,243 @@
 
 ### Rethink What Grows Next.
 
-A crop-rotation decision-support tool built on NASA Earth observations, for the
-NASA Space Apps challenge on soil health and farm resilience.
+Crop-rotation decision support built on NASA Earth observations.
+**NASA Space Apps Challenge 2026.**
 
 ---
 
-**What it does differently.** Most rotation tools score crops against a location.
-FieldShift simulates the *soil* forward - water, carbon, residue, pathogen history -
-through four decades of weather that actually happened, for every candidate
-sequence, and reports the bad years rather than the average one.
+A farmer decides what to plant next season. That one decision sets up the next ten
+years — how much water the field needs, whether the soil gets richer or poorer,
+whether the ground sits bare and blows away.
 
-**Why that matters.** A rotation effect cannot be scored crop by crop. It only
-exists across a sequence. So we tested against one that was independently observed:
+Farmers already know rotation matters. What nobody gives them is a way to compare
+*their* options on *their* field, with numbers they can check.
 
-> USDA NASS reports dryland wheat yield separately for crops following summer
-> fallow (35.4 bu/ac) and continuous cropping (32.0 bu/ac) in our pilot county -
-> an observed advantage of **+10.8%** over 25 years.
->
-> FieldShift, with nothing fitted to that number, produces **+15.0%**.
-
-The advantage is emergent. It comes from soil water banked through the fallow year
-and carried into the next crop. A tool that scored crops independently would show
-no difference between those two rotations at all.
-
-And the whole trade-off emerged with it, which matters more than the single number:
-
-| | wheat-fallow | continuous wheat |
-|---|---|---|
-| yield per crop | 2.72 t/ha | 2.36 t/ha |
-| **crops in 38 years** | **19** | **39** |
-| bare ground | 59.7% | 21.5% |
-| soil carbon | +0.07 t C/ha/yr | **+0.28** |
-| water lost to evaporation | 64% | 45% |
-
-Fallow wins per crop and loses on everything else. None of that was asserted.
-
-## The spine
-
-> Crop rotation is not a recommendation problem — it is a **sequential decision
-> under uncertainty**. We simulate the soil water / nitrogen / carbon state of a
-> specific field forward through 20+ years of *actually observed* NASA weather,
-> for every candidate rotation, and report **the bad years** — not the average year.
-
-Non-negotiable: every number on screen traces to an equation and a dataset.
-No language model makes a decision; at most it narrates structured model output.
-
-## Planned layers
-
-| Layer | Contents | Status |
-|---|---|---|
-| Parameters | 27 crops, 19 soilborne pathogens, 12 soil texture classes | **done** |
-| Physical models | ET0, dual-Kc water balance, **RothC carbon** done; RUSLE pending | in progress |
-| State simulator | couples the above; carries soil state across seasons | not started |
-| Optimizer | enumeration / DP over multi-year crop sequences | not started |
-| Replay | each rotation run through 20–40 observed years → outcome distribution | not started |
-| Honesty layer | evidence cards, guardrails, computed resolution mismatch | **done** |
-| Delivery | map UI, bare-soil × erosive-rain calendar, printable field plan | not started |
-
-Build order and the cut line (what to drop if behind) live in `docs/DECISIONS.md`.
-
-## Parameter tables (built)
-
-`src/fieldshift/data/crops.json` - 27 crops spanning cereals, grain legumes, oilseeds,
-fibre, tuber, green manures, cover crops, perennial forage, plus an explicit bare
-fallow slot so the cost of a bare window can be quantified rather than assumed.
-Each crop carries FAO-56 Kc values and stage lengths, rooting depth and depletion
-fraction, thermal thresholds and GDD, N fixation and uptake, residue mass and C:N,
-a RothC DPM/RPM ratio, erosion-relevant canopy cover, and trait scores.
-
-`src/fieldshift/data/pathogens.json` - 19 soilborne pathogens, nematodes, parasitic
-weeds and one allelopathy entry, each with its survival structure, persistence and
-the return interval it demands.
-
-`src/fieldshift/data/soils.json` - the 12 USDA texture classes with field capacity,
-wilting point, saturation, readily evaporable water, conductivity, bulk density and
-NRCS hydrologic group, plus derived FAO-56 quantities (TAW, RAW, TEW). The USDA
-texture triangle classifier in `soils.py` is the path gridded soil products take,
-since they give sand/silt/clay fractions rather than class names - and measured
-fractions are kept rather than replaced by the class centroid, because clay percent
-feeds the RothC carbon partition and the RUSLE K factor directly.
-
-Both tables are read through `fieldshift.data.load_registry()`, which validates them on
-load and raises rather than letting bad agronomy through silently. Review the
-derived constraints without reading code:
+FieldShift takes a field, pulls **41 years of NASA weather** for that exact point,
+and simulates **every workable rotation day by day** across all of it — roughly a
+million simulated days per field. Then it shows which options beat what the farmer
+is doing now, and exactly how much to trust the answer.
 
 ```bash
-PYTHONPATH=src ./.venv/bin/python scripts/show_constraints.py
+./scripts/serve.sh      # then open http://127.0.0.1:8000
 ```
 
-Four design choices worth knowing before you edit these files:
+Six fields are precomputed and ship with the repository, so this works on a fresh
+clone with no downloads. Any other point on Earth can be analysed on demand in
+about forty seconds.
 
-- **No prices anywhere.** Every marketed crop sets `price_local_required: true`.
-  Margin cannot be computed until local market data is supplied.
-- **Rotation is not credited where it does nothing.** Cereal rusts and rice blast
-  are in the table with `rotation_effective: false`, specifically so the tool can
-  never claim a break-crop benefit against an airborne pathogen.
-- **Precautionary, not prescriptive.** Patchily distributed organisms are tagged
-  `regional`; they are reported but do not block a rotation until a local source
-  confirms them. Quarantine pests are flagged on a separate axis, because that is
-  a legal question for the plant protection authority rather than a modelling one.
-- **The rotation cycle is closed by default.** The checker wraps the last slot back
-  to the first, which is the only way to catch a crop that returns too soon on the
-  next pass.
+---
 
-## The weather contract
+## What it found
 
-`src/fieldshift/agro/climate.py` is the seam between NASA data and the science. Models
-import from it and never touch a granule, a variable name or a product version, so
-when the dataset layer changes only the adapters move. Two consequences worth
-knowing:
+**Finney County, Kansas** — 176 rotation cycles examined, 79 workable here, and
+**four beat current practice on every single objective.** No trade-off.
 
-- **Required variables are only tmax, tmin and precipitation** - the three no
-  plausible source omits. Everything else is optional, because ET0 can be computed
-  with documented substitutions, and which substitutions were used is recorded on
-  the result rather than hidden.
-- **The series must be gap-free daily, and that is enforced.** A water balance
-  carries soil moisture from one day to the next, so a silently skipped day does
-  not cost one day of accuracy - it corrupts every day after it. Non-finite values
-  and out-of-range sentinels (`-9999`) are rejected here so they have to be handled
-  in the adapter, where the fill method can be recorded.
-
-## Why the dual crop coefficient
-
-The water balance splits crop water use into transpiration through the canopy
-(Kcb) and evaporation straight off the soil surface (Ke). That split is the reason
-it is worth building rather than using a single Kc: **transpiration is water
-converted into crop growth, soil evaporation is water simply lost.** The resulting
-`evaporation_fraction` is the quantified cost of leaving ground uncovered, and it
-is invisible to a single-coefficient model.
-
-Illustrative output on synthetic semi-arid weather, 120 days from monsoon onset on
-a clay loam (`scripts/show_water_balance.py`):
-
-| | evaporated | run off | transpired |
-|---|---|---|---|
-| bare fallow | 206 mm | 213 mm | 0 mm |
-| mungbean | 116 mm | 126 mm | 198 mm |
-| sunn hemp | 54 mm | 84 mm | 327 mm |
-| sorghum-sudangrass | 52 mm | 75 mm | 355 mm |
-
-Water a cover crop uses is not water wasted - it is transpired through a canopy
-that is also building residue and holding soil. But it *is* water unavailable to
-the next crop, which is precisely why the rotation must be simulated as a sequence
-rather than scored crop by crop.
-
-Two engineering notes:
-
-- **Mass balance closure is computed, not assumed.** Every result carries a
-  `closure_residual_mm`; it holds below 1e-6 mm across crops, soils and irrigation
-  policies. A leaking water balance produces plausible-looking seasonal totals that
-  are quietly wrong.
-- **Stored soil water carries between seasons.** `run_water_balance` returns the
-  closing depletion so the rotation simulator can chain seasons: a crop that leaves
-  the profile dry is a cost to whatever follows it, and the model has to see that.
-
-## Validation status
-
-All against independently observed data. The model never sees a yield.
-
-### It works away from the field it was built on
-
-Everything was developed and debugged at one point in Finney County, Kansas. The
-same engine, with **no per-site adjustment of any kind**, run at four contrasting
-sites against observed county yield:
-
-| site | rainfall | soil available water | dryland skill vs detrended yield |
-|---|---|---|---|
-| Finney, KS | 541 mm | 212 mm/m silt loam | corn **+0.50**, sorghum **+0.42**, wheat **+0.61** |
-| Sedgwick, KS | 841 mm | 200 mm/m silt loam | corn **+0.52**, sorghum **+0.70**, wheat +0.15 ns |
-| Holt, NE | 651 mm | **84 mm/m loamy sand** | corn **+0.70**, wheat **+0.57**, sorghum +0.06 ns |
-| Hale, TX | 503 mm | 178 mm/m clay loam | wheat **+0.51**, sorghum +0.18 ns |
-
-**11 of 11 dryland combinations show positive skill; 8 of 11 reach p<0.05.** Mean
-r = +0.447. The range matters more than the mean: it holds across a 2.5-fold
-difference in soil water-holding capacity, including a Sandhills loamy sand that
-holds 84 mm/m against the pilot field's 212.
-
-Three combinations are not significant and are named rather than explained away:
-sorghum at Holt and Hale, and wheat at Sedgwick. Irrigated combinations average
-r = +0.007 - **as expected**, since irrigation exists to decouple yield from
-weather.
-
-Dryland corn yield penalty, absolute magnitude across three sites: mean absolute
-error **6.0%** (observed 57-69%, predicted 45-67%).
-
-### And it is robust to parameter uncertainty
-
-There are roughly forty parameters per crop, many tagged medium or low confidence,
-so the headline claim is worth only as much as its robustness. Each of the most
-leveraged parameters was moved to the edge of its plausible range and the key
-rotations re-simulated:
-
-**The claim holds under 18 of 18 perturbations.** No single parameter can flip it.
-The most leveraged are wheat Ky (moves the fallow advantage 5.5 points), attainable
-yield (2.9), and depletion fraction (2.0) - which is the list an agronomist should
-check first.
-
-The sweep also produced a diagnostic. The modelled fallow advantage ranges
-**+14.7% to +23.5%** across every perturbation and never reaches the observed
-+10.8%. So the over-prediction is **structural, not parametric** - parameter error
-is ruled out, which confirms the stated mechanism (a modelled fallow is perfectly
-bare; a real one loses water to weeds) rather than leaving it a guess. The right
-response is to name it, not to tune a weed parameter until the number matches.
-
-```bash
-PYTHONPATH=src ./.venv/bin/python scripts/sensitivity.py
-```
-
-| Our output | Independent reference | Result |
+| | wheat–fallow now | suggested |
 |---|---|---|
-| FAO-56 Penman-Monteith ET0 | gridMET published 4 km grass ETo | **-3.2%** over 40 yr, daily r = 0.966, RMSE 0.70 mm/d |
-| Stress index, **dryland corn** | NASS county yield, detrended | **r = +0.51, p = 0.026**, n = 19 |
-| Stress index, **dryland wheat** | NASS county yield, detrended | **r = +0.50, p = 0.008**, n = 27 |
-| Stress index, **dryland sorghum** | NASS county yield, detrended | **r = +0.41, p = 0.046**, n = 24 |
-| Stress index, irrigated corn | NASS county yield, detrended | r = -0.13, ns - *as expected, see below* |
-| **Dryland corn yield penalty** | NASS irrigated vs non-irrigated | observed 69.3%, **predicted 65.9%** (error -3.3 pp) |
-| Dryland sorghum yield penalty | NASS irrigated vs non-irrigated | observed 45.8%, predicted 34.3% (error -11.5 pp) |
-| Worst dryland maize seasons | documented US High Plains droughts | recovers 2012, 2011, 2002, 1988, 2022 unprompted |
-| Soil texture class at pilot point | SSURGO (Richfield silt loam) | class correct; **our centroid AWC understated by 52%** |
-| RothC carbon gain, irrigated no-till | published western Kansas range | 0.38 t C/ha/yr vs 0.2-0.5 reported |
+| production | 0.90 t DM/ha/yr | **1.99** |
+| soil carbon | −0.050 t C/ha/yr (losing) | **+0.270 (building)** |
+| bare ground | 59.8% of the time | **21.5%** |
+| wind erosion exposure | 774 | **391** |
 
-The *absence* of skill on irrigated crops is a result, not a failure: irrigation
-exists to break the link between weather and yield, so there is little variance
-left for a water-stress index to explain. A strong correlation there would be
-suspicious rather than reassuring - and it was predicted in the validation script
-before being measured.
+**Sangrur District, Punjab** — rice–wheat over a falling water table. We measured
+that fall ourselves: **20 CGWB observation wells, records up to 27 years, every
+one showing the table dropping 1.167 m/year.**
 
-The yield-penalty rows are the harder test. Correlation only shows co-variation;
-those compare **absolute magnitude** against 19-24 years of USDA observation, and
-for corn the model lands within 3.3 percentage points.
+Seven rotations beat it on every objective. The cheapest in water replaces one
+rice year in three with a rainfed kharif legume: **1,996 → 1,511 mm/yr, a 24%
+saving, while producing more.**
 
-**Open target.** NASS reports dryland wheat yield separately for crops following
-summer fallow (35.4 bu/ac) and continuous cropping (32.0 bu/ac) - an *observed*
-rotation effect of **+10.8%** over 25 years. Reproducing that requires simulating
-rotations as sequences with soil water carried across the fallow year, which is the
-next component to build. It is recorded as the number to hit.
+---
 
-Reproduce any of it:
+## How it works
 
-```bash
-PYTHONPATH=src ./.venv/bin/python scripts/validate_et0.py     # vs gridMET
-PYTHONPATH=src ./.venv/bin/python scripts/validate_yield.py   # vs NASS yields
-PYTHONPATH=src ./.venv/bin/python scripts/validate_multisite.py  # 4 sites
-PYTHONPATH=src ./.venv/bin/python scripts/show_carbon.py      # 41-yr RothC runs
-```
+Three parts, and the design decision behind them matters more than any of them.
+
+**State simulator.** A field is not a blank slate each season. Soil water, carbon,
+nitrogen and surface residue are carried forward from one season into the next, so
+a legume shows up as a nitrogen credit to the following crop and a thirsty crop
+shows up as a cost to whatever comes after it.
+
+**Replay.** Each rotation is run through the weather that actually happened,
+1984–2024. That is where the "bad year" number comes from — a distribution, not an
+average, because nobody farms an average year.
+
+**Ranking.** Rotations beaten on every objective are set aside; what remains are
+genuine trade-offs, ordered by the farmer's own stated priorities. The interface
+says when *the weighting* rather than the evidence is deciding the answer.
+
+> The obvious way to build this is a scoring table — points per crop for water,
+> nitrogen, erosion, summed. We deliberately did not. A scoring table cannot
+> represent sequence, so it cannot see the thing rotation actually is, and it can
+> never produce a downside. Scoring happens only at the last step, on simulated
+> outputs.
+
+**The architectural split.** Simulating one site takes about a minute; re-ranking
+it against stated priorities takes **10 ms**. So physics is precomputed and
+preference is live — the expensive half does not depend on anyone's preferences,
+and the cheap half is entirely preference and has to move the instant a slider
+does.
+
+---
+
+## NASA data
+
+Not a layer on a map — the thing it runs on.
+
+| Dataset | Role |
+|---|---|
+| **NASA POWER** | 41 years of daily temperature, rain, humidity, wind and solar radiation at every field. Drives the water balance, and through it the yield, carbon, nitrogen and erosion. **Every number in the tool traces back to it.** |
+| **NASADEM** | 30 m elevation → slope → the RUSLE length-slope factor |
+| **MODIS MOD13Q1 NDVI** (via NASA AppEEARS) | Independent check on modelled ground cover — used as evidence, not decoration |
+
+Sangrur has no 41-year daily weather station we could access. POWER supplies 41
+gap-free years at any coordinate on Earth, processed identically everywhere, which
+is the only reason the same engine runs in Kansas and in Punjab and the comparison
+between them means anything.
+
+**Partner and other data:** USDA SSURGO (US soil), ISRIC SoilGrids (global soil),
+USDA NASS QuickStats (county yields and irrigation census), gridMET (independent
+reference ET), CGWB via India-WRIS (groundwater).
+
+---
+
+## Validation
+
+This is where most of the work went. A crop model that has not been checked
+against observation is a plausible-looking opinion.
+
+**11 checks: 5 pass, 4 partial, 2 fail.** All eleven are displayed in the app with
+the command that reproduces each one.
+
+| Check | Result |
+|---|---|
+| Reference ET vs gridMET | **−3.2%** bias, daily r = 0.966 over 40 years |
+| Modelled stress vs detrended NASS yield | **11/11 positive**, 8/11 significant, mean r = +0.447 |
+| Dryland yield penalty, absolute magnitude | mean absolute error **6.0%** |
+| Parameter sensitivity | **18/18** perturbations leave the recommendation standing |
+| Water and carbon mass balance | closes to **1e-12 mm** |
+| Ground cover vs MODIS NDVI | 1 of 5 pixels comparable — and it passes, r = **+0.772** |
+| Bad-year recall vs harvest records | weak: 4 of 12 against 2.6 expected by chance |
+| Rotation effect | ⚠️ observed **+10.8%**, modelled **+18.0%** — we over-predict |
+| Punjab groundwater | ⚠️ direction confirmed by 20/20 wells, magnitude unreconciled 5–13× |
+| **Paddy irrigation vs NASS** | ❌ **+53% over** observed 610–640 mm |
+| Punjab yields | ❌ no district series obtainable — this is why Punjab is Tier 2 |
+
+**18 errors found in our own model**, every one of which produced confident,
+plausible, wrong output before it was caught. All are listed in the app.
+
+### The two failures are the point
+
+We could not check the flooded-rice model that the whole Punjab result rests on,
+because India publishes no water record we could obtain. So we found somewhere
+that floods rice the same way and does: **Arkansas**, where USDA reports 610–640
+mm applied to gravity-irrigated rice.
+
+**The model failed — 77% over.** Percolation could not rescue it; swept across its
+whole plausible range the closest approach was still 50% over, so the error was
+structural. We rebuilt the season model so one rice crop runs dry, then flooded,
+then drained. That rebuild found three further bugs and the mass balance now closes
+to 1e-12 across both transitions.
+
+**It still fails, at +53%** — and the residual is now traced to FAO-56 Table 12's
+paddy coefficients, which already include evaporation from standing water and so
+charge open-water evaporation to a dry seedbed.
+
+Nothing was tuned to close it. Percolation, efficiency and the coefficients would
+each reproduce 610 mm with a plausible-looking number, and each would destroy the
+meaning of the agreement.
 
 **A process rule, learned the hard way:** a validation target must be a dataset we
-have fetched or a citation we can point at. An earlier run attributed a residual to
-a "+18% ET0 bias" on the strength of a *remembered* climatology figure; gridMET
-showed the bias did not exist. See `docs/DECISIONS.md` for the retraction.
-
-**For judges and reviewers:** `docs/SUBMISSION.md` is the project page with every
-claim and how to reproduce it. `docs/DEMO.md` is the spoken demo script.
-`docs/DECISIONS.md` is a dated log of every design decision, every alternative
-rejected, and every error we found in our own model.
-
-## Running it
+fetched or a citation we can point at. An earlier claim of a "+18% ET0 bias" came
+from a remembered figure; gridMET showed −3.2%. It was withdrawn. A later claim
+that the model recovered drought years unprompted turned out never to have been
+run at all — reproducing it properly downgraded the check from pass to partial.
 
 ```bash
-./scripts/serve.sh          # builds bundles if needed, then serves on :8000
+PYTHONPATH=src python scripts/validate_et0.py        # vs gridMET
+PYTHONPATH=src python scripts/validate_multisite.py  # 4 sites vs NASS
+PYTHONPATH=src python scripts/validate_punjab.py     # vs CGWB groundwater
+PYTHONPATH=src python scripts/validate_paddy.py      # vs NASS irrigation census
+PYTHONPATH=src python scripts/validate_ndvi.py       # vs MODIS NDVI
+PYTHONPATH=src python scripts/validate_drought.py    # bad-year recall
+PYTHONPATH=src python scripts/sensitivity.py         # 18 perturbations
 ```
 
-Then open <http://127.0.0.1:8000>: a map of the precomputed fields, priority
-sliders, the ranked rotations, the full evidence card for any of them, and a
-printable one-page field plan.
+---
 
-**The architecture point worth knowing.** Simulating one site - fetching 41 years
-of weather, reading the soil survey, running ~80 candidate rotations through every
-year - takes about a minute. Re-ranking that scored set against stated priorities
-takes **10 ms**. So the split is:
+## Two tiers, enforced in code
 
-| | what | cost |
-|---|---|---|
-| precomputed | weather, soil, simulation, scoring, guardrail screen | ~1 min per site |
-| **live** | ranking against priorities, Pareto front, sensitivity | **10 ms** |
-
-That is not only an optimisation. The expensive half is physics and does not depend
-on anyone's preferences; the cheap half is entirely preference and must be instant,
-because a farmer exploring trade-offs needs the answer to move with the slider.
-Precomputing the preferences instead would have been exactly the wrong way round.
-
-Endpoints: `/api/sites`, `/api/site/{id}`, `POST /api/rank`,
-`/api/site/{id}/rotation/{i}/evidence`, `.../tradeoff`, `.../fieldplan`,
-`/api/site/{id}/guardrails`. No endpoint returns a recommendation without the
-evidence behind it - ranking carries the weight-sensitivity report, rotation detail
-carries the full evidence card, the crop screen carries the frequency behind every
-verdict.
-
-## The honesty layer
-
-Two components, because a recommendation a farmer cannot interrogate is an
-instruction rather than decision support.
-
-**Guardrails** (`decide/guardrails.py`) refuse recommendations the optimiser would
-otherwise happily make - it will propose a frost-sensitive crop for a Nebraska
-winter if the water balance looks good, because a water balance knows nothing about
-frost. They run on the observed record, so they return **frequencies**: "killing
-frost during grain fill in 7 of 41 years" is usable, "frost risk: high" is not.
-
-Almost everything is a warning rather than a refusal. A screen that refuses freely
-removes options a farmer may have good local reasons to want. Only two things are
-genuine refusals: failure to reach maturity in three years out of four, and frost
-that kills during flowering. Heat is never a refusal - `t_max` is where growth
-ceases, not where the crop dies.
-
-The only real test of a crop screen is whether it agrees with what farmers actually
-grow, and that caught two false refusals and one category error:
-
-| | what went wrong |
+| | |
 |---|---|
-| winter wheat in Finney County | refused on heat, in the county where it has been the dominant crop for a century |
-| winter wheat in Nebraska | refused on degree days, because a whole-season sum counts dormant winter months at zero |
-| cereal rye cover crop | refused for "not reaching maturity" in a 70-day autumn window - which is exactly how a rye cover is grown |
+| **Tier 1 — validated** | US High Plains (4 fields) and US Mid-South (Arkansas). Checked against 41 years of county yields |
+| **Tier 2 — transferred** | Indian Punjab. Same engine, global-only inputs, no yield record to check against |
 
-One disagreement is deliberately left standing: grain sorghum is refused at the
-cooler Nebraska site although it is grown there with short-season hybrids needing
-~1300-1500 degree days against the 1700 in our table. The refusal is correct for the
-cultivar it was given, so **the verdict says so** rather than the threshold being
-loosened until it agrees.
+A tier-2 region **cannot claim validation** — it is refused in the constructor and
+there is a test for it. An evidence card takes its confidence from its weakest
+source, so a region declaring "no district yield series" can never read above LOW
+however good the physics is. The downgrade is structural, not a disclaimer somebody
+remembered to write.
 
-**Evidence cards** (`decide/evidence.py`) carry every dataset, equation, validation
-result and unknown behind one recommendation. Two things are computed rather than
-asserted:
+---
 
-- **Resolution mismatch.** Calling a dataset "coarse" conveys nothing. One NASA
-  POWER cell covers 270,400 ha; a quarter-section field is 65 - a ratio of
-  **4,160:1**, computed from the actual areas, which is what tells a farmer how far
-  to trust an absolute number.
-- **Confidence from the weakest link, never an average.** A card resting on one
-  low-confidence input is low-confidence however many strong inputs sit beside it.
-  Averaging would let good inputs launder a bad one. The card also names *every*
-  source at the floor, since naming one would imply fixing it alone would help.
+## What it cannot do
 
-```bash
-PYTHONPATH=src ./.venv/bin/python scripts/show_evidence.py
-```
+Stated on the output itself, not in a footnote.
 
-## Layout
-```
-src/fieldshift/        engine package  (agro/ models, data/ parameter tables, io/ dataset readers)
-tests/           pytest, validated against published reference values where possible
-data/raw/        NASA granules — gitignored, never committed
-data/reference/  small committed lookup tables
-docs/            decision log, method notes
-notebooks/       exploration only; nothing authoritative lives here
-web/             frontend (stack TBD)
-```
+- **No farmer has used this.** Zero field trials. The largest limitation.
+- **No prices, subsidies or markets.** The crop table refuses to invent them.
+- **No methane** from flooded paddy — the dominant climate term for rice. Our
+  carbon figure flatters rice.
+- **Erosion is water only** in RUSLE terms; wind is reported as an exposure index
+  because quantifying it properly needs field-roughness data no dataset carries.
+- **One POWER cell is 52 km across** — 108,160 times the area of the 2.5 ha Punjab
+  field. That ratio is printed on the evidence card rather than hidden.
 
-## Setup
+---
+
+## Stack
+
+Python 3.11, FastAPI, NumPy. Frontend is a single HTML file with Leaflet and no
+build step. NASADEM `.hgt` tiles are read directly as raw big-endian int16, so
+there is no heavy geospatial stack to install.
+
+**Seven published model families:** FAO-56 Penman-Monteith and the dual crop
+coefficient, FAO-33 yield response, RothC-26.3 soil carbon, per-pool C:N nitrogen
+under Liebig's minimum, RUSLE, SCS curve number runoff, and growing degree days.
+
+**Parameter tables:** 33 crops, 19 soilborne pathogens, 12 USDA soil texture
+classes — validated on load, so bad agronomy raises rather than passing silently.
+
+**827 tests.**
+
 ```bash
 python3.11 -m venv .venv
 ./.venv/bin/python -m pip install -r requirements.txt
-./.venv/bin/python -m pytest
+PYTHONPATH=src ./.venv/bin/python -m pytest
 ```
 
-## Status
-Foundation only. Datasets and the challenge Resources list are pending —
-see `RESOURCES.md`. No dataset-specific code is written until that is filled in.
+---
+
+## Use of AI
+
+An AI coding assistant wrote the large majority of the code, tests and
+documentation, under human direction.
+
+**No AI model makes or influences a recommendation at runtime.** There is no
+language model in the decision path. Every number a farmer sees comes from a
+published equation applied to an observed dataset, and the evidence card names
+which. An agronomist cannot audit a sentence a language model generated, and an
+unauditable agronomic recommendation is not decision support.
+
+---
+
+## Documents
+
+- **`docs/SUBMISSION.md`** — the project page: every claim and how to reproduce it
+- **`docs/EXPLAIN.md`** — the whole project in plain language, no jargon
+- **`docs/DECISIONS.md`** — dated log of every design decision, every alternative
+  rejected, and every error found in our own model
+
+> **FieldShift supports a decision; it does not make one.** Nothing here replaces
+> local agronomic judgement.
