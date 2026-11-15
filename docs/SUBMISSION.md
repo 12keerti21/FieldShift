@@ -103,6 +103,9 @@ The model never sees a yield. It takes weather, soil and crop parameters, produc
 water-stress index, and FAO-33 maps that onto yield loss. Everything on the observed
 side is USDA. That makes it an out-of-sample test rather than a fit.
 
+**11 checks: 5 pass, 4 partial, 2 fail.** All eleven are displayed in the app with
+the command that reproduces each one, and the two failures are described below.
+
 | Claim | Independent reference | Result |
 |---|---|---|
 | Reference ET | gridMET published 4 km product | **−3.2%** over 40 yr, daily r = 0.966 |
@@ -110,7 +113,7 @@ side is USDA. That makes it an out-of-sample test rather than a fit.
 | Dryland corn yield penalty (absolute) | NASS irrigated vs non-irrigated | mean absolute error **6.0%** across 3 sites |
 | **An observed rotation effect** | NASS wheat after fallow vs continuous | observed **+10.8%**, modelled **+18.0%** |
 | Soil carbon gain, irrigated no-till | published western Kansas range | 0.38 t C/ha/yr vs 0.2–0.5 reported |
-| Drought years | documented US High Plains droughts | recovers 2012, 2011, 2002, 1988, 2022 unprompted |
+| Bad-year recall | NASS non-irrigated yields, detrended | ⚠️ **weak**: 4 of 12 worst-year picks agree against 2.6 expected by chance |
 
 It also **transfers**. Same code, same crop table, no per-site tuning:
 
@@ -238,7 +241,9 @@ and nothing else: which year patterns are agronomically real and on what dates,
 where the soil comes from, and what independent data exists to check the answer
 against. The physics below that does not know where it is.
 
-So we ran it on **Sangrur district, Punjab** — rice–wheat over a falling water table,
+So we ran it on **Sangrur district, Punjab** — rice–wheat over a water table we
+measured falling **1.167 m/year** across 20 CGWB observation wells with records up
+to 27 years,
 which is the same shape of problem as the Ogallala: a profitable monoculture mining a
 finite aquifer. Inputs are global only: NASA POWER (worldwide already) and **ISRIC
 SoilGrids** instead of SSURGO. On a 2.5 ha holding, the result:
