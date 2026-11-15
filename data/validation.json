@@ -147,6 +147,17 @@
    "detail": "The paddy model drives the entire Punjab result and nothing had ever checked it, because India gave us no water record we could obtain. Arkansas floods its rice the same way and NASS publishes the water applied: 610-640 mm. The model asked for 1,135 mm, +77%. Percolation could not rescue it - swept 1 to 6 mm/day the closest approach was still 50% over - so the error was structural. The first suspect was the flood window: this model flooded from establishment for all 140 days, where Delta rice is drilled dry and flooded only at about the four-leaf stage, roughly 95 days. So the season model was rebuilt to run one crop through two regimes, dry then ponded then drained, with the mass balance closing to 1e-12 across both transitions. That rebuild found three further bugs on its own: the water released at the drain was counted as runoff AND as a release, the storage datum moved with the root zone so a profile that gained nothing appeared to gain, and the water filling newly explored saturated soil was never charged. Correcting the flood window was necessary and insufficient - the model still asks +53% too much. The residual is in crop water use: modelled ETc is 786 mm from a season ET0 of 680 mm and a mean coefficient of 1.13, and those FAO-56 Table 12 paddy values already include evaporation from standing water. Applying them to a crop that spends five weeks on dry soil charges open-water evaporation to a dry seedbed. There is no published basal coefficient for drill-seeded rice before the flood, which is why this has not been corrected: it is a literature question, not a coding one. Nothing was tuned - percolation, efficiency and the coefficients would each reproduce 610 mm with a plausible-looking number and each would destroy the meaning of the agreement. Punjab's rice is transplanted into an already flooded field, so Table 12 is the right table there and the dry-phase error does not apply; what carries over is that the same coefficients give 808 mm at Sangrur and nothing has checked that.",
    "reproduce": "python scripts/validate_paddy.py",
    "tier": 1
+  },
+  {
+   "id": "site_landcover",
+   "title": "Are our sites on the land we claim?",
+   "question": "Does each site's coordinate actually grow the rotation we modelled against it?",
+   "against": "USDA Cropland Data Layer, 30 m, 2008-2021, via the Microsoft Planetary Computer STAC catalogue",
+   "result": "0 of 5 US sites match. Four are not farmland in any year of the record",
+   "verdict": "fail",
+   "detail": "Every other check here tests the model. This tests an assumption underneath all of them. A MODIS pixel is 250 m and CDL is 30 m, so this asks for the composition of the whole pixel rather than the class of the centre cell. sedgwick_ks is 90% developed land - the point sits in built-up Wichita. holt_ne is 85% grass and pasture, which is the Sandhills. hale_tx is 70-96% pasture. arkansas_ar, the site the paddy irrigation check runs on, is 65% developed and the rest woody wetland. finney_ks is genuine cropland but grows wheat, sorghum, corn and fallow rather than the wheat-fallow we compared against it. CDL is independent of MODIS NDVI, so this does not make that check circular - it explains it: four of the five US NDVI pixels disagreed with our canopy curve because they do not grow the crop, not because the curve is wrong. The defect is in our site selection. A county reference point is a label on a map, not a field, and we used one as if it were the other at every US site. Replacement coordinates verified on CDL have been identified - finney_ks 38.28/-100.49 shows textbook wheat-fallow alternation and arkansas_ar 34.34/-91.48 a clean rice-soybean alternation - but moving them changes the POWER cell and the soil survey polygon, and therefore every number this project reports, so it is recorded here rather than quietly applied.",
+   "reproduce": "python scripts/validate_sites.py",
+   "tier": 1
   }
  ],
  "bugs_found": [
@@ -239,6 +250,11 @@
    "title": "A validation claim that had never been run",
    "effect": "an unsupported 'pass' displayed in the interface for days",
    "how": "The drought-recall check named specific years and pointed at a reproduce command that does not produce them. Nothing in the repository did. It was caught only when someone asked where the claim was backed up. Writing the script that reproduces it downgraded the check from pass to partial. Every other entry has since been re-checked against its own command."
+  },
+  {
+   "title": "Site coordinates were county reference points, not fields",
+   "effect": "every US result was computed for ground that does not grow the modelled rotation, and four of five sites are not farmland at all",
+   "how": "Sites were placed at county reference coordinates and never checked against a land-cover product. USDA CDL shows sedgwick_ks in built-up Wichita, holt_ne and hale_tx on pasture, and arkansas_ar on developed land and wetland. Found by scripts/validate_sites.py. Verified replacement coordinates are recorded in the check; applying them changes the weather cell and soil for every site, so it is a deliberate post-submission change rather than a silent edit."
   }
  ]
 }

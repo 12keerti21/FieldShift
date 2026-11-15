@@ -108,7 +108,7 @@ reference ET), CGWB via India-WRIS (groundwater).
 This is where most of the work went. A crop model that has not been checked
 against observation is a plausible-looking opinion.
 
-**11 checks: 5 pass, 4 partial, 2 fail.** All eleven are displayed in the app with
+**12 checks: 5 pass, 4 partial, 3 fail.** All twelve are displayed in the app with
 the command that reproduces each one.
 
 | Check | Result |
@@ -124,8 +124,9 @@ the command that reproduces each one.
 | Punjab groundwater | ⚠️ direction confirmed by 20/20 wells, magnitude unreconciled 5–13× |
 | **Paddy irrigation vs NASS** | ❌ **+53% over** observed 610–640 mm |
 | Punjab yields | ❌ no district series obtainable — this is why Punjab is Tier 2 |
+| **Site locations vs USDA CDL** | ❌ **0 of 5 US sites** sit on the land we modelled |
 
-**18 errors found in our own model**, every one of which produced confident,
+**19 errors found in our own model**, every one of which produced confident,
 plausible, wrong output before it was caught. All are listed in the app.
 
 ### The two failures are the point
@@ -149,6 +150,45 @@ Nothing was tuned to close it. Percolation, efficiency and the coefficients woul
 each reproduce 610 mm with a plausible-looking number, and each would destroy the
 meaning of the agreement.
 
+### The third failure: we checked our own ground, and failed
+
+Every other check here tests the model. This one tests an assumption underneath
+all of them — that the coordinate we picked for each site is a field growing the
+rotation we modelled against it. Nothing had ever checked that.
+
+USDA's Cropland Data Layer classifies every 30 m of the United States by crop,
+annually. It is independent of MODIS NDVI, so it can judge our points without
+making the NDVI check circular. CropScape is down and behind a sign-in wall, but
+CDL is in the **Microsoft Planetary Computer** catalogue, which needs no account.
+
+A MODIS pixel is 250 m and CDL is 30 m, so we asked for the composition of the
+whole pixel rather than the class of the centre cell.
+
+**0 of 5 US sites match. Four are not farmland in any year of the record.**
+
+| site | what is actually there |
+|---|---|
+| sedgwick_ks | **90% developed** — the point sits in built-up Wichita |
+| holt_ne | 85% grass and pasture — the Sandhills |
+| hale_tx | 70–96% pasture |
+| arkansas_ar | 65% developed, the rest woody wetland |
+| finney_ks | real cropland, but wheat–sorghum–corn–fallow, not wheat–fallow |
+
+This explains the NDVI result rather than contradicting it: four of five US
+pixels disagreed with our canopy curve because they do not grow the crop, not
+because the curve is wrong. And it reaches further than NDVI — each site draws
+its weather and soil from its coordinate, so `arkansas_ar`, the site the paddy
+check runs on, has been taking its soil from developed land and wetland.
+
+A county reference point is a label on a map, not a field. We used one as if it
+were the other, at every US site, for the whole project.
+
+Replacement coordinates verified on CDL are recorded in the check —
+`finney_ks` 38.28/−100.49 shows textbook wheat–fallow alternation, `arkansas_ar`
+34.34/−91.48 a clean rice–soybean alternation. Applying them moves the POWER
+cell and the soil polygon, and therefore every number this project reports, so
+it is a deliberate next step rather than a silent edit.
+
 **A process rule, learned the hard way:** a validation target must be a dataset we
 fetched or a citation we can point at. An earlier claim of a "+18% ET0 bias" came
 from a remembered figure; gridMET showed −3.2%. It was withdrawn. A later claim
@@ -162,6 +202,7 @@ PYTHONPATH=src python scripts/validate_punjab.py     # vs CGWB groundwater
 PYTHONPATH=src python scripts/validate_paddy.py      # vs NASS irrigation census
 PYTHONPATH=src python scripts/validate_ndvi.py       # vs MODIS NDVI
 PYTHONPATH=src python scripts/validate_drought.py    # bad-year recall
+PYTHONPATH=src python scripts/validate_sites.py      # site locations vs USDA CDL
 PYTHONPATH=src python scripts/sensitivity.py         # 18 perturbations
 ```
 
