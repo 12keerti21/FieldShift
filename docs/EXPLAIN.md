@@ -108,7 +108,7 @@ model wrong.**
   droughts. It independently flagged 2012, 2011, 2002, 1988 and 2022 as the worst
   water years. Those are exactly the famous drought years.
 
-### We found fourteen mistakes in our own model
+### We found seventeen mistakes in our own model
 
 Every one of them was producing confident, believable, **wrong** answers before we
 caught it. A few examples in plain terms:
@@ -125,7 +125,7 @@ caught it. A few examples in plain terms:
 - It read a hillslope as **17 times steeper than it is**, because on nearly flat
   ground the wobble in satellite elevation data is bigger than the actual slope.
 
-We list all fourteen in the app. A model whose builders can't tell you its past
+We list all seventeen in the app. A model whose builders can't tell you its past
 mistakes probably hasn't looked for them.
 
 ### We went looking for a way to break our own best result — and found one
@@ -139,15 +139,25 @@ actually apply — about **610 to 640 mm** a season.
 
 **Our model asked for 1,135 mm. Nearly twice as much.**
 
-Then we worked out why. Arkansas rice is planted dry in April and only flooded
-about five weeks later — roughly 95 days under water. Our model floods the field
-for the whole 140-day season, so it pays for 45 days of evaporation and seepage
-that never happen. Correcting just that gets it to within 8%.
+Then we worked out why — or thought we had. Arkansas rice is planted dry in
+April and only flooded about five weeks later. Our model flooded the field for
+the whole season, paying for 45 days of evaporation and seepage that never
+happen. So we rebuilt it: a rice crop can now be dry for part of its life,
+flooded for part, and drained before harvest.
 
-**We did not make that correction and call it fixed.** Changing a model to match
-a number you already know isn't science, it's decorating. Doing it properly means
-rebuilding how we handle a rice crop that's dry for part of its life, and that's
-real work we haven't done yet.
+That rebuild found **three more mistakes we'd made**, every one of which quietly
+created or destroyed water. The books now balance to a trillionth of a
+millimetre.
+
+**And it still failed** — 53% too much instead of 77%.
+
+So we kept looking. The answer is somewhere else: the standard crop figures for
+rice assume the field is flooded from the day it's sown, so we were charging a
+dry seedbed for water evaporating off a pond that isn't there yet. Nobody has
+published the right figure for rice that spends its first five weeks dry.
+
+That's where this stops — because the honest answer is "we don't know yet"
+rather than a number we made up.
 
 The Punjab rice is *transplanted* into a field that's already flooded, so this
 particular mistake doesn't apply there. But the honest summary is: the India

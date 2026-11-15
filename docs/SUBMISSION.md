@@ -208,15 +208,22 @@ still 50% over, so the error is structural. The sweep is the method: it would
 have been trivial to pick the value reproducing 610 mm and call that validation,
 so the question is asked the other way round and the data allowed to answer.
 
-The diagnosis is the useful half. This model floods from establishment for all
-140 days; Delta rice is drill-seeded dry in April and flooded only at about the
-four-leaf stage — roughly 95 days. Correcting only the flood window takes it from
-+77% to +49%; with clay-pan percolation and on-farm delivery it reaches 690 mm,
-+8%.
+So we rebuilt the season model: one rice crop can now run dry, then flooded,
+then drained, with the state carrying continuously across both transitions. That
+rebuild found **three further bugs on its own** — the drain release counted
+twice, a storage datum that moved with the root zone so a profile gaining
+nothing appeared to gain, and the water filling newly explored saturated soil
+never charged. The mass balance now closes to 1e-12 across a dry phase, a
+flood-up, 95 flooded days and a drain.
 
-We did not apply those corrections and declare success. Simulating the flood
-window alone would silently drop the dry establishment phase, and changing a
-model against a target you already know is fitting rather than modelling.
+**It still fails, at +53%.** Correcting the flood window was necessary and
+insufficient, and that is the informative part: the water is not going into the
+extra flooded days. It is going into crop water use — 786 mm of ETc from a
+season ET0 of 680 mm and a mean coefficient of 1.13, where FAO-56 Table 12's
+paddy values already include evaporation from standing water. We charge
+open-water evaporation to a dry seedbed. There is no published basal coefficient
+for drill-seeded rice before the permanent flood, which is a literature question
+rather than a coding one, and we will not invent one to close a gap.
 
 Punjab's rice is *transplanted* into an already-flooded field, so this failure
 mode is absent there by construction. The honest position: the Punjab water
@@ -288,7 +295,7 @@ live — because the expensive half does not depend on anyone's preferences, and
 cheap half is entirely preference and has to move the instant a slider does.
 
 Python engine (no heavy geospatial stack — NASADEM `.hgt` is read directly as raw
-int16), FastAPI, Leaflet, no build step. **819 tests.**
+int16), FastAPI, Leaflet, no build step. **827 tests.**
 
 ### What a farmer takes away
 
@@ -358,7 +365,7 @@ PYTHONPATH=src python scripts/validate_multisite.py # 4 sites
 PYTHONPATH=src python scripts/sensitivity.py        # 18 perturbations
 PYTHONPATH=src python scripts/search_rotations.py   # the rotation search
 PYTHONPATH=src python scripts/show_evidence.py      # an evidence card
-python -m pytest                                    # 819 tests
+python -m pytest                                    # 827 tests
 ```
 
 `docs/DECISIONS.md` is a dated log of every design decision, every alternative

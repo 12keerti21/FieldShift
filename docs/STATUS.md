@@ -1,7 +1,7 @@
 # Project status — what is done, what is not
 
 Verified against the repository, not written from memory.
-**39 commits · 819 tests passing · 44 source modules · 35 test files · 21 API routes**
+**39 commits · 827 tests passing · 44 source modules · 35 test files · 21 API routes**
 
 ---
 
@@ -53,7 +53,7 @@ NASA POWER · NASADEM · **NASA AppEEARS (MODIS NDVI)** · USDA SSURGO · ISRIC 
 | **Paddy irrigation vs NASS** | ❌ **+77% over.** Cause found and quantified |
 | Punjab yields | ❌ not validated — no data obtainable |
 
-**14 bugs found in our own model, all documented.**
+**17 bugs found in our own model, all documented.**
 
 ### The product
 - **7 screens:** Analyse · Field · Rotations · Compare · Evidence · Climate stress · Validation
@@ -118,7 +118,7 @@ NASA POWER · NASADEM · **NASA AppEEARS (MODIS NDVI)** · USDA SSURGO · ISRIC 
 
 The **science and the validation are strong** — that's where the work went, and
 it is unusual to be able to show eleven checks — six passing, three partial, **two
-outright failures we found ourselves** — and fourteen bugs in our own work.
+outright failures we found ourselves** — and seventeen bugs in our own work.
 
 The **product is complete and demonstrable** — anyone can pick a field anywhere on
 Earth and get an audited answer in about thirty seconds.

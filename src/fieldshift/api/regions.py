@@ -85,6 +85,11 @@ DELTA_FLOOD = IrrigationPolicy(
     percolation_mm_day=2.0, establishment_mm=120.0,
     target_ponding_mm=75.0, min_ponding_mm=50.0, bund_height_mm=125.0,
     max_application_mm=75.0,
+    # Drilled dry in April, permanently flooded at about the four-leaf stage
+    # roughly five weeks later, drained before harvest. These are the dates the
+    # crop is actually grown on; the model previously flooded from establishment
+    # for the whole season, which is what the Arkansas test caught.
+    flood_start_day=35, flood_days=95,
 )
 
 # Transplanted paddy under continuous submergence. This dispatches to the ponded
@@ -459,10 +464,11 @@ US_MID_SOUTH = Region(
         "dense clay subsoil holds water, so a lower figure is expected - but it "
         "is the single number the irrigation estimate turns on and it is swept "
         "rather than asserted in scripts/validate_paddy.py.",
-        "Flood timing. Delta rice is drill-seeded dry in April and permanently "
-        "flooded around the four-leaf stage, whereas this model floods from "
-        "establishment. The first few weeks are therefore wetter in the model "
-        "than in the field.",
+        "Flood timing, now modelled as a window rather than the whole season - "
+        "dry from drilling to about the four-leaf stage, flooded for 95 days, "
+        "drained before harvest. Correcting this was the first thing the "
+        "Arkansas test demanded; it did NOT close the gap, which is what sent "
+        "the search to crop water use instead.",
     ),
     note=(
         "Grand Prairie rice and soybean on a clay-pan soil. Humid where every "

@@ -142,9 +142,9 @@
    "title": "The paddy water balance against observed irrigation",
    "question": "Does the flooded-rice model ask for the right amount of water?",
    "against": "USDA NASS irrigation census, water applied to gravity-irrigated rice in Arkansas (2013, 2018, 2023)",
-   "result": "FAILS as configured: 1,135 mm modelled against 610-640 mm observed, +77%. The cause is identified and quantified.",
+   "result": "still FAILS after the flood window was fixed: 981 mm modelled against 610-640 mm observed, +53%. The residual is traced to crop water use.",
    "verdict": "fail",
-   "detail": "The paddy model drives the entire Punjab result - the 1,996 mm/yr rice-wheat is said to need, and therefore the 24% saving from switching - and nothing had ever checked it, because India gave us no water record we could obtain. Arkansas floods its rice exactly the way Punjab does and NASS publishes the water actually applied, so the management is the analogue even though the climate deliberately is not. The model fails. Percolation cannot rescue it: swept from 1 to 6 mm/day the closest approach is still 50% over, so the error is structural rather than a mis-set parameter. The diagnosis: this model floods from establishment for all 140 days, where Delta rice is drill-seeded dry in April and permanently flooded only at about the four-leaf stage, roughly 95 days. Correcting only the flood window takes it from +77% to +49%; with a clay-pan percolation of 1.0 mm/day and on-farm delivery at 0.90 it reaches 690 mm, +8%. We did NOT apply those corrections and declare success - simulating the flood window alone would silently drop the dry establishment phase, where the crop is in the ground and taking flush irrigations, and doing it properly needs one rice crop split into a dry phase and a ponded phase, which the season model does not support. Punjab's rice is TRANSPLANTED into an already flooded field, so this specific failure mode is absent there by construction - but the Punjab figures now rest on a model that has been tested once and failed in a way we can explain, which is more than was known before and much less than validation.",
+   "detail": "The paddy model drives the entire Punjab result and nothing had ever checked it, because India gave us no water record we could obtain. Arkansas floods its rice the same way and NASS publishes the water applied: 610-640 mm. The model asked for 1,135 mm, +77%. Percolation could not rescue it - swept 1 to 6 mm/day the closest approach was still 50% over - so the error was structural. The first suspect was the flood window: this model flooded from establishment for all 140 days, where Delta rice is drilled dry and flooded only at about the four-leaf stage, roughly 95 days. So the season model was rebuilt to run one crop through two regimes, dry then ponded then drained, with the mass balance closing to 1e-12 across both transitions. That rebuild found three further bugs on its own: the water released at the drain was counted as runoff AND as a release, the storage datum moved with the root zone so a profile that gained nothing appeared to gain, and the water filling newly explored saturated soil was never charged. Correcting the flood window was necessary and insufficient - the model still asks +53% too much. The residual is in crop water use: modelled ETc is 786 mm from a season ET0 of 680 mm and a mean coefficient of 1.13, and those FAO-56 Table 12 paddy values already include evaporation from standing water. Applying them to a crop that spends five weeks on dry soil charges open-water evaporation to a dry seedbed. There is no published basal coefficient for drill-seeded rice before the flood, which is why this has not been corrected: it is a literature question, not a coding one. Nothing was tuned - percolation, efficiency and the coefficients would each reproduce 610 mm with a plausible-looking number and each would destroy the meaning of the agreement. Punjab's rice is transplanted into an already flooded field, so Table 12 is the right table there and the dry-phase error does not apply; what carries over is that the same coefficients give 808 mm at Sangrur and nothing has checked that.",
    "reproduce": "python scripts/validate_paddy.py",
    "tier": 1
   }
@@ -219,6 +219,21 @@
    "title": "The paddy model floods for the whole season, not the flood window",
    "effect": "over-predicts rice irrigation by roughly 50% where the two differ",
    "how": "Found by the first independent test the paddy model has ever had. Drill-seeded rice is dry for about five weeks before the permanent flood goes on, so holding water from establishment pays evaporation and percolation on 45 days that are never flooded. Quantified rather than fixed: a correct fix means splitting one rice crop into a dry phase and a ponded phase, and making that change against a target we already know would be fitting rather than modelling."
+  },
+  {
+   "title": "The drain released water was counted twice",
+   "effect": "mass balance off by ~400 mm on any season with a drain",
+   "how": "Water let off at the drain was added to the runoff series before infiltration was computed, so infiltration went negative by the whole pond depth, and the release was then subtracted again on the storage side. Invisible until a crop existed that is flooded for only part of its season."
+  },
+  {
+   "title": "The water balance datum moved with the root zone",
+   "effect": "a profile that gained nothing appeared to gain 51 mm",
+   "how": "Storage was measured against field capacity, which rises as roots deepen - so under a flood, where depletion is pinned at zero, growing roots silently created water. Storage is now measured against the wilting point of the current root zone, the same datum either side of a flood-up or a drain."
+  },
+  {
+   "title": "Root growth was credited on days the regime changed",
+   "effect": "leaked exactly one day's root growth at every drain",
+   "how": "The root-growth bookkeeping ran before the flood-up and drain handlers, both of which reset the depletion - so the credit was kept and the matching depletion thrown away. The bookkeeping now runs after the transitions."
   }
  ]
 }

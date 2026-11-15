@@ -277,3 +277,99 @@ def test_ponded_fields_are_ignored_outside_ponded_mode():
         duration_days=120, irrigation=policy,
     )
     assert r.total_deep_percolation_mm < 99.0 * 120
+
+
+# ─────────────────────────────────────────────── the flood window, and its drain
+
+
+def flood_policy(start=0, days=None, percolation=2.0):
+    return IrrigationPolicy(
+        mode="ponded", efficiency=0.75, percolation_mm_day=percolation,
+        establishment_mm=120.0, target_ponding_mm=75.0, min_ponding_mm=50.0,
+        bund_height_mm=125.0, max_application_mm=75.0,
+        flood_start_day=start, flood_days=days,
+    )
+
+
+def test_a_split_season_closes_its_mass_balance():
+    """The hard case, and the one that exposed three separate bugs.
+
+    A crop that is dry, then flooded, then drained has two regime changes, and
+    every one of them is a chance to invent or destroy water. The drain was
+    being counted as runoff AND as a release, the storage datum moved with the
+    root zone so a profile that gained nothing appeared to gain, and the water
+    filling newly explored saturated soil was never charged.
+    """
+    for start, days in ((0, None), (35, 95), (10, 40), (1, 1)):
+        r = run_ponded_balance(
+            RICE, soil(), weather(rain_mm=4.0), et0(), duration_days=125,
+            irrigation=flood_policy(start, days),
+        )
+        assert abs(r.closure_residual_mm) < 1e-6, (
+            f"flood from {start} for {days}: residual {r.closure_residual_mm}"
+        )
+
+
+def test_the_dry_phase_can_be_water_stressed_and_the_flooded_phase_cannot():
+    """The whole point of splitting the season.
+
+    Before the permanent flood a drill-seeded crop is an ordinary dryland crop
+    and can run short. Under the flood it cannot, by construction.
+    """
+    r = run_ponded_balance(
+        RICE, soil(), weather(rain_mm=0.0), et0(), duration_days=125,
+        irrigation=flood_policy(start=40, days=60),
+    )
+    assert np.all(r.ks[40:100] == 1.0), "no stress is possible under standing water"
+    assert r.ks[:40].min() < 1.0, "the dry phase must be able to feel it"
+
+
+def test_flooding_the_whole_season_is_still_the_default():
+    """Transplanted paddy goes into an already-flooded field.
+
+    Punjab depends on this, so the default must not have moved.
+    """
+    policy = IrrigationPolicy(mode="ponded", efficiency=0.75)
+    assert policy.flood_start_day == 0
+    assert policy.flood_days is None
+    r = run_ponded_balance(RICE, soil(), weather(), et0(), duration_days=125,
+                           irrigation=policy)
+    assert np.all(r.ks == 1.0)
+
+
+def test_a_shorter_flood_uses_less_water_than_a_longer_one():
+    """The relationship the Arkansas failure turned on."""
+    long_flood = run_ponded_balance(
+        RICE, soil(), weather(rain_mm=2.0), et0(), duration_days=125,
+        irrigation=flood_policy(0, None))
+    short_flood = run_ponded_balance(
+        RICE, soil(), weather(rain_mm=2.0), et0(), duration_days=125,
+        irrigation=flood_policy(35, 70))
+    assert short_flood.total_deep_percolation_mm < long_flood.total_deep_percolation_mm
+
+
+def test_a_flood_window_outside_the_season_is_refused():
+    """Silently running an unflooded paddy would report a dryland crop as rice."""
+    with pytest.raises(WaterBalanceError, match="entirely outside the season"):
+        run_ponded_balance(RICE, soil(), weather(), et0(), duration_days=100,
+                           irrigation=flood_policy(start=150, days=20))
+
+
+@pytest.mark.parametrize("bad", [{"flood_start_day": -1}, {"flood_days": 0}])
+def test_incoherent_flood_windows_are_refused(bad):
+    with pytest.raises(WaterBalanceError):
+        IrrigationPolicy(mode="ponded", **bad)
+
+
+def test_the_drain_hands_on_a_profile_at_field_capacity():
+    """What the following crop actually inherits.
+
+    Standing water leaves at the drain; the profile keeps field capacity. A
+    model that handed on a saturated profile would credit the next crop with
+    water that ran off the field.
+    """
+    r = run_ponded_balance(
+        RICE, soil(), weather(rain_mm=0.0), et0(), duration_days=125,
+        irrigation=flood_policy(start=20, days=60))
+    assert r.final_root_depletion_mm >= 0.0
+    assert r.total_runoff_mm > 0.0, "the released pond must leave the field"

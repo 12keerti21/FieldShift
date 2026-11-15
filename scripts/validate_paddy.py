@@ -76,7 +76,8 @@ def observed_mm() -> tuple[float, float, list[str]]:
 
 
 def season(site_id: str, doy: int, days: int, percolation: float,
-           efficiency: float = 0.75) -> dict:
+           efficiency: float = 0.75, flood_start: int = 0,
+           flood_days: int | None = None) -> dict:
     """Simulate one rice season per year and return the mean water balance."""
     spec = SITES_BY_ID[site_id]
     registry = load_registry()
@@ -89,6 +90,7 @@ def season(site_id: str, doy: int, days: int, percolation: float,
         mode="ponded", efficiency=efficiency, percolation_mm_day=percolation,
         establishment_mm=120.0, target_ponding_mm=75.0, min_ponding_mm=50.0,
         bund_height_mm=125.0, max_application_mm=75.0,
+        flood_start_day=flood_start, flood_days=flood_days,
     )
     rows = []
     for year in np.unique(weather.year)[1:-1]:
@@ -126,11 +128,12 @@ def main() -> int:
     print(f"    => {lo:.0f} - {hi:.0f} mm applied per season")
 
     print("\nMODELLED — the model as configured, sweeping the one number it turns on")
-    print(f"    Arkansas County, flooded for the whole {RICE_DAYS}-day season\n")
+    print(f"    Arkansas County, drilled day {RICE_DOY}, dry 35 d then flooded 95 d\n")
     print(f"    {'perc':>6s} {'irrigation':>12s} {'ETc':>7s} {'rain':>7s} {'percol':>8s}")
     best, best_err = None, 1e9
     for perc in PERCOLATION_SWEEP:
-        m = season("arkansas_ar", RICE_DOY, RICE_DAYS, perc)
+        m = season("arkansas_ar", RICE_DOY, RICE_DAYS, perc,
+                   flood_start=35, flood_days=95)
         err = 0.0 if lo <= m["irrigation"] <= hi else min(
             abs(m["irrigation"] - lo), abs(m["irrigation"] - hi))
         if err < best_err:
@@ -138,7 +141,8 @@ def main() -> int:
         print(f"    {perc:6.1f} {m['irrigation']:9.0f} mm {m['etc']:7.0f} "
               f"{m['rain']:7.0f} {m['perc']:8.0f}")
 
-    closest = season("arkansas_ar", RICE_DOY, RICE_DAYS, best)
+    closest = season("arkansas_ar", RICE_DOY, RICE_DAYS, best,
+                     flood_start=35, flood_days=95)
     over = 100 * (closest["irrigation"] - hi) / hi
 
     print(f"""
@@ -158,37 +162,40 @@ error is not in that parameter. Something structural is wrong.""")
     print(RULE)
     print(f"\n    {'change':44s} {'irrigation':>11s} {'vs observed':>12s}")
     ladder = [
-        ("as configured: flooded all 140 days, perc 2.0", RICE_DOY, 140, 2.0, 0.75),
-        ("flood only the real window: 95 d from day 145", 145, 95, 2.0, 0.75),
-        ("  with clay-pan percolation of 1.0 mm/day",     145, 95, 1.0, 0.75),
-        ("  with on-farm delivery at 0.90 efficiency",    145, 95, 1.0, 0.90),
+        ("flooded the whole season (the old model)", 2.0, 0.75, 0, None),
+        ("flood window modelled: dry 35 d, flood 95 d", 2.0, 0.75, 35, 95),
+        ("  with clay-pan percolation of 1.0 mm/day", 1.0, 0.75, 35, 95),
+        ("  with on-farm delivery at 0.90 efficiency", 1.0, 0.90, 35, 95),
     ]
-    for label, doy, days, perc, eff in ladder:
-        m = season("arkansas_ar", doy, days, perc, efficiency=eff)
+    for label, perc, eff, fs, fd in ladder:
+        m = season("arkansas_ar", RICE_DOY, RICE_DAYS, perc, efficiency=eff,
+                   flood_start=fs, flood_days=fd)
         delta = 100 * (m["irrigation"] - hi) / hi
-        print(f"    {label:44s} {m['irrigation']:8.0f} mm {delta:+11.0f}%")
+        print(f"    {label:44s} {m['irrigation']:8.0f} mm {delta:+11.0f}%  "
+              f"ETc {m['etc']:.0f}")
 
     print(f"""
-The dominant error is the flood window, and it is a FACTUAL one rather than a
-fitted one. Delta rice is drill-seeded dry in April and permanently flooded only
-at about the four-leaf stage, around five weeks later. This model floods from
-establishment, so it holds water on the field for 140 days where the farmer holds
-it for roughly 95 - and then pays evaporation and percolation on the extra 45.
+Correcting the flood window was necessary and insufficient. It is a real error -
+the model held water for 140 days where the farmer holds it for about 95 - and
+fixing it moved the answer the right way. It did not close the gap, and that is
+the informative part: the water is not mostly going into the extra flooded days.
 
-Correcting only that brings the model from {over:.0f} percent over to within reach of the
-observed range. It was listed as a known simplification when the region was
-written; this is the first time anyone has been able to put a number on what it
-costs.
+It is going into crop water use. Modelled ETc is 786 mm, from a season ET0 of
+680 mm and a mean crop coefficient of 1.13. That coefficient comes from FAO-56
+Table 12, whose paddy values ALREADY INCLUDE evaporation from standing water -
+they describe a field that is flooded from the start. Applying them to a crop
+that spends its first five weeks on dry soil charges open-water evaporation to a
+seedbed that has no open water on it.
+
+There is no published basal coefficient for drill-seeded rice before the
+permanent flood, which is why this has not simply been corrected. It is the next
+thing to find, and it is a literature question rather than a coding one.
 
 WHAT WE HAVE NOT DONE, AND WHY
 
-We have not simply changed the flood window and declared the model validated. The
-dry-establishment phase is a real part of the season - the crop is in the ground,
-transpiring, and taking a flush irrigation or two - and simulating the flood
-window alone would silently drop all of that. Doing it properly means splitting
-one rice crop into a dry phase and a ponded phase, which the season model does
-not currently support, and which is not a change to make in an afternoon against
-a number we already know the answer to.
+We have not tuned percolation, efficiency or the coefficients until the answer
+matched. Every one of those would reproduce 610 mm with a plausible-looking
+number, and every one would destroy the meaning of the agreement.
 
 WHAT THIS MEANS FOR PUNJAB
 
@@ -198,10 +205,16 @@ here therefore does not transfer directly - but it does establish that the paddy
 model over-predicts irrigation when the flood period is overstated, and nobody
 has independently checked Punjab's assumed transplanting date either.
 
-So the honest position: the Punjab irrigation figures are now known to sit on a
-model that has been tested once, failed in a way we can explain, and whose
-failure mode is absent by construction in Punjab. That is a great deal more than
-was known this morning, and a great deal less than validation.""")
+Punjab's rice IS flooded from transplanting, so Table 12 is the right table
+there and the dry-phase error does not apply. What does carry over is that the
+same coefficients give 808 mm of crop water use at Sangrur on a season ET0 of
+706 mm - and nothing has checked that either.
+
+So the honest position: the Punjab irrigation figures sit on a model that has now
+been tested once and failed by about half, with the residual traced to crop water
+use rather than to the water-routing physics. The routing is sound - the mass
+balance closes to 1e-12 across a dry phase, a flood-up, 95 flooded days and a
+drain. The coefficients are what is now in doubt.""")
 
     print(f"\n{RULE}")
     print("FOR CONTRAST — the same equations in two climates")

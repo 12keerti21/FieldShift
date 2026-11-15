@@ -76,7 +76,7 @@ soil-N measurement. Do not let a judge catch this before you say it.
 ## 2. CREATIVITY
 
 ### Opening line
-> "Most teams will show you a dashboard. We'll show you the fourteen bugs we found
+> "Most teams will show you a dashboard. We'll show you the seventeen bugs we found
 > in our own model — and the one validation check we still fail."
 
 ### Why hasn't this been built?
@@ -188,7 +188,7 @@ only one of our six that nothing else could check.
 | **Rotation effect** | observed +10.8% vs modelled +18.0% — **we fail this** |
 | **Punjab groundwater** | direction **20/20 wells**, magnitude off **5–13×** |
 
-**11 checks: 6 pass, 3 partial, 2 fail. 819 tests. 14 bugs validation found in us.**
+**11 checks: 6 pass, 3 partial, 2 fail. 827 tests. 17 bugs validation found in us.**
 
 ### The two failures — lead with these, don't bury them
 
@@ -200,13 +200,15 @@ only one of our six that nothing else could check.
 > **Our model failed. It asked for 1,135 millimetres against an observed 610 to
 > 640.** Seventy-seven percent over.
 >
-> Then we found out why. We flood for the whole 140-day season; Delta rice is
-> drilled dry and flooded only at four-leaf, about 95 days. Fixing just that
-> takes it to within eight percent.
+> Then we rebuilt the season model so one rice crop runs dry, then flooded, then
+> drained. That rebuild found **three more bugs on its own**, and the mass
+> balance now closes to a trillionth of a millimetre across both transitions.
 >
-> We did **not** apply the fix and call it validated — doing it properly means
-> splitting one rice crop into a dry phase and a ponded phase, and changing a
-> model against a number you already know is fitting, not modelling."
+> **It still fails — fifty-three percent over.** But now we know where the water
+> goes: the FAO crop coefficients for paddy assume the field is flooded from
+> sowing, so we were charging open-water evaporation to a dry seedbed. That's a
+> literature question, not a coding one — and we're not going to invent a number
+> to close it."
 
 **Why this wins rather than loses:** we are the team that went looking for a way
 to break our own flagship result, found one, and can tell you exactly what it
@@ -294,7 +296,7 @@ scatter, rotation calendar strips. Responsive to 400 px.
 ## The three sentences that matter most
 
 1. **"Four rotations beat current practice on every measure — nothing given up."**
-2. **"Here are the fourteen bugs validation found in our own model."**
+2. **"Here are the seventeen bugs validation found in our own model."**
 3. **"Here's the one check we still fail, and why we refused to tune it away."**
 
 Most teams will claim everything works. Being the team that says what doesn't is
