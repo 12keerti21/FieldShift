@@ -31,6 +31,9 @@ from fieldshift.agro.climate import Site
 from fieldshift.agro.et0 import et0_penman_monteith
 from fieldshift.agro.waterbalance import IrrigationPolicy, RAINFED, run_water_balance
 from fieldshift.config import api_key
+from fieldshift.api.bundle import (  # noqa: E402
+    SITES_BY_ID, _power_path, _ssurgo_path,
+)
 from fieldshift.data import load_registry
 from fieldshift.io.power import load_power_daily
 from fieldshift.io.quickstats import (
@@ -60,17 +63,23 @@ class Pilot:
     county: str
     site: Site
     note: str
+    site_id: str = ""
 
 
-SITES = (
-    Pilot("Finney, KS", "KS", "FINNEY", Site(38.03, -100.74, 858.0, "Finney"),
-          "semi-arid High Plains, Ogallala - the site everything was built on"),
-    Pilot("Sedgwick, KS", "KS", "SEDGWICK", Site(37.70, -97.46, 410.0, "Sedgwick"),
-          "wetter eastern Kansas"),
-    Pilot("Holt, NE", "NE", "HOLT", Site(42.45, -98.78, 610.0, "Holt"),
-          "cooler Nebraska Sandhills, coarse soil"),
-    Pilot("Hale, TX", "TX", "HALE", Site(34.07, -101.82, 1030.0, "Hale"),
-          "hotter southern High Plains"),
+# Coordinates belong to the site registry and nowhere else. They used to be
+# repeated here, which is how four of them went on sitting over pasture and a
+# suburb after the registry had been corrected - the same duplication bug twice.
+_NOTES = {
+    "finney_ks":   "semi-arid High Plains, Ogallala - the site everything was built on",
+    "sedgwick_ks": "wetter eastern Kansas",
+    "holt_ne":     "cooler Nebraska Sandhills, coarse soil",
+    "hale_tx":     "hotter southern High Plains",
+}
+SITES = tuple(
+    Pilot(SITES_BY_ID[sid].name.split(" County")[0] + ", " + SITES_BY_ID[sid].state,
+          SITES_BY_ID[sid].state, SITES_BY_ID[sid].county,
+          SITES_BY_ID[sid].site, note, sid)
+    for sid, note in _NOTES.items()
 )
 
 
@@ -106,14 +115,18 @@ def main() -> int:
 
     for pilot in SITES:
         print(f"\n{pilot.name}  ({pilot.note})")
+        # Cache paths come from the same helpers the engine uses. Building them
+        # here by state and county is what let this script keep reading the old
+        # field's weather and soil after the site had been moved.
+        spec = SITES_BY_ID[pilot.site_id]
         weather, report = load_power_daily(
             pilot.site, "1984-01-01", "2024-12-31",
-            cache_path=f"data/raw/power_{pilot.state}_{pilot.county}.json".lower(),
+            cache_path=str(_power_path(spec)),
         )
         et0 = et0_penman_monteith(pilot.site, weather).values_mm
         profile = fetch_ssurgo_point(
             pilot.site.latitude_deg, pilot.site.longitude_deg,
-            cache_path=f"data/raw/ssurgo_{pilot.state}_{pilot.county}.json".lower(),
+            cache_path=str(_ssurgo_path(spec)),
         )
         soil = texture_from_ssurgo(profile, reg.texture)
         rain = np.mean([

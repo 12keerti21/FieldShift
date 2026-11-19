@@ -2,30 +2,30 @@
  "site": {
   "id": "sedgwick_ks",
   "name": "Sedgwick County, Kansas",
-  "latitude": 37.7,
-  "longitude": -97.46,
-  "elevation_m": 410.0,
+  "latitude": 37.55,
+  "longitude": -97.51,
+  "elevation_m": 402.8,
   "state": "KS",
   "county": "SEDGWICK",
-  "note": "Wetter eastern Kansas at about 840 mm. Water is much less often the binding constraint here.",
+  "note": "Wetter eastern Kansas at about 840 mm. Water is much less often the binding constraint here, and CDL shows this point in continuous winter wheat rather than the wheat-fallow the drier sites run.",
   "dem_tile": null,
   "field_hectares": 65.0,
   "region": "us_high_plains",
   "existing_rotation": [
-   "wheat",
-   "fallow"
+   "wheat"
   ],
   "rainfall_mm_yr": 841.0925641025641,
   "soil": {
-   "component": "Vanoss",
-   "component_pct": 85.0,
-   "texture": "Silt loam",
-   "available_water_mm_per_m": 200.0,
+   "component": "Clime",
+   "component_pct": 80.0,
+   "soil_source": "ssurgo",
+   "texture": "Silty clay",
+   "available_water_mm_per_m": 104.1747572815534,
    "measured": true,
    "provenance": "survey",
-   "organic_carbon_pct": 1.1214230471771076,
-   "hydrologic_group": "B",
-   "source": "SSURGO Vanoss (85% of map unit)"
+   "organic_carbon_pct": 1.6434648105181748,
+   "hydrologic_group": "D",
+   "source": "SSURGO Clime (80% of map unit)"
   },
   "terrain": {
    "slope_percent": null,
@@ -39,9 +39,16 @@
    "et0_confidence": "high",
    "et0_method": "fao56_penman_monteith",
    "record_confidence": "high",
-   "annual_et0_mm": 1333.478126223207
+   "annual_et0_mm": 1334.2647351909197
   },
-  "starting_carbon_t_ha": 36.62567672080432
+  "starting_carbon_t_ha": 51.40757927300851
+ },
+ "scenario": {
+  "name": "observed weather",
+  "warming_c": 0.0,
+  "rain_scale": 1.0,
+  "is_baseline": true,
+  "caveats": []
  },
  "region": {
   "id": "us_high_plains",
@@ -132,23 +139,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "11 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "8 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.032485905123882,
+    "production": 1.8645856964074787,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.021060665967933493,
-    "wind_exposure": 233.45943491984428,
+    "carbon": -0.14397005487348274,
+    "wind_exposure": 247.56489494086287,
     "bare_ground": 0.4630045655482281
    },
    "detail": {
     "crops_per_decade": 6.882020436263498,
-    "evaporation_fraction": 0.5481702366791511,
-    "nitrogen_limited_seasons": 11,
+    "evaporation_fraction": 0.5798397751195403,
+    "nitrogen_limited_seasons": 8,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 275.89874838687786,
+    "nitrogen_leached_kg_ha": 397.55109161691473,
     "seasons_simulated": 26,
     "years": 37.779603011635864
    }
@@ -187,23 +194,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "10 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "3 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.4321306141852554,
+    "production": 2.330723796445147,
     "downside": 0.0,
-    "irrigation": 80.1864372098575,
-    "carbon": -0.0061029305013745976,
-    "wind_exposure": 169.5356815614794,
+    "irrigation": 110.39716754564728,
+    "carbon": -0.1313125072734079,
+    "wind_exposure": 170.88989511613875,
     "bare_ground": 0.4630045655482281
    },
    "detail": {
     "crops_per_decade": 6.882020436263498,
-    "evaporation_fraction": 0.5213716916995588,
-    "nitrogen_limited_seasons": 10,
+    "evaporation_fraction": 0.5354542971588736,
+    "nitrogen_limited_seasons": 3,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 334.6434160900489,
+    "nitrogen_leached_kg_ha": 517.4831243528748,
     "seasons_simulated": 26,
     "years": 37.779603011635864
    }
@@ -242,23 +249,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "7 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.334568082784929,
+    "production": 2.2648521735518727,
     "downside": 0.0,
-    "irrigation": 56.052655136987774,
-    "carbon": 0.022432972475403597,
-    "wind_exposure": 209.20797121713213,
+    "irrigation": 98.71887269072732,
+    "carbon": -0.11601345554475359,
+    "wind_exposure": 220.84498729210108,
     "bare_ground": 0.4630045655482281
    },
    "detail": {
     "crops_per_decade": 6.882020436263498,
-    "evaporation_fraction": 0.534964891426057,
-    "nitrogen_limited_seasons": 7,
+    "evaporation_fraction": 0.5530914325540333,
+    "nitrogen_limited_seasons": 5,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 377.9515125924777,
+    "nitrogen_leached_kg_ha": 649.9774118536245,
     "seasons_simulated": 26,
     "years": 37.779603011635864
    }
@@ -297,22 +304,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "1 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.685001158515083,
+    "production": 2.660666823354173,
     "downside": 0.0,
-    "irrigation": 131.56803775209627,
-    "carbon": 0.04018659694205825,
-    "wind_exposure": 156.4424061078859,
+    "irrigation": 203.03494395563254,
+    "carbon": -0.12370879559337625,
+    "wind_exposure": 157.93871315217598,
     "bare_ground": 0.4630045655482281
    },
    "detail": {
     "crops_per_decade": 6.882020436263498,
-    "evaporation_fraction": 0.511029151644675,
-    "nitrogen_limited_seasons": 0,
+    "evaporation_fraction": 0.5145446602659622,
+    "nitrogen_limited_seasons": 1,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 523.8977386768998,
+    "nitrogen_leached_kg_ha": 878.992280483142,
     "seasons_simulated": 26,
     "years": 37.779603011635864
    }
@@ -351,23 +359,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.8417221851325145,
+    "production": 1.70027230345264,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.0764312131865887,
-    "wind_exposure": 242.73956266536783,
+    "carbon": -0.20163584099972273,
+    "wind_exposure": 249.33618071772298,
     "bare_ground": 0.6171252065225199
    },
    "detail": {
     "crops_per_decade": 6.821708210617054,
-    "evaporation_fraction": 0.6009180843072024,
-    "nitrogen_limited_seasons": 12,
+    "evaporation_fraction": 0.6397396712473805,
+    "nitrogen_limited_seasons": 6,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 197.877839551306,
+    "nitrogen_leached_kg_ha": 247.40180574729186,
     "seasons_simulated": 26,
     "years": 38.11362080766598
    }
@@ -406,23 +414,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "1 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.257042679839618,
+    "production": 2.142673067828118,
     "downside": 0.0,
-    "irrigation": 83.34213650980111,
-    "carbon": -0.05573208415842974,
-    "wind_exposure": 194.14456761842226,
+    "irrigation": 117.94365010297216,
+    "carbon": -0.19223412219187797,
+    "wind_exposure": 210.70590711667626,
     "bare_ground": 0.6171252065225199
    },
    "detail": {
     "crops_per_decade": 6.821708210617054,
-    "evaporation_fraction": 0.5727174236739172,
-    "nitrogen_limited_seasons": 5,
+    "evaporation_fraction": 0.5949727039383841,
+    "nitrogen_limited_seasons": 1,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 282.9594298772043,
+    "nitrogen_leached_kg_ha": 391.065389386332,
     "seasons_simulated": 26,
     "years": 38.11362080766598
    }
@@ -461,23 +469,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "17 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "9 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7270484500979788,
+    "production": 1.6374026152476449,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.06692963979535681,
-    "wind_exposure": 285.8510738149031,
+    "carbon": -0.18786951829755882,
+    "wind_exposure": 286.26468837054654,
     "bare_ground": 0.7617127355377961
    },
    "detail": {
     "crops_per_decade": 6.962753867585599,
-    "evaporation_fraction": 0.626632431070355,
-    "nitrogen_limited_seasons": 17,
+    "evaporation_fraction": 0.6735792330122533,
+    "nitrogen_limited_seasons": 9,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 203.1766431490333,
+    "nitrogen_leached_kg_ha": 148.0083932973399,
     "seasons_simulated": 26,
     "years": 37.34154688569473
    }
@@ -486,7 +494,7 @@
    "index": 7,
    "name": "corn (irrigated) - fallow - grain sorghum",
    "is_existing": false,
-   "on_front": true,
+   "on_front": false,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -516,23 +524,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.6623748842966695,
+    "production": 3.481161174874943,
     "downside": 0.0,
-    "irrigation": 146.22616791870686,
-    "carbon": 0.04149991838474033,
-    "wind_exposure": 422.36697405689443,
+    "irrigation": 181.7560547295951,
+    "carbon": -0.12411900998753798,
+    "wind_exposure": 432.94097693845794,
     "bare_ground": 0.7452251995438997
    },
    "detail": {
     "crops_per_decade": 6.767745153933865,
-    "evaporation_fraction": 0.5427488528534288,
-    "nitrogen_limited_seasons": 5,
+    "evaporation_fraction": 0.5592729653202441,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 471.865373401852,
+    "nitrogen_leached_kg_ha": 554.0386647598974,
     "seasons_simulated": 26,
     "years": 38.417522245037645
    }
@@ -571,23 +578,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "16 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.6113200732030137,
+    "production": 1.5050817354582144,
     "downside": 0.0,
-    "irrigation": 131.44426035994596,
-    "carbon": -0.19794791255435676,
-    "wind_exposure": 441.998841456713,
+    "irrigation": 164.1122583556155,
+    "carbon": -0.3801438782702861,
+    "wind_exposure": 460.9300689083756,
     "bare_ground": 0.7474710453012755
    },
    "detail": {
     "crops_per_decade": 6.961222694619558,
-    "evaporation_fraction": 0.5569743267333197,
-    "nitrogen_limited_seasons": 16,
-    "nitrogen_fixed_kg_ha": 1488.8481392831125,
-    "nitrogen_leached_kg_ha": 327.67138259420295,
+    "evaporation_fraction": 0.5665050556968707,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1481.4127198330605,
+    "nitrogen_leached_kg_ha": 410.6890323583521,
     "seasons_simulated": 26,
     "years": 37.34976043805612
    }
@@ -637,23 +644,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "7 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7534738591639647,
+    "production": 1.6302268193235878,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": 0.03599845969093496,
-    "wind_exposure": 390.0137376660989,
+    "carbon": -0.11074884944956563,
+    "wind_exposure": 418.33824006923214,
     "bare_ground": 0.6967930029154519
    },
    "detail": {
     "crops_per_decade": 10.382470845481048,
-    "evaporation_fraction": 0.6234390398140828,
-    "nitrogen_limited_seasons": 15,
+    "evaporation_fraction": 0.6691007876332159,
+    "nitrogen_limited_seasons": 7,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 144.59043519661773,
+    "nitrogen_leached_kg_ha": 120.64464389576915,
     "seasons_simulated": 39,
     "years": 37.56331279945243
    }
@@ -692,23 +699,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.56247811349501,
+    "production": 1.4860316446275288,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.08501966277845671,
-    "wind_exposure": 402.86660593139266,
+    "carbon": -0.2078640204524536,
+    "wind_exposure": 409.65612311270047,
     "bare_ground": 0.7851476421330983
    },
    "detail": {
     "crops_per_decade": 6.975539885412076,
-    "evaporation_fraction": 0.6409499545985607,
-    "nitrogen_limited_seasons": 17,
+    "evaporation_fraction": 0.6818793990426497,
+    "nitrogen_limited_seasons": 8,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 218.50457442420696,
+    "nitrogen_leached_kg_ha": 149.42998016903655,
     "seasons_simulated": 26,
     "years": 37.27310061601643
    }
@@ -747,22 +754,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.8306376942352864,
+    "production": 3.6439741408888744,
     "downside": 0.0,
-    "irrigation": 146.32611235045314,
-    "carbon": 0.053994356133611705,
-    "wind_exposure": 251.67271531654978,
+    "irrigation": 184.67655202820168,
+    "carbon": -0.09307905330171509,
+    "wind_exposure": 261.05323618438183,
     "bare_ground": 0.5945945945945946
    },
    "detail": {
     "crops_per_decade": 6.808014911463187,
-    "evaporation_fraction": 0.5076489067482899,
+    "evaporation_fraction": 0.5214160291418253,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 514.8098677387688,
+    "nitrogen_leached_kg_ha": 784.6896971663261,
     "seasons_simulated": 26,
     "years": 38.19028062970568
    }
@@ -801,22 +808,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.976297373838164,
+    "production": 3.9452347225558575,
     "downside": 0.0,
-    "irrigation": 200.23573269009378,
-    "carbon": 0.05151061512856814,
-    "wind_exposure": 247.22868015421636,
+    "irrigation": 275.3387586257286,
+    "carbon": -0.1130298382604121,
+    "wind_exposure": 248.9202492629866,
     "bare_ground": 0.5945945945945946
    },
    "detail": {
     "crops_per_decade": 6.808014911463187,
-    "evaporation_fraction": 0.49889252316751265,
+    "evaporation_fraction": 0.5007644428472398,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 845.2429194533912,
+    "nitrogen_leached_kg_ha": 1211.08460897648,
     "seasons_simulated": 26,
     "years": 38.19028062970568
    }
@@ -855,23 +862,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "2 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.696028307698901,
+    "production": 3.50600796657192,
     "downside": 0.0,
-    "irrigation": 157.20563486973776,
-    "carbon": 0.027851350765948538,
-    "wind_exposure": 266.30000945041564,
+    "irrigation": 197.82160515621382,
+    "carbon": -0.13070975299030402,
+    "wind_exposure": 292.71295297020447,
     "bare_ground": 0.7384210141216068
    },
    "detail": {
     "crops_per_decade": 6.948489061242409,
-    "evaporation_fraction": 0.5441083592994154,
-    "nitrogen_limited_seasons": 2,
+    "evaporation_fraction": 0.5641988244084564,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 427.733818523639,
+    "nitrogen_leached_kg_ha": 528.9648505753972,
     "seasons_simulated": 26,
     "years": 37.41820670773443
    }
@@ -910,22 +916,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 5.394602899839268,
+    "production": 5.346781462643048,
     "downside": 0.0,
-    "irrigation": 324.6771485762253,
-    "carbon": 0.0339820860486577,
-    "wind_exposure": 370.3470397788975,
+    "irrigation": 398.46374108756186,
+    "carbon": -0.14221102426433346,
+    "wind_exposure": 371.6151067608472,
     "bare_ground": 0.7145993413830956
    },
    "detail": {
     "crops_per_decade": 6.949506037321624,
-    "evaporation_fraction": 0.47469788211626407,
+    "evaporation_fraction": 0.4785922055708578,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 1258.1439111667542,
+    "nitrogen_leached_kg_ha": 1538.2666480268367,
     "seasons_simulated": 26,
     "years": 37.412731006160165
    }
@@ -964,23 +970,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.5934960908037477,
+    "production": 3.7119998639946727,
     "downside": 0.0,
-    "irrigation": 333.93779405627896,
-    "carbon": -0.11172498766406459,
-    "wind_exposure": 519.2936316423154,
+    "irrigation": 404.51603206769477,
+    "carbon": -0.308660716062481,
+    "wind_exposure": 518.1182375280115,
     "bare_ground": 0.7242136064374542
    },
    "detail": {
     "crops_per_decade": 6.946964155084126,
-    "evaporation_fraction": 0.4885875334173732,
-    "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1486.605845542607,
-    "nitrogen_leached_kg_ha": 562.3126646781831,
+    "evaporation_fraction": 0.4880080251132607,
+    "nitrogen_limited_seasons": 5,
+    "nitrogen_fixed_kg_ha": 1479.559520991089,
+    "nitrogen_leached_kg_ha": 732.2245770518163,
     "seasons_simulated": 26,
     "years": 37.426420260095824
    }
@@ -1030,22 +1036,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.6845111143750757,
+    "production": 3.4821011966803663,
     "downside": 0.0,
-    "irrigation": 163.31198976535626,
-    "carbon": 0.1354953230458436,
-    "wind_exposure": 443.0073439485112,
+    "irrigation": 206.14100316709929,
+    "carbon": -0.045180572261044126,
+    "wind_exposure": 449.5538215482743,
     "bare_ground": 0.6737707302880419
    },
    "detail": {
     "crops_per_decade": 10.361325283677626,
-    "evaporation_fraction": 0.5521239222238866,
+    "evaporation_fraction": 0.5686769202206154,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 382.28672260022836,
+    "nitrogen_leached_kg_ha": 458.3421518285361,
     "seasons_simulated": 39,
     "years": 37.63997262149213
    }
@@ -1084,23 +1090,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 3.5121328699223238,
+    "production": 3.3465326610927395,
     "downside": 0.0,
-    "irrigation": 163.00600653690591,
-    "carbon": 0.0024832057619616154,
-    "wind_exposure": 448.932791585682,
+    "irrigation": 206.724096627022,
+    "carbon": -0.16155155696818374,
+    "wind_exposure": 464.0593548251025,
     "bare_ground": 0.7617651370766749
    },
    "detail": {
     "crops_per_decade": 6.961222694619558,
-    "evaporation_fraction": 0.5605894577545366,
+    "evaporation_fraction": 0.58009837255797,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 503.54379781364344,
+    "nitrogen_leached_kg_ha": 632.5279195089387,
     "seasons_simulated": 26,
     "years": 37.34976043805612
    }
@@ -1139,23 +1145,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7487180176888042,
+    "production": 1.7524902420488184,
     "downside": 0.0,
-    "irrigation": 165.32274020197815,
-    "carbon": -0.20416641181900497,
-    "wind_exposure": 513.5966717820324,
+    "irrigation": 196.29401850655412,
+    "carbon": -0.3804026501811708,
+    "wind_exposure": 517.5928053074521,
     "bare_ground": 0.6034594129046149
    },
    "detail": {
     "crops_per_decade": 6.81583291466303,
-    "evaporation_fraction": 0.5279210427527755,
-    "nitrogen_limited_seasons": 14,
-    "nitrogen_fixed_kg_ha": 1486.21516509316,
-    "nitrogen_leached_kg_ha": 273.53140512936045,
+    "evaporation_fraction": 0.5382418979033596,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1478.0124398676153,
+    "nitrogen_leached_kg_ha": 386.1765300004465,
     "seasons_simulated": 26,
     "years": 38.14647501711157
    }
@@ -1194,23 +1200,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.1287534972887636,
+    "production": 2.253096230448915,
     "downside": 0.0,
-    "irrigation": 253.52022689611715,
-    "carbon": -0.18691950044091088,
-    "wind_exposure": 489.13183701060325,
+    "irrigation": 323.14649776678124,
+    "carbon": -0.3604548228110842,
+    "wind_exposure": 481.94603864508514,
     "bare_ground": 0.6034594129046149
    },
    "detail": {
     "crops_per_decade": 6.81583291466303,
-    "evaporation_fraction": 0.5103078159879674,
-    "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1486.7823182208797,
-    "nitrogen_leached_kg_ha": 372.7940310150281,
+    "evaporation_fraction": 0.5136708085140698,
+    "nitrogen_limited_seasons": 12,
+    "nitrogen_fixed_kg_ha": 1479.7961912043938,
+    "nitrogen_leached_kg_ha": 575.7296051841294,
     "seasons_simulated": 26,
     "years": 38.14647501711157
    }
@@ -1249,23 +1255,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "23 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.741419960948084,
+    "production": 1.7887426584534576,
     "downside": 0.0,
-    "irrigation": 170.7099465273822,
-    "carbon": -0.19791913851853105,
-    "wind_exposure": 444.1756551371933,
+    "irrigation": 202.30404846795642,
+    "carbon": -0.3611981881534721,
+    "wind_exposure": 441.55976163327347,
     "bare_ground": 0.7476375357116695
    },
    "detail": {
     "crops_per_decade": 6.956633213683979,
-    "evaporation_fraction": 0.5442423183411742,
-    "nitrogen_limited_seasons": 23,
-    "nitrogen_fixed_kg_ha": 1486.710035017077,
-    "nitrogen_leached_kg_ha": 243.6613572077205,
+    "evaporation_fraction": 0.5615861578166772,
+    "nitrogen_limited_seasons": 15,
+    "nitrogen_fixed_kg_ha": 1477.3964232226451,
+    "nitrogen_leached_kg_ha": 292.48294290731326,
     "seasons_simulated": 26,
     "years": 37.374401095140314
    }
@@ -1304,23 +1310,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "11 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.4520924615047432,
+    "production": 3.563232103329269,
     "downside": 0.0,
-    "irrigation": 293.6184021693985,
-    "carbon": -0.13201720504510034,
-    "wind_exposure": 533.6524765411664,
+    "irrigation": 366.6668775513672,
+    "carbon": -0.296378035728393,
+    "wind_exposure": 528.4153515984569,
     "bare_ground": 0.7313858211613823
    },
    "detail": {
     "crops_per_decade": 6.766298539365871,
-    "evaporation_fraction": 0.4957017581762242,
-    "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1489.0263716894417,
-    "nitrogen_leached_kg_ha": 708.90636859135,
+    "evaporation_fraction": 0.49869141438179676,
+    "nitrogen_limited_seasons": 11,
+    "nitrogen_fixed_kg_ha": 1480.9892252584361,
+    "nitrogen_leached_kg_ha": 878.5766217561024,
     "seasons_simulated": 26,
     "years": 38.42573579739904
    }
@@ -1370,23 +1376,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "23 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7940762454121335,
+    "production": 1.8216904223908101,
     "downside": 0.0,
-    "irrigation": 177.42272515103272,
-    "carbon": -0.11113539244593545,
-    "wind_exposure": 578.1422240642777,
+    "irrigation": 213.54628886546743,
+    "carbon": -0.293462469625516,
+    "wind_exposure": 578.8362063302538,
     "bare_ground": 0.6828575589863094
    },
    "detail": {
     "crops_per_decade": 10.373397902709002,
-    "evaporation_fraction": 0.5486802384718026,
-    "nitrogen_limited_seasons": 23,
-    "nitrogen_fixed_kg_ha": 1486.4052031488332,
-    "nitrogen_leached_kg_ha": 197.94563565081077,
+    "evaporation_fraction": 0.5671242714504944,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1476.4017552103337,
+    "nitrogen_leached_kg_ha": 252.44191338091957,
     "seasons_simulated": 39,
     "years": 37.596167008898014
    }
@@ -1425,23 +1431,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.5834434763862963,
+    "production": 1.6761472922597644,
     "downside": 0.0,
-    "irrigation": 177.3302991718687,
-    "carbon": -0.21016045474293404,
-    "wind_exposure": 572.8319713615183,
+    "irrigation": 215.63132201037467,
+    "carbon": -0.38138216361498817,
+    "wind_exposure": 562.7171989869089,
     "bare_ground": 0.7710259797446058
    },
    "detail": {
     "crops_per_decade": 6.969396741523559,
-    "evaporation_fraction": 0.555253378320464,
-    "nitrogen_limited_seasons": 23,
-    "nitrogen_fixed_kg_ha": 1486.3502473505603,
-    "nitrogen_leached_kg_ha": 261.14506373974876,
+    "evaporation_fraction": 0.5700385127447526,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1478.5188860835847,
+    "nitrogen_leached_kg_ha": 325.18444945480894,
     "seasons_simulated": 26,
     "years": 37.30595482546201
    }
@@ -1491,23 +1497,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "11 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "3 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.8926931834591214,
+    "production": 1.7027570487468224,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.02852487243785483,
-    "wind_exposure": 401.8878553381182,
+    "carbon": -0.16648348508709698,
+    "wind_exposure": 422.12180798962504,
     "bare_ground": 0.5517563393434379
    },
    "detail": {
     "crops_per_decade": 10.23256231592558,
-    "evaporation_fraction": 0.5973679495265776,
-    "nitrogen_limited_seasons": 11,
+    "evaporation_fraction": 0.6342956955980281,
+    "nitrogen_limited_seasons": 3,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 163.6269718221646,
+    "nitrogen_leached_kg_ha": 214.61193956703107,
     "seasons_simulated": 39,
     "years": 38.11362080766598
    }
@@ -1557,23 +1563,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "4 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 2.283846168343837,
+    "production": 2.1408823507367254,
     "downside": 0.0,
-    "irrigation": 90.28731455228454,
-    "carbon": -0.023249899951737554,
-    "wind_exposure": 382.54113562674706,
+    "irrigation": 132.55584147774087,
+    "carbon": -0.17434942309807316,
+    "wind_exposure": 391.42006968026016,
     "bare_ground": 0.5517563393434379
    },
    "detail": {
     "crops_per_decade": 10.23256231592558,
-    "evaporation_fraction": 0.5739374364775204,
-    "nitrogen_limited_seasons": 4,
+    "evaporation_fraction": 0.5964306850296711,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 247.1156763511992,
+    "nitrogen_leached_kg_ha": 374.51318295352957,
     "seasons_simulated": 39,
     "years": 38.11362080766598
    }
@@ -1623,23 +1628,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "16 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7568706599981598,
+    "production": 1.633735495272413,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.021208533386237897,
-    "wind_exposure": 411.7298520492373,
+    "carbon": -0.15208892302267688,
+    "wind_exposure": 406.451926236978,
     "bare_ground": 0.6949923014883789
    },
    "detail": {
     "crops_per_decade": 10.4441308013784,
-    "evaporation_fraction": 0.6179553191896092,
-    "nitrogen_limited_seasons": 16,
+    "evaporation_fraction": 0.6619863064147302,
+    "nitrogen_limited_seasons": 6,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 204.18861879019474,
+    "nitrogen_leached_kg_ha": 133.1778893777802,
     "seasons_simulated": 39,
     "years": 37.34154688569473
    }
@@ -1689,23 +1694,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "3 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.657986773435747,
+    "production": 3.455336159645811,
     "downside": 0.0,
-    "irrigation": 159.84949212449098,
-    "carbon": 0.1150963683575754,
-    "wind_exposure": 526.9870301807522,
+    "irrigation": 198.9516637728362,
+    "carbon": -0.06616013236299498,
+    "wind_exposure": 537.7266580350846,
     "bare_ground": 0.6822078934315879
    },
    "detail": {
     "crops_per_decade": 10.093353645575002,
-    "evaporation_fraction": 0.5405859719790412,
-    "nitrogen_limited_seasons": 3,
+    "evaporation_fraction": 0.5602231268434069,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 507.7535611500064,
+    "nitrogen_leached_kg_ha": 575.1223291672995,
     "seasons_simulated": 39,
     "years": 38.639288158795345
    }
@@ -1755,23 +1759,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.6354890434768838,
+    "production": 1.5447121577568819,
     "downside": 0.0,
-    "irrigation": 142.69450761945166,
-    "carbon": -0.16435486956427417,
-    "wind_exposure": 575.0366372497897,
+    "irrigation": 175.83685502827208,
+    "carbon": -0.34889923854444294,
+    "wind_exposure": 582.1167062655281,
     "bare_ground": 0.6807652836827445
    },
    "detail": {
     "crops_per_decade": 10.441834041929337,
-    "evaporation_fraction": 0.5516464491045974,
-    "nitrogen_limited_seasons": 14,
-    "nitrogen_fixed_kg_ha": 1489.1510618781224,
-    "nitrogen_leached_kg_ha": 329.133934012174,
+    "evaporation_fraction": 0.5618220753226026,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1480.252004312094,
+    "nitrogen_leached_kg_ha": 370.6662183059748,
     "seasons_simulated": 39,
     "years": 37.34976043805612
    }
@@ -1832,23 +1836,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.7774268503312194,
+    "production": 1.6258623269208452,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": 0.07828888405401117,
-    "wind_exposure": 522.1231014771612,
+    "carbon": -0.07607323895081462,
+    "wind_exposure": 538.7637801471615,
     "bare_ground": 0.630466472303207
    },
    "detail": {
     "crops_per_decade": 13.843294460641399,
-    "evaporation_fraction": 0.615781782142259,
-    "nitrogen_limited_seasons": 14,
+    "evaporation_fraction": 0.6580860290970953,
+    "nitrogen_limited_seasons": 6,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 141.17904537461803,
+    "nitrogen_leached_kg_ha": 104.30129772844224,
     "seasons_simulated": 52,
     "years": 37.56331279945243
    }
@@ -1898,23 +1902,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.5913362527191548,
+    "production": 1.485166132575579,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.03949200363666199,
-    "wind_exposure": 529.6915743896146,
+    "carbon": -0.17189342245246442,
+    "wind_exposure": 528.6508210138998,
     "bare_ground": 0.7183046863522844
    },
    "detail": {
     "crops_per_decade": 10.463309828118113,
-    "evaporation_fraction": 0.6298910391814199,
-    "nitrogen_limited_seasons": 17,
+    "evaporation_fraction": 0.6685813351725095,
+    "nitrogen_limited_seasons": 7,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 223.44785633029522,
+    "nitrogen_leached_kg_ha": 140.42928909690622,
     "seasons_simulated": 39,
     "years": 37.27310061601643
    }
@@ -1953,23 +1957,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.686422092688485,
+    "production": 1.5484689342786202,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.09713943737287688,
-    "wind_exposure": 397.1419497246127,
+    "carbon": -0.22654887361309956,
+    "wind_exposure": 402.4099610418414,
     "bare_ground": 0.6404712305150492
    },
    "detail": {
     "crops_per_decade": 6.821708210617054,
-    "evaporation_fraction": 0.6179042265529703,
-    "nitrogen_limited_seasons": 11,
+    "evaporation_fraction": 0.6558977546299048,
+    "nitrogen_limited_seasons": 5,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 202.45340055251822,
+    "nitrogen_leached_kg_ha": 237.76025890494765,
     "seasons_simulated": 26,
     "years": 38.11362080766598
    }
@@ -2008,23 +2012,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.0724147018082633,
+    "production": 1.9819728483021848,
     "downside": 0.0,
-    "irrigation": 87.97225520479006,
-    "carbon": -0.07564865494841572,
-    "wind_exposure": 352.2505414945465,
+    "irrigation": 127.10775409200382,
+    "carbon": -0.2233512171188814,
+    "wind_exposure": 366.14607707110895,
     "bare_ground": 0.6404712305150492
    },
    "detail": {
     "crops_per_decade": 6.821708210617054,
-    "evaporation_fraction": 0.5895630280314058,
-    "nitrogen_limited_seasons": 4,
+    "evaporation_fraction": 0.6114094393590682,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 295.8893035342963,
+    "nitrogen_leached_kg_ha": 429.03601099163905,
     "seasons_simulated": 26,
     "years": 38.11362080766598
    }
@@ -2063,23 +2067,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.613360384480475,
+    "production": 1.513019593579779,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.0798254018095534,
-    "wind_exposure": 347.277623977663,
+    "carbon": -0.20882098772070423,
+    "wind_exposure": 351.8082247514351,
     "bare_ground": 0.7855414619840164
    },
    "detail": {
     "crops_per_decade": 6.962753867585599,
-    "evaporation_fraction": 0.6424007178170885,
-    "nitrogen_limited_seasons": 16,
+    "evaporation_fraction": 0.6889040598917872,
+    "nitrogen_limited_seasons": 4,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 203.15344743183798,
+    "nitrogen_leached_kg_ha": 150.3123203664639,
     "seasons_simulated": 26,
     "years": 37.34154688569473
    }
@@ -2118,23 +2122,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 3.5028317227915733,
+    "production": 3.3507323914020195,
     "downside": 0.0,
-    "irrigation": 151.08884633313596,
-    "carbon": 0.015399458232226083,
-    "wind_exposure": 459.1905375814516,
+    "irrigation": 190.70950551896266,
+    "carbon": -0.13986305540762345,
+    "wind_exposure": 471.07153993264154,
     "bare_ground": 0.7679731562790033
    },
    "detail": {
     "crops_per_decade": 6.779824373527522,
-    "evaporation_fraction": 0.5531110076160085,
-    "nitrogen_limited_seasons": 2,
+    "evaporation_fraction": 0.5669064758564644,
+    "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 529.7780516716775,
+    "nitrogen_leached_kg_ha": 673.1379127420206,
     "seasons_simulated": 26,
     "years": 38.34907597535934
    }
@@ -2173,23 +2177,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.4444142111127318,
+    "production": 1.399130613830944,
     "downside": 0.0,
-    "irrigation": 136.27277918464742,
-    "carbon": -0.21922177531510545,
-    "wind_exposure": 507.0753837585647,
+    "irrigation": 170.31273430716627,
+    "carbon": -0.3963365425912827,
+    "wind_exposure": 528.5221802176541,
     "bare_ground": 0.771294531593608
    },
    "detail": {
     "crops_per_decade": 6.961222694619558,
-    "evaporation_fraction": 0.5702821404037388,
+    "evaporation_fraction": 0.5799487673962445,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1488.3925923730765,
-    "nitrogen_leached_kg_ha": 341.6447261955113,
+    "nitrogen_fixed_kg_ha": 1481.550322536099,
+    "nitrogen_leached_kg_ha": 454.0770455847271,
     "seasons_simulated": 26,
     "years": 37.34976043805612
    }
@@ -2239,23 +2243,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.6384089165256164,
+    "production": 1.5068293774232586,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": 0.02211871051249266,
-    "wind_exposure": 458.64960856934766,
+    "carbon": -0.13241841266422266,
+    "wind_exposure": 489.7304828994718,
     "bare_ground": 0.7204810495626822
    },
    "detail": {
     "crops_per_decade": 10.382470845481048,
-    "evaporation_fraction": 0.6387107607115737,
-    "nitrogen_limited_seasons": 15,
+    "evaporation_fraction": 0.6837038366732118,
+    "nitrogen_limited_seasons": 4,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 142.9228643681586,
+    "nitrogen_leached_kg_ha": 122.37898879940703,
     "seasons_simulated": 39,
     "years": 37.56331279945243
    }
@@ -2294,23 +2298,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.447421440128531,
+    "production": 1.3649309360562762,
     "downside": 0.0,
     "irrigation": 0.0,
-    "carbon": -0.09745889706452045,
-    "wind_exposure": 467.3192932901826,
+    "carbon": -0.22748481824989306,
+    "wind_exposure": 476.0234175678338,
     "bare_ground": 0.8090201263405318
    },
    "detail": {
     "crops_per_decade": 6.975539885412076,
-    "evaporation_fraction": 0.6554759273786134,
-    "nitrogen_limited_seasons": 16,
+    "evaporation_fraction": 0.6962612096166587,
+    "nitrogen_limited_seasons": 5,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 219.13342111504116,
+    "nitrogen_leached_kg_ha": 159.73247341058712,
     "seasons_simulated": 26,
     "years": 37.27310061601643
    }
@@ -2360,23 +2364,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "32 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "17 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.7687148082221085,
-    "downside": 2.368042544758738,
+    "production": 2.57268461179875,
+    "downside": 1.9905987394350069,
     "irrigation": 0.0,
-    "carbon": 0.18109350169622873,
-    "wind_exposure": 115.87434191878785,
+    "carbon": 0.07413626232571051,
+    "wind_exposure": 131.81923672569602,
     "bare_ground": 0.215319449346982
    },
    "detail": {
     "crops_per_decade": 10.056300741263678,
-    "evaporation_fraction": 0.4134349196576226,
-    "nitrogen_limited_seasons": 32,
+    "evaporation_fraction": 0.45544856859173927,
+    "nitrogen_limited_seasons": 17,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 219.27095255680837,
+    "nitrogen_leached_kg_ha": 378.0910924859778,
     "seasons_simulated": 39,
     "years": 38.78165639972622
    }
@@ -2426,23 +2430,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "24 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.1701491792447363,
-    "downside": 2.5149806882478765,
-    "irrigation": 79.63134071136398,
-    "carbon": 0.1808238368555701,
-    "wind_exposure": 92.67241812293354,
+    "production": 3.0254556563227033,
+    "downside": 2.144551047289806,
+    "irrigation": 107.54933964743093,
+    "carbon": 0.06886839573889575,
+    "wind_exposure": 104.87224815559998,
     "bare_ground": 0.215319449346982
    },
    "detail": {
     "crops_per_decade": 10.056300741263678,
-    "evaporation_fraction": 0.4013747326257665,
-    "nitrogen_limited_seasons": 24,
+    "evaporation_fraction": 0.43312819225197363,
+    "nitrogen_limited_seasons": 14,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 263.0416868339908,
+    "nitrogen_leached_kg_ha": 469.1562588318161,
     "seasons_simulated": 39,
     "years": 38.78165639972622
    }
@@ -2492,23 +2496,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.4998539167242657,
-    "downside": 2.591395697019166,
-    "irrigation": 126.65175141712174,
-    "carbon": 0.25012863025675725,
-    "wind_exposure": 81.74464425470893,
+    "production": 3.365599382252458,
+    "downside": 2.1908108289561876,
+    "irrigation": 197.34136674671493,
+    "carbon": 0.07369001198274734,
+    "wind_exposure": 89.91982999025336,
     "bare_ground": 0.215319449346982
    },
    "detail": {
     "crops_per_decade": 10.056300741263678,
-    "evaporation_fraction": 0.39476700995464276,
+    "evaporation_fraction": 0.41966217342152606,
     "nitrogen_limited_seasons": 14,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 311.99612697987016,
+    "nitrogen_leached_kg_ha": 633.3818892377118,
     "seasons_simulated": 39,
     "years": 38.78165639972622
    }
@@ -2558,23 +2562,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "35 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "20 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.3598914142509324,
-    "downside": 1.9287518649890956,
+    "production": 2.2639863105837477,
+    "downside": 1.6530932218911332,
     "irrigation": 0.0,
-    "carbon": 0.1044460630237203,
-    "wind_exposure": 217.5917190307848,
+    "carbon": 0.007517253858238046,
+    "wind_exposure": 225.3179231581213,
     "bare_ground": 0.6519100321313817
    },
    "detail": {
     "crops_per_decade": 10.171188861121028,
-    "evaporation_fraction": 0.512931142641064,
-    "nitrogen_limited_seasons": 35,
+    "evaporation_fraction": 0.5732204140625006,
+    "nitrogen_limited_seasons": 20,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 72.83063677841798,
+    "nitrogen_leached_kg_ha": 103.16138681443184,
     "seasons_simulated": 39,
     "years": 38.34360027378508
    }
@@ -2624,23 +2628,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "19 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "7 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.421636444779036,
-    "downside": 2.1585464476328284,
-    "irrigation": 146.99174994969482,
-    "carbon": 0.23846205099137982,
-    "wind_exposure": 181.70699048510195,
+    "production": 4.2440441672026,
+    "downside": 1.8429056828797872,
+    "irrigation": 181.7635186794969,
+    "carbon": 0.08470996347385944,
+    "wind_exposure": 194.74377384088734,
     "bare_ground": 0.629418472063854
    },
    "detail": {
     "crops_per_decade": 10.151617730900798,
-    "evaporation_fraction": 0.44231381261682085,
-    "nitrogen_limited_seasons": 19,
+    "evaporation_fraction": 0.4766092185414536,
+    "nitrogen_limited_seasons": 7,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 180.40084383947442,
+    "nitrogen_leached_kg_ha": 274.3275215292126,
     "seasons_simulated": 39,
     "years": 38.417522245037645
    }
@@ -2690,23 +2694,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "33 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "22 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.2861501028475284,
-    "downside": 1.8491125696055353,
-    "irrigation": 130.22202960695085,
-    "carbon": -0.04808531447780052,
-    "wind_exposure": 324.129911475315,
+    "production": 2.1549174926675723,
+    "downside": 1.6840572828100602,
+    "irrigation": 160.86772105912434,
+    "carbon": -0.20343018720629785,
+    "wind_exposure": 333.7495250662753,
     "bare_ground": 0.6380639634494575
    },
    "detail": {
     "crops_per_decade": 10.169010565391204,
-    "evaporation_fraction": 0.46182682747638415,
-    "nitrogen_limited_seasons": 33,
-    "nitrogen_fixed_kg_ha": 1487.813999552235,
-    "nitrogen_leached_kg_ha": 188.94397664319794,
+    "evaporation_fraction": 0.4942782498148985,
+    "nitrogen_limited_seasons": 22,
+    "nitrogen_fixed_kg_ha": 1481.4983436681157,
+    "nitrogen_leached_kg_ha": 330.7769225398903,
     "seasons_simulated": 39,
     "years": 38.351813826146476
    }
@@ -2767,23 +2771,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "34 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "20 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.409548170132536,
-    "downside": 1.9606372563047296,
+    "production": 2.280659600547726,
+    "downside": 1.6526397055080106,
     "irrigation": 0.0,
-    "carbon": 0.15294268948142953,
-    "wind_exposure": 258.4177972150969,
+    "carbon": 0.048801594451437204,
+    "wind_exposure": 269.2951030916945,
     "bare_ground": 0.5869332381292396
    },
    "detail": {
     "crops_per_decade": 13.56158514816137,
-    "evaporation_fraction": 0.5023205842639613,
-    "nitrogen_limited_seasons": 34,
+    "evaporation_fraction": 0.5598653090597286,
+    "nitrogen_limited_seasons": 20,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 74.65481115454286,
+    "nitrogen_leached_kg_ha": 103.14827124638624,
     "seasons_simulated": 52,
     "years": 38.34360027378508
    }
@@ -2833,23 +2837,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.2515575808929094,
-    "downside": 1.582661675422584,
+    "production": 2.1539291441810584,
+    "downside": 1.4674054618556982,
     "irrigation": 0.0,
-    "carbon": 0.09359063584593079,
-    "wind_exposure": 275.9429312122427,
+    "carbon": -0.006990036303525248,
+    "wind_exposure": 284.8392985255971,
     "bare_ground": 0.6751160299892895
    },
    "detail": {
     "crops_per_decade": 10.171188861121028,
-    "evaporation_fraction": 0.522601519782056,
-    "nitrogen_limited_seasons": 34,
+    "evaporation_fraction": 0.5809614534992593,
+    "nitrogen_limited_seasons": 19,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 70.6597788679394,
+    "nitrogen_leached_kg_ha": 96.36229067051444,
     "seasons_simulated": 39,
     "years": 38.34360027378508
    }
@@ -2899,22 +2903,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 6.353638577684626,
-    "downside": 3.26218499295649,
-    "irrigation": 305.46723036420957,
-    "carbon": 0.30115439791114207,
-    "wind_exposure": 158.71740521855125,
+    "production": 6.110077271767265,
+    "downside": 2.5716295790451276,
+    "irrigation": 371.91656653692854,
+    "carbon": 0.11709686414823718,
+    "wind_exposure": 173.2716301082597,
     "bare_ground": 0.6062571265678449
    },
    "detail": {
     "crops_per_decade": 10.151617730900798,
-    "evaporation_fraction": 0.3884163499059952,
+    "evaporation_fraction": 0.40962739703882406,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 446.45851405947894,
+    "nitrogen_leached_kg_ha": 765.3503870631214,
     "seasons_simulated": 39,
     "years": 38.417522245037645
    }
@@ -2923,7 +2927,7 @@
    "index": 47,
    "name": "corn (irrigated) - soybean (irrigated) - grain sorghum",
    "is_existing": false,
-   "on_front": false,
+   "on_front": true,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -2964,23 +2968,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "20 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.389807516908009,
-    "downside": 2.069355545394858,
-    "irrigation": 306.15338706469265,
-    "carbon": 0.09238251709132242,
-    "wind_exposure": 359.7193874413437,
+    "production": 4.319454463471805,
+    "downside": 2.231983594332518,
+    "irrigation": 370.2155535945654,
+    "carbon": -0.11763361291554421,
+    "wind_exposure": 361.05841098187665,
     "bare_ground": 0.6155216647662486
    },
    "detail": {
     "crops_per_decade": 10.151617730900798,
-    "evaporation_fraction": 0.399626258530872,
-    "nitrogen_limited_seasons": 20,
-    "nitrogen_fixed_kg_ha": 1486.6608899378994,
-    "nitrogen_leached_kg_ha": 223.14371217027164,
+    "evaporation_fraction": 0.41733738077253896,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1479.6103131005887,
+    "nitrogen_leached_kg_ha": 448.92583642907226,
     "seasons_simulated": 39,
     "years": 38.417522245037645
    }
@@ -3041,23 +3045,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.443384176536677,
-    "downside": 2.2217864557360305,
-    "irrigation": 147.75733198068284,
-    "carbon": 0.28026847250432246,
-    "wind_exposure": 306.43481536109766,
+    "production": 4.239209327101165,
+    "downside": 1.8428684662091452,
+    "irrigation": 181.7636965960463,
+    "carbon": 0.11870585743322097,
+    "wind_exposure": 316.9802132318214,
     "bare_ground": 0.5645667046750285
    },
    "detail": {
     "crops_per_decade": 13.53549030786773,
-    "evaporation_fraction": 0.44132459568821714,
-    "nitrogen_limited_seasons": 15,
+    "evaporation_fraction": 0.47294612701643185,
+    "nitrogen_limited_seasons": 6,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 171.22740868637982,
+    "nitrogen_leached_kg_ha": 265.664752097075,
     "seasons_simulated": 52,
     "years": 38.417522245037645
    }
@@ -3066,7 +3070,7 @@
    "index": 49,
    "name": "corn (irrigated) - pearl millet - grain sorghum",
    "is_existing": false,
-   "on_front": false,
+   "on_front": true,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -3107,23 +3111,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.301453532946245,
-    "downside": 1.8917936374553364,
-    "irrigation": 146.99174994969482,
-    "carbon": 0.21848781136578502,
-    "wind_exposure": 256.41024837603476,
+    "production": 4.1123323274951735,
+    "downside": 1.532036436556738,
+    "irrigation": 180.99314989635317,
+    "carbon": 0.06230361704842146,
+    "wind_exposure": 270.71224426094625,
     "bare_ground": 0.6525798175598632
    },
    "detail": {
     "crops_per_decade": 10.151617730900798,
-    "evaporation_fraction": 0.454516077552683,
-    "nitrogen_limited_seasons": 16,
+    "evaporation_fraction": 0.48798676033053107,
+    "nitrogen_limited_seasons": 4,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 182.31243559799194,
+    "nitrogen_leached_kg_ha": 273.9367615540492,
     "seasons_simulated": 39,
     "years": 38.417522245037645
    }
@@ -3132,7 +3136,7 @@
    "index": 50,
    "name": "corn (irrigated) - grain sorghum - soybean (irrigated)",
    "is_existing": false,
-   "on_front": false,
+   "on_front": true,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -3173,23 +3177,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.286981215187125,
-    "downside": 1.9706484444534695,
-    "irrigation": 289.43853468042647,
-    "carbon": 0.061910645448290634,
-    "wind_exposure": 283.6759954776659,
+    "production": 4.1453610045757685,
+    "downside": 1.8693068112955127,
+    "irrigation": 358.88843197929907,
+    "carbon": -0.12835548649594766,
+    "wind_exposure": 300.05580073753987,
     "bare_ground": 0.6156038475240471
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.40826779835636057,
-    "nitrogen_limited_seasons": 15,
-    "nitrogen_fixed_kg_ha": 1488.8591935843706,
-    "nitrogen_leached_kg_ha": 302.3718698575493,
+    "evaporation_fraction": 0.42899798575927844,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1481.383341479663,
+    "nitrogen_leached_kg_ha": 524.274279649187,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -3250,23 +3254,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "32 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "22 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.320914717162741,
-    "downside": 1.8662740633565233,
-    "irrigation": 129.46350770741458,
-    "carbon": -0.008768492611826318,
-    "wind_exposure": 374.92376909915083,
+    "production": 2.1692855698387032,
+    "downside": 1.687325625015953,
+    "irrigation": 160.8693198681851,
+    "carbon": -0.16977425375558175,
+    "wind_exposure": 380.3667582257104,
     "bare_ground": 0.5731010850942319
    },
    "detail": {
     "crops_per_decade": 13.55868075385494,
-    "evaporation_fraction": 0.4546722289817411,
-    "nitrogen_limited_seasons": 32,
-    "nitrogen_fixed_kg_ha": 1487.8614286682166,
-    "nitrogen_leached_kg_ha": 192.9323389273136,
+    "evaporation_fraction": 0.48479222334827315,
+    "nitrogen_limited_seasons": 22,
+    "nitrogen_fixed_kg_ha": 1481.5965893879513,
+    "nitrogen_leached_kg_ha": 335.3564123978639,
     "seasons_simulated": 52,
     "years": 38.351813826146476
    }
@@ -3316,23 +3320,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.1732161628174755,
-    "downside": 1.802301942965356,
-    "irrigation": 129.568399103035,
-    "carbon": -0.0552257552275315,
-    "wind_exposure": 379.8486095714377,
+    "production": 2.06625772789955,
+    "downside": 1.6045916087948409,
+    "irrigation": 160.03572184877092,
+    "carbon": -0.20890498548615877,
+    "wind_exposure": 391.1602768399237,
     "bare_ground": 0.6612649914334666
    },
    "detail": {
     "crops_per_decade": 10.169010565391204,
-    "evaporation_fraction": 0.46840548466489473,
-    "nitrogen_limited_seasons": 31,
-    "nitrogen_fixed_kg_ha": 1488.2682491470819,
-    "nitrogen_leached_kg_ha": 188.90703933065186,
+    "evaporation_fraction": 0.49908140628385067,
+    "nitrogen_limited_seasons": 19,
+    "nitrogen_fixed_kg_ha": 1481.4904088106302,
+    "nitrogen_leached_kg_ha": 316.71105165612516,
     "seasons_simulated": 39,
     "years": 38.351813826146476
    }
@@ -3393,23 +3397,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "6 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.444826950185646,
-    "downside": 2.1651777985156775,
-    "irrigation": 159.84949212449098,
-    "carbon": 0.320237496597913,
-    "wind_exposure": 267.77595009033547,
+    "production": 4.2227427211896895,
+    "downside": 1.8447636765847049,
+    "irrigation": 198.9515714173301,
+    "carbon": 0.14348293586082986,
+    "wind_exposure": 294.35071037200885,
     "bare_ground": 0.5670658258343372
    },
    "detail": {
     "crops_per_decade": 13.45780486076667,
-    "evaporation_fraction": 0.44274127586326545,
-    "nitrogen_limited_seasons": 13,
+    "evaporation_fraction": 0.48065390368176564,
+    "nitrogen_limited_seasons": 6,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 170.16100680650345,
+    "nitrogen_leached_kg_ha": 244.45981532180465,
     "seasons_simulated": 52,
     "years": 38.639288158795345
    }
@@ -3470,23 +3474,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "31 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "21 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.4361685294088766,
-    "downside": 1.8904610818219165,
-    "irrigation": 175.1739569923409,
-    "carbon": -0.009670083966751874,
-    "wind_exposure": 417.2504457923327,
+    "production": 2.3510745004579854,
+    "downside": 1.8127162964735055,
+    "irrigation": 208.98379555755477,
+    "carbon": -0.1767757271211619,
+    "wind_exposure": 423.70187677608703,
     "bare_ground": 0.5730096394144948
    },
    "detail": {
     "crops_per_decade": 13.56158514816137,
-    "evaporation_fraction": 0.4482716800610461,
-    "nitrogen_limited_seasons": 31,
-    "nitrogen_fixed_kg_ha": 1486.6320765700807,
-    "nitrogen_leached_kg_ha": 116.74025708924295,
+    "evaporation_fraction": 0.48443117377790806,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1476.1580895801553,
+    "nitrogen_leached_kg_ha": 184.01703978932164,
     "seasons_simulated": 52,
     "years": 38.34360027378508
    }
@@ -3558,23 +3562,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "33 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "19 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.448418843431321,
-    "downside": 1.9665570292161547,
+    "production": 2.289577781867025,
+    "downside": 1.6434284567167323,
     "irrigation": 0.0,
-    "carbon": 0.20203890441333403,
-    "wind_exposure": 363.2113469559955,
+    "carbon": 0.08997098840726617,
+    "wind_exposure": 374.35289187458267,
     "bare_ground": 0.5219564441270975
    },
    "detail": {
     "crops_per_decade": 16.951981435201713,
-    "evaporation_fraction": 0.4968086657207452,
-    "nitrogen_limited_seasons": 33,
+    "evaporation_fraction": 0.5519134274360327,
+    "nitrogen_limited_seasons": 19,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 66.23554447640127,
+    "nitrogen_leached_kg_ha": 87.6132240599839,
     "seasons_simulated": 65,
     "years": 38.34360027378508
    }
@@ -3583,7 +3587,7 @@
    "index": 56,
    "name": "pearl millet - grain sorghum - sorghum + rye cover",
    "is_existing": false,
-   "on_front": true,
+   "on_front": false,
    "cycle_years": 3,
    "crops": [
     "pearl_millet",
@@ -3635,23 +3639,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.2829567862326017,
-    "downside": 1.5720355910875583,
+    "production": 2.146848516139277,
+    "downside": 1.4677123521119637,
     "irrigation": 0.0,
-    "carbon": 0.19666531617577127,
-    "wind_exposure": 359.1091417011265,
+    "carbon": 0.07062192316951679,
+    "wind_exposure": 379.0168624137642,
     "bare_ground": 0.6123810876047139
    },
    "detail": {
     "crops_per_decade": 13.483600738321737,
-    "evaporation_fraction": 0.515828885960748,
-    "nitrogen_limited_seasons": 32,
+    "evaporation_fraction": 0.5731208963185733,
+    "nitrogen_limited_seasons": 17,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 64.36170628694731,
+    "nitrogen_leached_kg_ha": 89.87381628680157,
     "seasons_simulated": 52,
     "years": 38.56536618754278
    }
@@ -3701,23 +3705,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.287867526672644,
-    "downside": 1.8020571779689516,
-    "irrigation": 154.1566401673113,
-    "carbon": 0.2175948792890006,
-    "wind_exposure": 219.98507863247815,
+    "production": 4.111886088891409,
+    "downside": 1.640893658500381,
+    "irrigation": 189.76863088578185,
+    "carbon": 0.06989401155564992,
+    "wind_exposure": 237.19439335552514,
     "bare_ground": 0.6519597344185051
    },
    "detail": {
     "crops_per_decade": 10.169736560291284,
-    "evaporation_fraction": 0.453529187876296,
-    "nitrogen_limited_seasons": 13,
+    "evaporation_fraction": 0.4853534090277146,
+    "nitrogen_limited_seasons": 7,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 179.38265218145952,
+    "nitrogen_leached_kg_ha": 269.5239464339525,
     "seasons_simulated": 39,
     "years": 38.34907597535934
    }
@@ -3767,23 +3771,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.2605934796414258,
-    "downside": 1.5153830649155164,
-    "irrigation": 170.32033824726187,
-    "carbon": -0.048890496868317576,
-    "wind_exposure": 444.3333444080053,
+    "production": 2.2102521707343534,
+    "downside": 1.4432658309510542,
+    "irrigation": 200.98450745223897,
+    "carbon": -0.21503704735372967,
+    "wind_exposure": 445.909792899321,
     "bare_ground": 0.6611924312745449
    },
    "detail": {
     "crops_per_decade": 10.171188861121028,
-    "evaporation_fraction": 0.4638718454934885,
-    "nitrogen_limited_seasons": 33,
-    "nitrogen_fixed_kg_ha": 1486.243659972232,
-    "nitrogen_leached_kg_ha": 116.075438658292,
+    "evaporation_fraction": 0.4973147281560354,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1477.3733511076216,
+    "nitrogen_leached_kg_ha": 185.58854822722878,
     "seasons_simulated": 39,
     "years": 38.34360027378508
    }
@@ -3844,23 +3848,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.293541817178829,
-    "downside": 1.5896175926058338,
+    "production": 2.1646595615011184,
+    "downside": 1.464298345253163,
     "irrigation": 0.0,
-    "carbon": 0.14424294905164906,
-    "wind_exposure": 385.29604543414575,
+    "carbon": 0.034214576819244544,
+    "wind_exposure": 395.43742290275554,
     "bare_ground": 0.6101392359871475
    },
    "detail": {
     "crops_per_decade": 13.56158514816137,
-    "evaporation_fraction": 0.5165926971902679,
-    "nitrogen_limited_seasons": 33,
+    "evaporation_fraction": 0.5725007663282594,
+    "nitrogen_limited_seasons": 19,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 62.6659091572341,
+    "nitrogen_leached_kg_ha": 80.95532656815134,
     "seasons_simulated": 52,
     "years": 38.34360027378508
    }
@@ -3910,23 +3914,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.124554444585649,
-    "downside": 1.5409427786417513,
+    "production": 2.0345074676900485,
+    "downside": 1.287115548796293,
     "irrigation": 0.0,
-    "carbon": 0.07380709515517905,
-    "wind_exposure": 352.05133824457437,
+    "carbon": -0.031738921288269384,
+    "wind_exposure": 356.85117765107435,
     "bare_ground": 0.6983220278471974
    },
    "detail": {
     "crops_per_decade": 10.171188861121028,
-    "evaporation_fraction": 0.5368091523220733,
-    "nitrogen_limited_seasons": 32,
+    "evaporation_fraction": 0.5946924032304255,
+    "nitrogen_limited_seasons": 18,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 72.31150495978176,
+    "nitrogen_leached_kg_ha": 94.16956400375864,
     "seasons_simulated": 39,
     "years": 38.34360027378508
    }
@@ -3987,22 +3991,22 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 6.314641033764883,
-    "downside": 3.262178329980026,
-    "irrigation": 318.9377961912463,
-    "carbon": 0.3709461513940646,
-    "wind_exposure": 268.49627702669034,
+    "production": 6.06946852605571,
+    "downside": 2.571621081220365,
+    "irrigation": 388.84741415164467,
+    "carbon": 0.16852945038288272,
+    "wind_exposure": 279.35758837240985,
     "bare_ground": 0.544037412314887
    },
    "detail": {
     "crops_per_decade": 13.45780486076667,
-    "evaporation_fraction": 0.39273703256575687,
+    "evaporation_fraction": 0.4163494677767351,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 498.29744311383996,
+    "nitrogen_leached_kg_ha": 784.1282889839981,
     "seasons_simulated": 52,
     "years": 38.639288158795345
    }
@@ -4052,23 +4056,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 6.162230848173799,
-    "downside": 2.6335440634077543,
-    "irrigation": 311.381074168798,
-    "carbon": 0.27316270603562154,
-    "wind_exposure": 197.4164637306472,
+    "production": 5.976397268346098,
+    "downside": 2.2218944389845876,
+    "irrigation": 381.2349617959625,
+    "carbon": 0.10184522588063902,
+    "wind_exposure": 212.01856173436644,
     "bare_ground": 0.6287570500464054
    },
    "detail": {
     "crops_per_decade": 10.169736560291284,
-    "evaporation_fraction": 0.3975667863798954,
+    "evaporation_fraction": 0.4176651639640368,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 561.9125099438679,
+    "nitrogen_leached_kg_ha": 882.1627602052348,
     "seasons_simulated": 39,
     "years": 38.34907597535934
    }
@@ -4077,7 +4081,7 @@
    "index": 63,
    "name": "corn (irrigated) - soybean (irrigated) - sorghum + rye cover",
    "is_existing": false,
-   "on_front": false,
+   "on_front": true,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -4129,23 +4133,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "19 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.411501910074235,
-    "downside": 2.226731308929932,
-    "irrigation": 319.4915301617739,
-    "carbon": 0.16845683580592125,
-    "wind_exposure": 460.738145798265,
+    "production": 4.321785574226337,
+    "downside": 2.3388419152447204,
+    "irrigation": 386.617770735995,
+    "carbon": -0.05727152641486258,
+    "wind_exposure": 462.4736872864912,
     "bare_ground": 0.553248777722667
    },
    "detail": {
     "crops_per_decade": 13.45780486076667,
-    "evaporation_fraction": 0.4026467183359563,
-    "nitrogen_limited_seasons": 19,
-    "nitrogen_fixed_kg_ha": 1486.694521990995,
-    "nitrogen_leached_kg_ha": 216.43687641274363,
+    "evaporation_fraction": 0.42313594202371774,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1479.5337833058784,
+    "nitrogen_leached_kg_ha": 429.5198896788735,
     "seasons_simulated": 52,
     "years": 38.639288158795345
    }
@@ -4195,23 +4199,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.2686801198699635,
-    "downside": 2.1825685376103956,
-    "irrigation": 312.6985093018996,
-    "carbon": 0.07219691019561546,
-    "wind_exposure": 394.808676315788,
+    "production": 4.218315219547821,
+    "downside": 2.154360211907272,
+    "irrigation": 379.06718810224436,
+    "carbon": -0.12783778623709854,
+    "wind_exposure": 396.36764654455476,
     "bare_ground": 0.6380381237952453
    },
    "detail": {
     "crops_per_decade": 10.169736560291284,
-    "evaporation_fraction": 0.4073166170248568,
-    "nitrogen_limited_seasons": 19,
-    "nitrogen_fixed_kg_ha": 1486.7158190545115,
-    "nitrogen_leached_kg_ha": 233.3395271071081,
+    "evaporation_fraction": 0.42371659352891383,
+    "nitrogen_limited_seasons": 14,
+    "nitrogen_fixed_kg_ha": 1479.5942382482974,
+    "nitrogen_leached_kg_ha": 459.35923669392645,
     "seasons_simulated": 39,
     "years": 38.34907597535934
    }
@@ -4220,7 +4224,7 @@
    "index": 65,
    "name": "corn (irrigated) - sorghum + rye cover - soybean (irrigated)",
    "is_existing": false,
-   "on_front": false,
+   "on_front": true,
    "cycle_years": 3,
    "crops": [
     "maize",
@@ -4272,23 +4276,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "15 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.316800705084883,
-    "downside": 1.9899106826266908,
-    "irrigation": 300.2021518295405,
-    "carbon": 0.09297134461317436,
-    "wind_exposure": 416.81225170649054,
+    "production": 4.182025856875661,
+    "downside": 1.8740501185820795,
+    "irrigation": 369.57150150461626,
+    "carbon": -0.10087931164254627,
+    "wind_exposure": 423.62209293166677,
     "bare_ground": 0.5507659422871393
    },
    "detail": {
     "crops_per_decade": 13.532597078731742,
-    "evaporation_fraction": 0.40928526530183545,
-    "nitrogen_limited_seasons": 15,
-    "nitrogen_fixed_kg_ha": 1489.3325873938668,
-    "nitrogen_leached_kg_ha": 297.95207332290755,
+    "evaporation_fraction": 0.43019582314034627,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1480.253836634799,
+    "nitrogen_leached_kg_ha": 487.48763156480004,
     "seasons_simulated": 52,
     "years": 38.42573579739904
    }
@@ -4360,23 +4364,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "5 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.454802618851438,
-    "downside": 2.2273349810463605,
-    "irrigation": 159.84949212449098,
-    "carbon": 0.35542408666201647,
-    "wind_exposure": 400.4131151306614,
+    "production": 4.215898202174416,
+    "downside": 1.844763589171298,
+    "irrigation": 198.9515110967792,
+    "carbon": 0.17577803785470172,
+    "wind_exposure": 418.0162087509033,
     "bare_ground": 0.5025862679798767
    },
    "detail": {
     "crops_per_decade": 16.822256075958336,
-    "evaporation_fraction": 0.44173915965938615,
-    "nitrogen_limited_seasons": 12,
+    "evaporation_fraction": 0.4768029346093062,
+    "nitrogen_limited_seasons": 5,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 161.0461035341475,
+    "nitrogen_leached_kg_ha": 226.9958590853644,
     "seasons_simulated": 65,
     "years": 38.639288158795345
    }
@@ -4437,23 +4441,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.298761915208496,
-    "downside": 1.7264207770757125,
-    "irrigation": 154.15664016731128,
-    "carbon": 0.25421348317605624,
-    "wind_exposure": 348.8799244439257,
+    "production": 4.105749608487693,
+    "downside": 1.6452755370152305,
+    "irrigation": 190.55347299151006,
+    "carbon": 0.10300023921950816,
+    "wind_exposure": 358.84931106699224,
     "bare_ground": 0.586992218176626
    },
    "detail": {
     "crops_per_decade": 13.559648747055045,
-    "evaporation_fraction": 0.45062912493169266,
-    "nitrogen_limited_seasons": 12,
+    "evaporation_fraction": 0.48034212481901334,
+    "nitrogen_limited_seasons": 7,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 174.64437065450494,
+    "nitrogen_leached_kg_ha": 259.53596637632114,
     "seasons_simulated": 52,
     "years": 38.34907597535934
    }
@@ -4503,23 +4507,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.135503041555484,
-    "downside": 1.90939313548069,
-    "irrigation": 292.41687043010216,
-    "carbon": 0.041442873923562065,
-    "wind_exposure": 355.26394450884266,
+    "production": 4.040453263228273,
+    "downside": 1.6278966238091945,
+    "irrigation": 361.6868504702693,
+    "carbon": -0.1459077438346764,
+    "wind_exposure": 373.8179099375556,
     "bare_ground": 0.6387602422515141
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.4192943052852555,
-    "nitrogen_limited_seasons": 15,
-    "nitrogen_fixed_kg_ha": 1488.5072315101745,
-    "nitrogen_leached_kg_ha": 323.3853474972404,
+    "evaporation_fraction": 0.44014262536225846,
+    "nitrogen_limited_seasons": 13,
+    "nitrogen_fixed_kg_ha": 1481.3791093603595,
+    "nitrogen_leached_kg_ha": 544.1913894192694,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -4580,23 +4584,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.321143482436123,
-    "downside": 1.9871320363485618,
-    "irrigation": 159.84949212449098,
-    "carbon": 0.3019543868579329,
-    "wind_exposure": 345.70506226912505,
+    "production": 4.090087432402927,
+    "downside": 1.536789556094431,
+    "irrigation": 198.9515827791865,
+    "carbon": 0.11998391695800892,
+    "wind_exposure": 374.49539731895857,
     "bare_ground": 0.5900942393537872
    },
    "detail": {
     "crops_per_decade": 13.45780486076667,
-    "evaporation_fraction": 0.4547735180078785,
-    "nitrogen_limited_seasons": 11,
+    "evaporation_fraction": 0.49187936177087094,
+    "nitrogen_limited_seasons": 3,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 173.86790589307986,
+    "nitrogen_leached_kg_ha": 244.8911687744803,
     "seasons_simulated": 52,
     "years": 38.639288158795345
    }
@@ -4646,23 +4650,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 4.1630714285805075,
-    "downside": 1.7303540647349052,
-    "irrigation": 153.38969170876746,
-    "carbon": 0.20111820829318078,
-    "wind_exposure": 291.5359809071963,
+    "production": 3.9810029734037906,
+    "downside": 1.3086205380178986,
+    "irrigation": 190.54431409538842,
+    "carbon": 0.04558481859488714,
+    "wind_exposure": 310.22193773891854,
     "bare_ground": 0.6751624187906047
    },
    "detail": {
     "crops_per_decade": 10.169736560291284,
-    "evaporation_fraction": 0.4639128515842353,
-    "nitrogen_limited_seasons": 13,
+    "evaporation_fraction": 0.4962214662231665,
+    "nitrogen_limited_seasons": 4,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 184.87950404955856,
+    "nitrogen_leached_kg_ha": 278.4398151585096,
     "seasons_simulated": 39,
     "years": 38.34907597535934
    }
@@ -4734,23 +4738,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "32 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "21 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.3623693276164377,
-    "downside": 1.9121603184517728,
-    "irrigation": 138.97264559251178,
-    "carbon": 0.028541664187179107,
-    "wind_exposure": 475.7452008070695,
+    "production": 2.2132915295129063,
+    "downside": 1.7809684702789328,
+    "irrigation": 171.24586947364276,
+    "carbon": -0.1392829261592665,
+    "wind_exposure": 483.3340591029116,
     "bare_ground": 0.5081382067390063
    },
    "detail": {
     "crops_per_decade": 16.948350942318676,
-    "evaporation_fraction": 0.4511887180409384,
-    "nitrogen_limited_seasons": 32,
-    "nitrogen_fixed_kg_ha": 1489.1134734036602,
-    "nitrogen_leached_kg_ha": 178.83626478214768,
+    "evaporation_fraction": 0.4821106133291353,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1480.201614112218,
+    "nitrogen_leached_kg_ha": 284.47090591555053,
     "seasons_simulated": 65,
     "years": 38.351813826146476
    }
@@ -4811,23 +4815,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.2845708448780773,
-    "downside": 1.5140926088010527,
-    "irrigation": 170.09653066074017,
-    "carbon": 0.04391278436180884,
-    "wind_exposure": 541.9102496190358,
+    "production": 2.205170561516058,
+    "downside": 1.4335634825600458,
+    "irrigation": 199.83940612532152,
+    "carbon": -0.1436073511863383,
+    "wind_exposure": 546.6114494595382,
     "bare_ground": 0.5985375550191679
    },
    "detail": {
     "crops_per_decade": 13.483600738321737,
-    "evaporation_fraction": 0.4612468750499701,
-    "nitrogen_limited_seasons": 32,
-    "nitrogen_fixed_kg_ha": 1486.9459521080514,
-    "nitrogen_leached_kg_ha": 108.93270051127502,
+    "evaporation_fraction": 0.49332065944291875,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1477.3009651991958,
+    "nitrogen_leached_kg_ha": 180.17811541050042,
     "seasons_simulated": 52,
     "years": 38.56536618754278
    }
@@ -4888,23 +4892,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.2145579645553455,
-    "downside": 1.8582036561891973,
-    "irrigation": 138.9707323324298,
-    "carbon": -0.01769732348062132,
-    "wind_exposure": 485.22067540504867,
+    "production": 2.1011614995411865,
+    "downside": 1.6048030928705461,
+    "irrigation": 171.24538537811702,
+    "carbon": -0.17956874551074845,
+    "wind_exposure": 500.3539360772095,
     "bare_ground": 0.596302113078241
    },
    "detail": {
     "crops_per_decade": 13.55868075385494,
-    "evaporation_fraction": 0.4647981531957632,
-    "nitrogen_limited_seasons": 31,
-    "nitrogen_fixed_kg_ha": 1489.1245707791606,
-    "nitrogen_leached_kg_ha": 172.11420119562732,
+    "evaporation_fraction": 0.49627078114280054,
+    "nitrogen_limited_seasons": 19,
+    "nitrogen_fixed_kg_ha": 1480.2117325866548,
+    "nitrogen_leached_kg_ha": 281.2045039158915,
     "seasons_simulated": 52,
     "years": 38.351813826146476
    }
@@ -4954,23 +4958,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.020980325522596,
-    "downside": 1.52135231574379,
-    "irrigation": 135.01895319528745,
-    "carbon": -0.07863677172890551,
-    "wind_exposure": 461.2089418293679,
+    "production": 1.9458635094411447,
+    "downside": 1.2874409612212379,
+    "irrigation": 167.62729527505087,
+    "carbon": -0.23498007803764506,
+    "wind_exposure": 466.1069877225307,
     "bare_ground": 0.6844660194174758
    },
    "detail": {
     "crops_per_decade": 10.169010565391204,
-    "evaporation_fraction": 0.4819835525755013,
-    "nitrogen_limited_seasons": 31,
-    "nitrogen_fixed_kg_ha": 1488.6880835245674,
-    "nitrogen_leached_kg_ha": 192.0433768534478,
+    "evaporation_fraction": 0.511730943734124,
+    "nitrogen_limited_seasons": 21,
+    "nitrogen_fixed_kg_ha": 1481.3162469954652,
+    "nitrogen_leached_kg_ha": 337.405476565802,
     "seasons_simulated": 39,
     "years": 38.351813826146476
    }
@@ -5053,23 +5057,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "29 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "17 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.474266753938866,
-    "downside": 1.996532980067739,
+    "production": 2.273236409970215,
+    "downside": 1.6455057325120357,
     "irrigation": 0.0,
-    "carbon": 0.30117313357959585,
-    "wind_exposure": 454.65504240363134,
+    "carbon": 0.16531851263456812,
+    "wind_exposure": 473.1100310084751,
     "bare_ground": 0.46010222916370863
    },
    "detail": {
     "crops_per_decade": 20.225401107482607,
-    "evaporation_fraction": 0.492896676381445,
-    "nitrogen_limited_seasons": 29,
+    "evaporation_fraction": 0.5463219720893745,
+    "nitrogen_limited_seasons": 17,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 55.8957749733231,
+    "nitrogen_leached_kg_ha": 73.76648489672623,
     "seasons_simulated": 78,
     "years": 38.56536618754278
    }
@@ -5141,23 +5145,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.3199097688060117,
-    "downside": 1.6010304760437073,
+    "production": 2.1533063624870334,
+    "downside": 1.4622034571819178,
     "irrigation": 0.0,
-    "carbon": 0.24369464363152082,
-    "wind_exposure": 472.50825525380236,
+    "carbon": 0.10981937694417501,
+    "wind_exposure": 493.2292458215005,
     "bare_ground": 0.5477779355388329
    },
    "detail": {
     "crops_per_decade": 16.854500922902172,
-    "evaporation_fraction": 0.5105110188029124,
-    "nitrogen_limited_seasons": 30,
+    "evaporation_fraction": 0.5651133098233315,
+    "nitrogen_limited_seasons": 17,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 55.7406957874981,
+    "nitrogen_leached_kg_ha": 73.79255232907325,
     "seasons_simulated": 65,
     "years": 38.56536618754278
    }
@@ -5218,23 +5222,23 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 2.1536049306987084,
-    "downside": 1.5492986533335436,
+    "production": 2.027421697323583,
+    "downside": 1.2870453660499712,
     "irrigation": 0.0,
-    "carbon": 0.17503138787073066,
-    "wind_exposure": 441.076585067809,
+    "carbon": 0.045105008089007505,
+    "wind_exposure": 456.9227503078595,
     "bare_ground": 0.6354536419139571
    },
    "detail": {
     "crops_per_decade": 13.483600738321737,
-    "evaporation_fraction": 0.5300748663324646,
-    "nitrogen_limited_seasons": 32,
+    "evaporation_fraction": 0.5866631392759645,
+    "nitrogen_limited_seasons": 14,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 66.8636003652871,
+    "nitrogen_leached_kg_ha": 87.81431056460406,
     "seasons_simulated": 52,
     "years": 38.56536618754278
    }
@@ -5284,33 +5288,33 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
     "yield for pearl_millet rests on a Ky taken from an analogue crop rather than FAO-33; treat those yields as indicative only"
    ],
    "objectives": {
-    "production": 1.9925831530043372,
-    "downside": 1.5666140398578405,
+    "production": 1.9181078166531098,
+    "downside": 1.214766474642753,
     "irrigation": 0.0,
-    "carbon": 0.06158527231182744,
-    "wind_exposure": 396.5420807933226,
+    "carbon": -0.040535730748222455,
+    "wind_exposure": 399.3532092961449,
     "bare_ground": 0.721030042918455
    },
    "detail": {
     "crops_per_decade": 10.189377682403434,
-    "evaporation_fraction": 0.5469608205424085,
-    "nitrogen_limited_seasons": 30,
+    "evaporation_fraction": 0.6006399081960734,
+    "nitrogen_limited_seasons": 18,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 72.46597700996199,
+    "nitrogen_leached_kg_ha": 94.78993984723833,
     "seasons_simulated": 39,
     "years": 38.275154004106774
    }
   },
   {
    "index": 79,
-   "name": "EXISTING: fallow - winter wheat",
+   "name": "EXISTING: winter wheat",
    "is_existing": true,
-   "on_front": false,
-   "cycle_years": 2,
+   "on_front": true,
+   "cycle_years": 1,
    "crops": [
     "wheat_winter"
    ],
@@ -5318,7 +5322,7 @@
     {
      "crop_id": "wheat_winter",
      "crop_name": "Winter wheat",
-     "year_offset": 1,
+     "year_offset": 0,
      "start_doy": 274,
      "duration_days": 285,
      "irrigation": "rainfed",
@@ -5328,30 +5332,29 @@
    ],
    "notes": [
     "no local prices supplied, so the economic objective is physical production; margin requires market data this model will not invent",
-    "carbon pools supplied (36.6 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
-    "2 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
+    "carbon pools supplied (51.4 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up",
+    "18 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 1.5869770313471967,
-    "downside": 0.0,
+    "production": 2.564542453980055,
+    "downside": 1.9913184068076186,
     "irrigation": 0.0,
-    "carbon": -0.14610674894883927,
-    "wind_exposure": 265.142727107102,
-    "bare_ground": 0.5975713075402429
+    "carbon": 0.07743509340684979,
+    "wind_exposure": 132.45682579601325,
+    "bare_ground": 0.21541637990364762
    },
    "detail": {
-    "crops_per_decade": 5.157441400734256,
-    "evaporation_fraction": 0.6369079368380848,
-    "nitrogen_limited_seasons": 2,
+    "crops_per_decade": 10.055058499655884,
+    "evaporation_fraction": 0.4556482790452123,
+    "nitrogen_limited_seasons": 18,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 295.98207769959396,
-    "seasons_simulated": 20,
-    "years": 38.77891854893908
+    "nitrogen_leached_kg_ha": 392.68406859446094,
+    "seasons_simulated": 40,
+    "years": 39.780971937029435
    }
   }
  ],
  "front": [
-  7,
   11,
   12,
   38,
@@ -5359,19 +5362,24 @@
   40,
   42,
   46,
+  47,
   48,
+  49,
+  50,
   53,
   55,
-  56,
   61,
+  63,
+  65,
   66,
-  75
+  75,
+  79
  ],
  "search": {
   "examined": 176,
   "feasible": 79,
   "simulated": 80,
-  "on_front": 15,
+  "on_front": 19,
   "rejections": {
    "no marketable crop": 1,
    "too much fallow": 7,

@@ -27,6 +27,7 @@ from typing import Callable
 import numpy as np
 
 from fieldshift.agro.climate import Site
+from fieldshift.api.bundle import SITES_BY_ID, _ssurgo_path, _power_path  # noqa: E402
 from fieldshift.agro.et0 import et0_penman_monteith
 from fieldshift.agro.rotation import RotationPlan, SeasonPlan, simulate_rotation
 from fieldshift.agro.rothc import soc_from_organic_carbon_pct
@@ -34,7 +35,8 @@ from fieldshift.data import load_registry
 from fieldshift.io.power import parse_power_daily
 from fieldshift.io.ssurgo import fetch_ssurgo_point, texture_from_ssurgo
 
-SITE = Site(38.03, -100.74, 858.0, "Finney County, Kansas")
+# From the registry, not repeated here - see validate_sites.py for why.
+SITE = SITES_BY_ID["finney_ks"].site
 OCT1, N_RATE = 274, 70.0
 OBSERVED_FALLOW_ADVANTAGE = 0.108
 
@@ -172,7 +174,7 @@ def run_pair(reg, soil, weather, et0, soc, fertiliser=N_RATE, subsoil=0.5,
 
 def main() -> int:
     reg = load_registry()
-    payload = json.loads(open("data/raw/power_finney_ks_1981_2024.json").read())
+    payload = json.loads(_power_path(SITES_BY_ID["finney_ks"]).read_text())
     for series in payload["properties"]["parameter"].values():
         for k in list(series):
             if k < "19840101":
@@ -180,7 +182,8 @@ def main() -> int:
     weather, _ = parse_power_daily(payload, site=SITE)
     et0 = et0_penman_monteith(SITE, weather).values_mm
     profile = fetch_ssurgo_point(
-        38.03, -100.74, cache_path="data/raw/ssurgo_finney_point.json"
+        SITE.latitude_deg, SITE.longitude_deg,
+        cache_path=str(_ssurgo_path(SITES_BY_ID["finney_ks"]))
     )
     soil = texture_from_ssurgo(profile, reg.texture)
     soc = soc_from_organic_carbon_pct(

@@ -36,6 +36,10 @@ import sys
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
+sys.path.insert(0, "src")
+
+from fieldshift.api.bundle import SITES_BY_ID  # noqa: E402
+
 STAC = "https://planetarycomputer.microsoft.com/api/stac/v1/search"
 DATA = "https://planetarycomputer.microsoft.com/api/data/v1/item/statistics"
 YEARS = range(2008, 2022)          # CDL coverage in the Planetary Computer catalogue
@@ -44,18 +48,17 @@ RULE = "-" * 78
 
 # The CDL classes that would mean "this pixel grows what we modelled".
 EXPECTED = {
-    "finney_ks":   ({24, 61}, "winter wheat / fallow"),
-    "sedgwick_ks": ({24, 61}, "winter wheat / fallow"),
-    "holt_ne":     ({24, 61}, "winter wheat / fallow"),
-    "hale_tx":     ({24, 61}, "winter wheat / fallow"),
-    "arkansas_ar": ({3, 5},   "rice / soybeans"),
+    # The CDL classes that would mean "this pixel grows what we modelled".
+    # Keyed to each site's declared existing rotation.
+    "finney_ks":   ({24, 61, 4}, "winter wheat / fallow / grain sorghum"),
+    "sedgwick_ks": ({24},        "continuous winter wheat"),
+    "holt_ne":     ({1, 5},      "continuous irrigated corn"),
+    "hale_tx":     ({24, 61},    "winter wheat / fallow"),
+    "arkansas_ar": ({3, 5},      "rice / soybeans"),
 }
 SITES = {
-    "finney_ks":   (38.03, -100.74),
-    "sedgwick_ks": (37.70, -97.46),
-    "holt_ne":     (42.45, -98.78),
-    "hale_tx":     (34.07, -101.82),
-    "arkansas_ar": (34.29, -91.33),
+    sid: (SITES_BY_ID[sid].latitude, SITES_BY_ID[sid].longitude)
+    for sid in EXPECTED
 }
 NAMES = {
     0: "background", 1: "corn", 2: "cotton", 3: "rice", 4: "sorghum", 5: "soybeans",
@@ -189,19 +192,30 @@ def main() -> int:
                   "the rotation we compared against it.")
     print()
     not_field = sum(1 for v, _, _ in verdicts.values() if v == "NOT FARMLAND")
-    print("This does not say the model is wrong. It says the baseline rotation at")
-    print(f"{len(bad)} of {len(verdicts)} US sites was compared against ground that does not grow it,")
-    print(f"and that {not_field} of those are not farmland at any point in the record. A")
-    print("disagreement measured there was never evidence about the canopy model at")
-    print("all. The defect is in our site selection, and it is ours.")
+    if not bad:
+        print("Every US site now sits on ground that grows the rotation it is")
+        print("compared against.")
+    else:
+        print(f"{len(bad)} of {len(verdicts)} sites still disagree"
+              + (f", and {not_field} are not farmland at all" if not_field else ""), end=".\n")
+        print("A disagreement measured there is not evidence about the canopy model.")
     print()
-    print("A county reference point is a label on a map, not a field. We used one")
-    print("as if it were the other, at every US site, for the whole project.")
+    print("WHY THIS CHECK EXISTS")
+    print(RULE)
+    print("The first time it ran, 0 of 5 US sites matched and four were not farmland")
+    print("in any year: sedgwick_ks sat in built-up Wichita, holt_ne and hale_tx on")
+    print("pasture, arkansas_ar on developed land and wetland, and finney_ks grew a")
+    print("wheat-sorghum-fallow cycle rather than the wheat-fallow it was compared")
+    print("against. Every site had been placed at a county reference point - a label")
+    print("on a map, not a field - and nothing had ever checked.")
     print()
-    print("It also reaches further than the NDVI check. Each site's weather and soil")
-    print("are drawn from its coordinate, so arkansas_ar - the site the paddy")
-    print("irrigation check runs on - has been taking its soil from a pixel CDL")
-    print("calls developed land and wetland.")
+    print("Correcting them moved the weather cell and the soil survey polygon at")
+    print("every site, so it changed every number this project reports. It also")
+    print("exposed a second copy of the same bug: the download cache was keyed by")
+    print("state and county alone, so the first rebuild silently reused the old")
+    print("field's weather and soil while appearing to succeed. The coordinate is")
+    print("part of the cache key now, and the validation scripts read their sites")
+    print("from the registry instead of repeating them.")
     return 0
 
 

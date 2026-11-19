@@ -740,6 +740,9 @@ function renderNav(){
 
 function go(id){
   state.screen = id;
+  // Reflect the screen in the URL so a view can be linked to, reloaded, and
+  // reached directly - including by a headless browser taking screenshots.
+  try{ history.replaceState(null, "", "#" + id); }catch(e){}
   setNav(false);
   renderNav();
   render();
@@ -760,7 +763,9 @@ async function boot(){
       .catch(()=>{});
     if(!state.sites.length) throw new Error("no bundles on disk");
     renderNav();
+    const wanted = (location.hash || "").replace("#", "");
     await selectSite(state.sites[0].id);
+    if(SCREENS.some(x => x.id === wanted)) go(wanted);
   }catch(e){
     $("#screens").innerHTML = `<div class="screen"><div class="warn">
       <b>No precomputed fields.</b> ${esc(e.message)}<br><br>
@@ -958,9 +963,14 @@ function headline(){
     <div class="ab">
       <div class="big">Try ${name}.</div>
       <div class="plain">${parts.length ? "It would mean " + parts.join(", ") + "." : ""}
-      ${rank.beaten_by.length
+      ${rank.beaten_by.includes(top.name)
         ? ` Nothing is given up to get there — this beats your current rotation on
             <b>every</b> measure, not just on balance.`
+        : rank.beaten_by.length
+        ? ` This is the best fit to the priorities you set, but it does involve a
+            real trade-off. ${rank.beaten_by.length} other rotation${rank.beaten_by.length>1?"s":""}
+            beat${rank.beaten_by.length>1?"":"s"} your current one on every measure — reweight
+            toward what you care about to see them.`
         : ` This is the best fit to the priorities you set, but it does involve a
             real trade-off.`}</div>
       ${cells ? `<div class="wins">${cells}</div>` : ""}

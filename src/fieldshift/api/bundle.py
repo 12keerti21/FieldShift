@@ -81,34 +81,43 @@ class SiteSpec:
 
 SITES: tuple[SiteSpec, ...] = (
     SiteSpec(
-        "finney_ks", "Finney County, Kansas", 38.03, -100.74, 858.0, "KS", "FINNEY",
+        "finney_ks", "Finney County, Kansas", 38.23, -100.69, 858.4, "KS", "FINNEY",
         "Semi-arid High Plains over the Ogallala aquifer. Irrigated corn against "
-        "dryland wheat and sorghum, with a declining water table.",
+        "dryland wheat and sorghum, with a declining water table. The point is on "
+        "cropland USDA CDL shows in a clean wheat-sorghum-fallow cycle every year "
+        "from 2008 to 2021.",
         dem_tile="nasadem_n38w101/n38w101.hgt",
-        existing_rotation=("wheat", "fallow"),
+        existing_rotation=("wheat", "fallow", "sorghum"),
     ),
     SiteSpec(
-        "sedgwick_ks", "Sedgwick County, Kansas", 37.70, -97.46, 410.0, "KS",
+        "sedgwick_ks", "Sedgwick County, Kansas", 37.55, -97.51, 402.8, "KS",
         "SEDGWICK",
         "Wetter eastern Kansas at about 840 mm. Water is much less often the "
-        "binding constraint here.",
-        existing_rotation=("wheat", "fallow"),
+        "binding constraint here, and CDL shows this point in continuous winter "
+        "wheat rather than the wheat-fallow the drier sites run.",
+        existing_rotation=("wheat",),
     ),
     SiteSpec(
-        "holt_ne", "Holt County, Nebraska", 42.45, -98.78, 610.0, "NE", "HOLT",
+        "holt_ne", "Holt County, Nebraska", 42.70, -98.83, 602.1, "NE", "HOLT",
         "Cooler Nebraska Sandhills on a coarse soil holding only 84 mm/m of "
-        "available water - a quarter of the Kansas pilot field.",
-        existing_rotation=("wheat", "fallow"),
+        "available water - a quarter of the Kansas pilot field. Dryland wheat "
+        "does not exist here: CDL shows this point under continuous irrigated "
+        "corn in 13 of 14 years, which is what a coarse soil over the Ogallala "
+        "gets farmed as.",
+        existing_rotation=("corn_irr",),
     ),
     SiteSpec(
-        "hale_tx", "Hale County, Texas", 34.07, -101.82, 1030.0, "TX", "HALE",
+        "hale_tx", "Hale County, Texas", 34.02, -101.57, 1034.1, "TX", "HALE",
         "Hotter southern High Plains. Heat at flowering is a routine cost here "
-        "rather than an exception.",
+        "rather than an exception. The point is verified cropland, but CDL shows "
+        "it in cotton in 8 of 14 years and the crop table carries no cotton, so "
+        "the baseline below is a representative dryland system rather than the "
+        "one actually grown. The NDVI check cannot settle this site.",
         existing_rotation=("wheat", "fallow"),
     ),
     # ---- Tier 1: the Mid-South, where the paddy model becomes checkable ----
     SiteSpec(
-        "arkansas_ar", "Arkansas County, Arkansas", 34.29, -91.37, 62.0,
+        "arkansas_ar", "Arkansas County, Arkansas", 34.34, -91.48, 57.0,
         "AR", "ARKANSAS",
         "Grand Prairie rice and soybean on a clay-pan soil. Humid where every "
         "other field here is semi-arid, and flooded exactly the way Punjab is - "
@@ -142,12 +151,18 @@ SITES_BY_ID = {s.id: s for s in SITES}
 def _key(spec: SiteSpec) -> str:
     """Cache key for this field.
 
-    Named sites keep their state/county filenames so existing caches stay valid.
-    A live point has neither, so it keys on rounded coordinates - which also means
-    two people analysing the same field reuse one download instead of two.
+    The coordinate is always part of the key, including for named sites. It used
+    not to be: the key was state_county alone, so moving a site within its county
+    silently reused the previous point's weather and soil. A rebuild then looked
+    like it had worked while every input was still the old field's. Downloads are
+    cheap; a cache that answers for the wrong place is not.
+
+    Rounding to three decimals - about 100 m - also means two people analysing the
+    same field reuse one download instead of two.
     """
     if spec.state and spec.county:
-        return f"{spec.state}_{spec.county}".lower()
+        return (f"{spec.state}_{spec.county}"
+                f"_{spec.latitude:.3f}_{spec.longitude:.3f}").lower()
     return f"pt_{spec.latitude:.3f}_{spec.longitude:.3f}".replace("-", "m")
 
 
@@ -311,7 +326,13 @@ def build_bundle(
 
     existing_plan = None
     if spec.existing_rotation:
-        patterns = [p for p in patterns_all if p.id in spec.existing_rotation]
+        # Order matters and belongs to the site, not to the pattern registry.
+        # Winter wheat occupies the field from October into the following July,
+        # so wheat-sorghum-fallow is an impossible calendar while the same three
+        # crops as wheat-fallow-sorghum is the rotation western Kansas actually
+        # grows. Filtering patterns_all would silently impose registry order.
+        by_id = {p.id: p for p in patterns_all}
+        patterns = [by_id[i] for i in spec.existing_rotation if i in by_id]
         if patterns:
             existing_plan = build_rotation(
                 patterns, name="EXISTING: " + " - ".join(p.name for p in patterns)

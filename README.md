@@ -32,21 +32,25 @@ about forty seconds.
 ## What it found
 
 **Finney County, Kansas** — 176 rotation cycles examined, 79 workable here, and
-**four beat current practice on every single objective.** No trade-off.
+**two beat current practice on every single objective.** No trade-off.
 
-| | wheat–fallow now | suggested |
+| | wheat–fallow–sorghum now | suggested |
 |---|---|---|
-| production | 0.90 t DM/ha/yr | **1.99** |
-| soil carbon | −0.050 t C/ha/yr (losing) | **+0.270 (building)** |
-| bare ground | 59.8% of the time | **21.5%** |
-| wind erosion exposure | 774 | **391** |
+| production | 1.38 t DM/ha/yr | **2.02** |
+| soil carbon | +0.101 t C/ha/yr | **+0.283** |
+| bare ground | 61.6% of the time | **21.5%** |
+| wind erosion exposure | 653 | **382** |
+
+That baseline is not an assumption. USDA's Cropland Data Layer shows this field
+in a clean wheat–fallow–sorghum cycle every year from 2008 to 2021. We used to
+assume wheat–fallow, at a coordinate that was not this field.
 
 **Sangrur District, Punjab** — rice–wheat over a falling water table. We measured
 that fall ourselves: **20 CGWB observation wells, records up to 27 years, every
 one showing the table dropping 1.167 m/year.**
 
 Seven rotations beat it on every objective. The cheapest in water replaces one
-rice year in three with a rainfed kharif legume: **1,996 → 1,511 mm/yr, a 24%
+rice year in three with a rainfed kharif legume: **1,961 → 1,489 mm/yr, a 24%
 saving, while producing more.**
 
 ---
@@ -108,26 +112,41 @@ reference ET), CGWB via India-WRIS (groundwater).
 This is where most of the work went. A crop model that has not been checked
 against observation is a plausible-looking opinion.
 
-**12 checks: 5 pass, 4 partial, 3 fail.** All twelve are displayed in the app with
+**12 checks: 6 pass, 4 partial, 2 fail.** All twelve are displayed in the app with
 the command that reproduces each one.
 
 | Check | Result |
 |---|---|
-| Reference ET vs gridMET | **−3.2%** bias, daily r = 0.966 over 40 years |
-| Modelled stress vs detrended NASS yield | **11/11 positive**, 8/11 significant, mean r = +0.447 |
-| Dryland yield penalty, absolute magnitude | mean absolute error **6.0%** |
+| Reference ET vs gridMET | **−3.3%** bias, daily r = 0.966 over 40 years |
+| Modelled stress vs detrended NASS yield | **10/11 positive**, 8/11 significant, mean r = +0.430 |
+| Dryland yield penalty, absolute magnitude | mean absolute error **3.8%** |
 | Parameter sensitivity | **18/18** perturbations leave the recommendation standing |
 | Water and carbon mass balance | closes to **1e-12 mm** |
-| Ground cover vs MODIS NDVI | 1 of 5 pixels comparable — and it passes, r = **+0.772** |
+| **Ground cover vs MODIS NDVI** | **4 of 6 pixels comparable, all four agree** — mean r = **+0.738** |
+| Site locations vs USDA CDL | 4 of 5 US sites now sit on the land we model, after all five were moved |
 | Bad-year recall vs harvest records | weak: 4 of 12 against 2.6 expected by chance |
-| Rotation effect | ⚠️ observed **+10.8%**, modelled **+18.0%** — we over-predict |
+| Rotation effect | ⚠️ observed **+10.8%**, modelled **+18.2%** — we over-predict |
 | Punjab groundwater | ⚠️ direction confirmed by 20/20 wells, magnitude unreconciled 5–13× |
 | **Paddy irrigation vs NASS** | ❌ **+53% over** observed 610–640 mm |
 | Punjab yields | ❌ no district series obtainable — this is why Punjab is Tier 2 |
-| **Site locations vs USDA CDL** | ❌ **0 of 5 US sites** sit on the land we modelled |
 
-**19 errors found in our own model**, every one of which produced confident,
+**23 errors found in our own model**, every one of which produced confident,
 plausible, wrong output before it was caught. All are listed in the app.
+
+### The satellite check, after the sites were corrected
+
+MODIS NDVI now agrees with our modelled canopy at four of six fields: Holt
+**+0.790**, Sangrur **+0.772**, Finney **+0.750**, Arkansas **+0.641**, mean
+**+0.738**, with peak greenness landing within 5 and 9 days at the two closest.
+
+On the original county reference points only 1 of 5 pixels was a valid
+comparison, because four of the sites were not farmland. The two still excluded
+are excluded by the data: Sedgwick never bares off, and Hale grows cotton in 8 of
+14 years, which our crop table does not carry.
+
+Sangrur matters most of the group. Punjab has no district yield series, so this
+is the only independent check of the cropping there — the groundwater check only
+ever tested the water.
 
 ### The two failures are the point
 
@@ -150,7 +169,7 @@ Nothing was tuned to close it. Percolation, efficiency and the coefficients woul
 each reproduce 610 mm with a plausible-looking number, and each would destroy the
 meaning of the agreement.
 
-### The third failure: we checked our own ground, and failed
+### We checked our own ground, and failed — then fixed it
 
 Every other check here tests the model. This one tests an assumption underneath
 all of them — that the coordinate we picked for each site is a field growing the
@@ -164,34 +183,55 @@ CDL is in the **Microsoft Planetary Computer** catalogue, which needs no account
 A MODIS pixel is 250 m and CDL is 30 m, so we asked for the composition of the
 whole pixel rather than the class of the centre cell.
 
-**0 of 5 US sites match. Four are not farmland in any year of the record.**
+**0 of 5 US sites matched. Four were not farmland in any year of the record.**
 
-| site | what is actually there |
+| site | what was actually there |
 |---|---|
-| sedgwick_ks | **90% developed** — the point sits in built-up Wichita |
+| sedgwick_ks | **90% developed** — the point sat in built-up Wichita |
 | holt_ne | 85% grass and pasture — the Sandhills |
 | hale_tx | 70–96% pasture |
 | arkansas_ar | 65% developed, the rest woody wetland |
-| finney_ks | real cropland, but wheat–sorghum–corn–fallow, not wheat–fallow |
-
-This explains the NDVI result rather than contradicting it: four of five US
-pixels disagreed with our canopy curve because they do not grow the crop, not
-because the curve is wrong. And it reaches further than NDVI — each site draws
-its weather and soil from its coordinate, so `arkansas_ar`, the site the paddy
-check runs on, has been taking its soil from developed land and wetland.
+| finney_ks | real cropland, but wheat–sorghum–fallow, not wheat–fallow |
 
 A county reference point is a label on a map, not a field. We used one as if it
 were the other, at every US site, for the whole project.
 
-Replacement coordinates verified on CDL are recorded in the check —
-`finney_ks` 38.28/−100.49 shows textbook wheat–fallow alternation, `arkansas_ar`
-34.34/−91.48 a clean rice–soybean alternation. Applying them moves the POWER
-cell and the soil polygon, and therefore every number this project reports, so
-it is a deliberate next step rather than a silent edit.
+**So we moved all five** onto CDL-verified cropland inside the same county —
+which matters, because the yield comparison is against county statistics, and two
+candidate points had to be rejected for drifting into neighbouring counties. Holt
+turned out to grow continuous irrigated corn and Sedgwick continuous wheat, so
+their baselines changed too. **Four of five now match.** Hale is the honest
+exception: verified cropland, but CDL shows cotton in 8 of 14 years and our crop
+table carries no cotton.
+
+Correcting it moved the POWER cell and the soil series at every site, and
+therefore **every number this project reports**. Dryland skill went from 11 of 11
+to 10 of 11, and the absolute yield-penalty error improved from 6.0% to **3.8%**.
+A correction that makes one measure slightly worse and another clearly better is
+what a real one looks like. The satellite check went from 1 of 5 comparable
+pixels to **4 of 6, all agreeing**.
+
+The correction exposed **four further bugs**, each of which made the fix appear to
+work when it had not:
+
+1. **The download cache was keyed by county, not coordinate.** The first rebuild
+   silently reused the old field's weather and soil, and gave itself away because
+   rainfall and soil series came back identical after a 25 km move.
+2. **Seven scripts each hardcoded their own coordinates and cache paths**, so the
+   validation scripts kept measuring the old points. The same duplication that put
+   the sites in the wrong place kept them there.
+3. **The baseline rotation was ordered by the pattern registry, not by the site.**
+   Finney's real wheat–fallow–sorghum became wheat–sorghum–fallow; winter wheat
+   holds the field from October into July, so sorghum the following June overlapped
+   it by six weeks, the plan failed to simulate, and **the baseline silently
+   vanished from the results.**
+4. **The headline claimed nothing was given up** while the panel beside it showed
+   irrigation rising by 456 mm — the sentence fired whenever *any* rotation beat
+   current practice, not when the displayed one did.
 
 **A process rule, learned the hard way:** a validation target must be a dataset we
 fetched or a citation we can point at. An earlier claim of a "+18% ET0 bias" came
-from a remembered figure; gridMET showed −3.2%. It was withdrawn. A later claim
+from a remembered figure; gridMET showed −3.3%. It was withdrawn. A later claim
 that the model recovered drought years unprompted turned out never to have been
 run at all — reproducing it properly downgraded the check from pass to partial.
 

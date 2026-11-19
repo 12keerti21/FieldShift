@@ -17,11 +17,14 @@ from pathlib import Path
 import numpy as np
 
 from fieldshift.agro.climate import Site
+from fieldshift.api.bundle import SITES_BY_ID  # noqa: E402
 from fieldshift.agro.et0 import et0_penman_monteith
 from fieldshift.io.gridmet import dataset_scale_factor, parse_gridmet_csv
 from fieldshift.io.power import parse_power_daily
 
-SITE = Site(38.03, -100.74, 858.0, "Finney County, Kansas")
+# The coordinate lives in the site registry; repeating it here is how the
+# old county reference point survived a correction once already.
+SITE = SITES_BY_ID["finney_ks"].site
 POWER_CACHE = Path("data/raw/power_finney_ks_1981_2024.json")
 
 

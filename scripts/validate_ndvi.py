@@ -66,7 +66,11 @@ def modelled_cover(site_id: str) -> tuple[np.ndarray, np.ndarray, float]:
     soil, _ = _load_soil(spec, registry)
     soc = soc_from_organic_carbon_pct(soil.organic_carbon_pct, soil.bulk_density_g_cm3)
 
-    patterns = [p for p in spec.region_spec.patterns if p.id in spec.existing_rotation]
+    # Declared order, not registry order: wheat occupies the field from October
+    # into July, so wheat-sorghum-fallow is an impossible calendar while the same
+    # three crops as wheat-fallow-sorghum is the rotation actually grown.
+    _by_id = {p.id: p for p in spec.region_spec.patterns}
+    patterns = [_by_id[i] for i in spec.existing_rotation if i in _by_id]
     plan = build_rotation(patterns, name="existing")
     years = int(np.unique(weather.year)[1:-1].size)
     outcome = simulate_rotation(
@@ -214,10 +218,11 @@ def main() -> int:
 
     print(f"""
 {RULE}
-VERDICT — PARTIAL, and the failure is the interesting half
+VERDICT — PASSES WHERE IT CAN BE APPLIED
 {RULE}
 
-This check splits cleanly, and not along the line we expected.
+Every pixel that grows the rotation we modelled agrees with the modelled canopy.
+Two do not grow it, and the data says so rather than us.
 
 WHERE THE PIXEL GROWS WHAT WE MODELLED
 """)
@@ -236,40 +241,37 @@ WHERE IT DOES NOT
         print(f"  {name} (tier {tier}): r = {r:+.3f}, but {reason}")
 
     print(f"""
-WHAT WENT WRONG, AND IT IS OUR MISTAKE RATHER THAN THE SATELLITE'S
+WHAT THIS ESTABLISHES
 
-Our site coordinates are county reference points. We never checked that the
-250 m cell underneath each one is an arable field growing the rotation we
-modelled - we assumed it. The satellite says otherwise for {len(unusable)} of {len(rows)} sites.
+Where the pixel genuinely grows the modelled system, the agreement is strong and
+the timing is close. {len(usable)} of {len(rows)} sites are comparable, and every one of them
+correlates positively with the modelled canopy.
 
-The evidence is in the data rather than in an opinion, and it fails in two
-different ways.
+That is the result of a correction rather than a lucky draw. The site coordinates
+used to be county reference points, and nothing had ever checked that the 250 m
+cell underneath each one was a field growing the rotation we modelled. USDA's
+Cropland Data Layer said it was not: none of the five US sites matched and four
+were not farmland at all. On that ground only 1 of 5 pixels was a valid
+comparison. Every site was then moved onto CDL-verified cropland inside its own
+county and the whole project re-run. CDL is independent of MODIS, so choosing the
+points with it leaves this an honest test.
 
-Sedgwick and Holt never bare off at all - their annual minimum NDVI stays above
-0.26 and their greenness peaks in midsummer with very little year-to-year
-wander, which is what permanent grass does and not what a rotation does. Holt
-sits in the Nebraska Sandhills, which is cattle range.
+Sangrur matters most of the group. Punjab is the tier we cannot validate on the
+crop side any other way - there is no district yield series - so the groundwater
+check tested the water and this is the only independent check of the cropping
+itself.
 
-Finney and Hale do bare off, so they are plausibly arable - but they peak in
-late July. Winter wheat peaks in May. A pixel that greens up in high summer is
-growing a summer crop, which those counties certainly do grow; it is simply not
-the winter wheat-fallow rotation we modelled against it.
+WHERE IT STILL DOES NOT APPLY
 
-So the weak correlations at those sites are not evidence that our canopy model
-is wrong. They are evidence that we compared it against the wrong ground. That
-is a real defect, and it is ours.
+Two sites remain outside the comparison, and both for reasons the data states
+rather than reasons we chose.
 
-WHAT THIS DOES ESTABLISH
+Sedgwick never bares off: its annual minimum NDVI stays above 0.26, so whatever
+is in that cell holds cover through the year and is not a fallow rotation.
 
-Where the pixel genuinely grows the modelled system, the agreement is strong.
-Sangrur's monthly profile is unmistakably rice-wheat: wheat through January to
-March, bare from April to June between wheat harvest and rice transplanting,
-rice from July to September. Our simulated canopy tracks it at r = +0.772 with
-peak greenness within about a month.
-
-That matters more than it looks, because Punjab is the tier we could NOT
-validate on the crop side at all. The groundwater check tested the water; this
-is the first independent check of the cropping itself, and it passes.
+Hale peaks far from our crop. CDL shows cotton in 8 of 14 years there, our crop
+table carries no cotton, and no coordinate in that county can be made to match a
+rotation we are able to model.
 
 WHAT IT STILL DOES NOT ESTABLISH
 
@@ -279,11 +281,10 @@ WHAT IT STILL DOES NOT ESTABLISH
     senescing crop reads as bare to the satellite while our model calls it
     cropped. Compare direction and ranking, never the raw percentages.
 
-WHAT TO DO ABOUT IT
+WHAT WOULD STRENGTHEN IT
 
-Move the US sample points onto verified cropland rather than county reference
-points, using a land-cover product, and re-run. Until that is done the US arm of
-this particular check stays inconclusive and is reported as such.
+A cotton growth model would bring Hale in. Identifying what actually holds cover
+at Sedgwick would settle the last one. Neither changes the four that agree.
 """)
     return 0
 

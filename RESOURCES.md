@@ -45,7 +45,7 @@ construction if it tries to claim validation, and there is a test for it.
 
 | Dataset | What it does here |
 |---|---|
-| **USDA SSURGO** | Field-scale soil for US sites. Measured available water capacity replaces our class centroid — at the pilot point the difference was 52%. |
+| **USDA SSURGO** | Field-scale soil for US sites. Measured available water capacity replaces our class centroid — at the pilot point the difference is 60%. |
 | **ISRIC SoilGrids v2.0** | Global soil, and the only reason the engine can leave the United States. Never presented as equivalent to a survey. |
 | **USDA NASS QuickStats** | County yields by production practice, and the irrigation census. The yields split by *preceding crop* are what made validating a rotation effect possible at all. |
 | **gridMET** | Published 4 km reference ET, used purely as an independent check on ours. |

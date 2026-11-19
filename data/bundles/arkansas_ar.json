@@ -2,9 +2,9 @@
  "site": {
   "id": "arkansas_ar",
   "name": "Arkansas County, Arkansas",
-  "latitude": 34.29,
-  "longitude": -91.37,
-  "elevation_m": 62.0,
+  "latitude": 34.34,
+  "longitude": -91.48,
+  "elevation_m": 57.0,
   "state": "AR",
   "county": "ARKANSAS",
   "note": "Grand Prairie rice and soybean on a clay-pan soil. Humid where every other field here is semi-arid, and flooded exactly the way Punjab is - which is what lets the paddy water balance be checked against an observed record for the first time.",
@@ -40,7 +40,7 @@
    "et0_confidence": "high",
    "et0_method": "fao56_penman_monteith",
    "record_confidence": "high",
-   "annual_et0_mm": 1182.4704655996075
+   "annual_et0_mm": 1182.0913844640206
   },
   "starting_carbon_t_ha": 25.754930394431554
  },
@@ -158,19 +158,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.7656129902382385,
-    "downside": 2.24972300151101,
-    "irrigation": 1110.0961045747083,
-    "carbon": -0.2220745014382364,
-    "wind_exposure": 4.1226898934625105,
+    "production": 2.7655562363433557,
+    "downside": 2.2496131145100646,
+    "irrigation": 1110.0069348126087,
+    "carbon": -0.22209836467771046,
+    "wind_exposure": 4.122812578012301,
     "bare_ground": 0.6105563480741797
    },
    "detail": {
     "crops_per_decade": 10.160306704707562,
-    "evaporation_fraction": 0.28191793868356957,
+    "evaporation_fraction": 0.28184507811375925,
     "nitrogen_limited_seasons": 39,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 5115.599459381581,
+    "nitrogen_leached_kg_ha": 5115.720439395305,
     "seasons_simulated": 39,
     "years": 38.38466803559206
    }
@@ -224,19 +224,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.2412543579110116,
-    "downside": 0.8877076537959557,
-    "irrigation": 743.8009582627748,
-    "carbon": -0.21892492548117576,
-    "wind_exposure": 8.208516168517184,
+    "production": 2.2412307719309785,
+    "downside": 0.8879373525341722,
+    "irrigation": 743.7406303562335,
+    "carbon": -0.21895243599172878,
+    "wind_exposure": 8.208584272155896,
     "bare_ground": 0.6203703703703703
    },
    "detail": {
     "crops_per_decade": 10.145833333333334,
-    "evaporation_fraction": 0.3544960791805003,
+    "evaporation_fraction": 0.35441774427831,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 904.9614030254999,
-    "nitrogen_leached_kg_ha": 3681.9486333742275,
+    "nitrogen_fixed_kg_ha": 905.0344104323873,
+    "nitrogen_leached_kg_ha": 3682.085464884933,
     "seasons_simulated": 39,
     "years": 38.4394250513347
    }
@@ -290,19 +290,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.48433612048588,
-    "downside": 1.7295612992502116,
-    "irrigation": 920.3094827708184,
-    "carbon": -0.23742619862611442,
-    "wind_exposure": 7.503688525901447,
+    "production": 2.4842738560276976,
+    "downside": 1.7294811023219907,
+    "irrigation": 920.2263233755187,
+    "carbon": -0.23745417321825302,
+    "wind_exposure": 7.50376956921413,
     "bare_ground": 0.6203703703703703
    },
    "detail": {
     "crops_per_decade": 10.145833333333334,
-    "evaporation_fraction": 0.32956983213228463,
+    "evaporation_fraction": 0.3294999442519197,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 1491.774841543268,
-    "nitrogen_leached_kg_ha": 3760.8305132278865,
+    "nitrogen_fixed_kg_ha": 1491.7811384646063,
+    "nitrogen_leached_kg_ha": 3760.961180505856,
     "seasons_simulated": 39,
     "years": 38.4394250513347
    }
@@ -356,19 +356,19 @@
     "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.749099583831031,
-    "downside": 2.8124736805347896,
-    "irrigation": 895.483910063752,
-    "carbon": -0.06985964249182025,
-    "wind_exposure": 3.525757683952277,
+    "production": 4.749044728209476,
+    "downside": 2.8123250321094897,
+    "irrigation": 895.4247554202103,
+    "carbon": -0.06990026112804443,
+    "wind_exposure": 3.525938335769866,
     "bare_ground": 0.6062009978617249
    },
    "detail": {
     "crops_per_decade": 10.153064861012117,
-    "evaporation_fraction": 0.30885575469564985,
+    "evaporation_fraction": 0.3087801977609009,
     "nitrogen_limited_seasons": 27,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 4102.653417242117,
+    "nitrogen_leached_kg_ha": 4102.890891164197,
     "seasons_simulated": 39,
     "years": 38.41204654346338
    }
@@ -422,19 +422,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.0059224078990976,
-    "downside": 2.5501133199139607,
-    "irrigation": 743.5421435858074,
-    "carbon": -0.1238848014933308,
-    "wind_exposure": 3.914553962794642,
+    "production": 3.005942692618774,
+    "downside": 2.550006754529515,
+    "irrigation": 743.4827474149179,
+    "carbon": -0.12390634739235995,
+    "wind_exposure": 3.9146709476667354,
     "bare_ground": 0.6239285714285714
    },
    "detail": {
     "crops_per_decade": 10.174821428571429,
-    "evaporation_fraction": 0.3438780294033537,
+    "evaporation_fraction": 0.34379971210245114,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3621.65443381103,
+    "nitrogen_leached_kg_ha": 3621.796181918629,
     "seasons_simulated": 39,
     "years": 38.32991101984942
    }
@@ -499,19 +499,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.812861075744242,
-    "downside": 2.332667766913722,
-    "irrigation": 1101.4501474022138,
-    "carbon": -0.15052437945762853,
-    "wind_exposure": 5.897916826162982,
+    "production": 2.8127430436529584,
+    "downside": 2.3326581272176536,
+    "irrigation": 1101.3614966235573,
+    "carbon": -0.1505797999091047,
+    "wind_exposure": 5.900033506777701,
     "bare_ground": 0.5399858457183297
    },
    "detail": {
     "crops_per_decade": 13.441613588110403,
-    "evaporation_fraction": 0.27388922635799257,
+    "evaporation_fraction": 0.2738341725965771,
     "nitrogen_limited_seasons": 39,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 5159.917732139361,
+    "nitrogen_leached_kg_ha": 5159.9642205669525,
     "seasons_simulated": 52,
     "years": 38.68583162217659
    }
@@ -565,19 +565,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.153204933840595,
-    "downside": 0.974070813753382,
-    "irrigation": 536.9714719940711,
-    "carbon": -0.06302141876247845,
-    "wind_exposure": 7.646151438852449,
+    "production": 4.15314620049502,
+    "downside": 0.9741725413800751,
+    "irrigation": 536.941761394068,
+    "carbon": -0.06306739499340612,
+    "wind_exposure": 7.6463321940560105,
     "bare_ground": 0.6160142348754448
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.39447988666995365,
+    "evaporation_fraction": 0.3944018716533066,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 907.3530248807388,
-    "nitrogen_leached_kg_ha": 2651.7602959407195,
+    "nitrogen_fixed_kg_ha": 907.4254369778548,
+    "nitrogen_leached_kg_ha": 2651.995642308464,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -631,19 +631,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.404725598585655,
-    "downside": 0.9280887045308114,
-    "irrigation": 376.66408431814733,
-    "carbon": -0.12091434878594907,
-    "wind_exposure": 8.007177869701081,
+    "production": 2.404764459014238,
+    "downside": 0.928265632927045,
+    "irrigation": 376.6341962059932,
+    "carbon": -0.12094101081164288,
+    "wind_exposure": 8.007347203500746,
     "bare_ground": 0.6337375178316691
    },
    "detail": {
     "crops_per_decade": 10.160306704707562,
-    "evaporation_fraction": 0.4418835486062885,
+    "evaporation_fraction": 0.44180110068443396,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 906.3681116691051,
-    "nitrogen_leached_kg_ha": 2167.5861557405365,
+    "nitrogen_fixed_kg_ha": 906.4408217568695,
+    "nitrogen_leached_kg_ha": 2167.757383590096,
     "seasons_simulated": 39,
     "years": 38.38466803559206
    }
@@ -708,19 +708,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.3317602585001156,
-    "downside": 1.0093158462816132,
-    "irrigation": 727.6987992116149,
-    "carbon": -0.14909335714979455,
-    "wind_exposure": 8.228850411794594,
+    "production": 2.331670614763645,
+    "downside": 1.0093295998984,
+    "irrigation": 727.6397195219666,
+    "carbon": -0.14915764815579155,
+    "wind_exposure": 8.230810771701695,
     "bare_ground": 0.5491861288039632
    },
    "detail": {
     "crops_per_decade": 13.441613588110403,
-    "evaporation_fraction": 0.34220808100918687,
+    "evaporation_fraction": 0.34214959915531495,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 894.7158239233763,
-    "nitrogen_leached_kg_ha": 3665.3819617293866,
+    "nitrogen_fixed_kg_ha": 894.7833831413932,
+    "nitrogen_leached_kg_ha": 3665.471259435939,
     "seasons_simulated": 52,
     "years": 38.68583162217659
    }
@@ -774,19 +774,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.399059172379185,
-    "downside": 1.8729409520822071,
-    "irrigation": 714.4106925268259,
-    "carbon": -0.09092238197160286,
-    "wind_exposure": 6.889497557500876,
+    "production": 4.399025629963646,
+    "downside": 1.8728891817503577,
+    "irrigation": 714.3576105016336,
+    "carbon": -0.09096520625964204,
+    "wind_exposure": 6.889673370529018,
     "bare_ground": 0.6160142348754448
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.364990892129613,
+    "evaporation_fraction": 0.36492031818407134,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1492.0947773947396,
-    "nitrogen_leached_kg_ha": 2726.6679905645324,
+    "nitrogen_fixed_kg_ha": 1492.100961352658,
+    "nitrogen_leached_kg_ha": 2726.8947366376783,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -840,19 +840,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.6487250337937347,
-    "downside": 1.8078832029902496,
-    "irrigation": 553.4949435936867,
-    "carbon": -0.14535716810720542,
-    "wind_exposure": 7.402248381178351,
+    "production": 2.6487351831900097,
+    "downside": 1.8077970088703537,
+    "irrigation": 553.4416343646287,
+    "carbon": -0.14538515358343507,
+    "wind_exposure": 7.402409535801555,
     "bare_ground": 0.6337375178316691
    },
    "detail": {
     "crops_per_decade": 10.160306704707562,
-    "evaporation_fraction": 0.4055249861827877,
+    "evaporation_fraction": 0.40545194637700827,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1491.9368547067745,
-    "nitrogen_leached_kg_ha": 2245.907363847376,
+    "nitrogen_fixed_kg_ha": 1491.9429780666667,
+    "nitrogen_leached_kg_ha": 2246.0676192407386,
     "seasons_simulated": 39,
     "years": 38.38466803559206
    }
@@ -917,19 +917,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.563998502364722,
-    "downside": 1.7628634480302339,
-    "irrigation": 899.7804189701747,
-    "carbon": -0.1682435432416709,
-    "wind_exposure": 8.09081120056759,
+    "production": 2.5634805075007825,
+    "downside": 1.762738276569541,
+    "irrigation": 899.8724288591949,
+    "carbon": -0.16834093475921777,
+    "wind_exposure": 8.09286612561943,
     "bare_ground": 0.5491861288039632
    },
    "detail": {
     "crops_per_decade": 13.441613588110403,
-    "evaporation_fraction": 0.31729962294261965,
+    "evaporation_fraction": 0.31723884542725017,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 1491.907174865413,
-    "nitrogen_leached_kg_ha": 3783.721785106999,
+    "nitrogen_fixed_kg_ha": 1491.8801088663104,
+    "nitrogen_leached_kg_ha": 3783.882167306205,
     "seasons_simulated": 52,
     "years": 38.68583162217659
    }
@@ -983,19 +983,19 @@
     "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.218606965681901,
-    "downside": 1.1972410760185257,
-    "irrigation": 519.1496882640834,
-    "carbon": -0.06547981652074801,
-    "wind_exposure": 5.789098563480312,
+    "production": 4.218583144188101,
+    "downside": 1.1971769190562123,
+    "irrigation": 519.120306993908,
+    "carbon": -0.06552844379232825,
+    "wind_exposure": 5.789268164425994,
     "bare_ground": 0.6154668567355667
    },
    "detail": {
     "crops_per_decade": 10.153064861012117,
-    "evaporation_fraction": 0.3841397760974769,
+    "evaporation_fraction": 0.3840572997677519,
     "nitrogen_limited_seasons": 27,
-    "nitrogen_fixed_kg_ha": 900.5609130058572,
-    "nitrogen_leached_kg_ha": 2505.0385177171042,
+    "nitrogen_fixed_kg_ha": 900.6292723647822,
+    "nitrogen_leached_kg_ha": 2505.3332681229153,
     "seasons_simulated": 39,
     "years": 38.41204654346338
    }
@@ -1049,19 +1049,19 @@
     "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.4518010674749195,
-    "downside": 1.978841139517967,
-    "irrigation": 686.9056782112357,
-    "carbon": -0.09374311618009744,
-    "wind_exposure": 5.686600441397977,
+    "production": 4.451569491639715,
+    "downside": 1.9788243003141022,
+    "irrigation": 686.8558571587678,
+    "carbon": -0.09379930540846722,
+    "wind_exposure": 5.686909235569093,
     "bare_ground": 0.6154668567355667
    },
    "detail": {
     "crops_per_decade": 10.153064861012117,
-    "evaporation_fraction": 0.35465086506383015,
+    "evaporation_fraction": 0.3545798580193097,
     "nitrogen_limited_seasons": 27,
-    "nitrogen_fixed_kg_ha": 1492.0103756207454,
-    "nitrogen_leached_kg_ha": 2617.4617302122397,
+    "nitrogen_fixed_kg_ha": 1492.015892766782,
+    "nitrogen_leached_kg_ha": 2617.7417295353503,
     "seasons_simulated": 39,
     "years": 38.41204654346338
    }
@@ -1115,19 +1115,19 @@
     "14 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 6.532658340807793,
-    "downside": 3.4753215134210107,
-    "irrigation": 667.5451695713355,
-    "carbon": 0.09294148439056106,
-    "wind_exposure": 2.527836849166743,
+    "production": 6.532364830312287,
+    "downside": 3.474794954913951,
+    "irrigation": 667.5157681546191,
+    "carbon": 0.09284496100583266,
+    "wind_exposure": 2.5281266499707744,
     "bare_ground": 0.601568068424804
    },
    "detail": {
     "crops_per_decade": 10.153064861012117,
-    "evaporation_fraction": 0.3371825933298994,
+    "evaporation_fraction": 0.33710919635956793,
     "nitrogen_limited_seasons": 14,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3191.385811804268,
+    "nitrogen_leached_kg_ha": 3191.8139487540216,
     "seasons_simulated": 39,
     "years": 38.41204654346338
    }
@@ -1181,19 +1181,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.832057361120318,
-    "downside": 2.7842330911716076,
-    "irrigation": 519.1567549153783,
-    "carbon": 0.044193608405332124,
-    "wind_exposure": 2.619280947073644,
+    "production": 4.832063188001297,
+    "downside": 2.7843220652952025,
+    "irrigation": 519.1273540987825,
+    "carbon": 0.04414754373541274,
+    "wind_exposure": 2.6192911000371084,
     "bare_ground": 0.6200997861724875
    },
    "detail": {
     "crops_per_decade": 10.153064861012117,
-    "evaporation_fraction": 0.37788022131415683,
+    "evaporation_fraction": 0.37779991608067354,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2652.3658807725087,
+    "nitrogen_leached_kg_ha": 2652.667283280578,
     "seasons_simulated": 39,
     "years": 38.41204654346338
    }
@@ -1258,19 +1258,19 @@
     "27 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.804127252203904,
-    "downside": 2.8781827152893213,
-    "irrigation": 895.4787278728965,
-    "carbon": -0.021970855176763966,
-    "wind_exposure": 2.4754302151564387,
+    "production": 4.803675929136142,
+    "downside": 2.8767309031663104,
+    "irrigation": 895.4195816709705,
+    "carbon": -0.022586325926280727,
+    "wind_exposure": 2.475839029658138,
     "bare_ground": 0.5320741268709908
    },
    "detail": {
     "crops_per_decade": 13.537419814682822,
-    "evaporation_fraction": 0.29807008792193496,
+    "evaporation_fraction": 0.29803729812465596,
     "nitrogen_limited_seasons": 27,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 4140.90723515489,
+    "nitrogen_leached_kg_ha": 4143.148332850323,
     "seasons_simulated": 52,
     "years": 38.41204654346338
    }
@@ -1324,19 +1324,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.4995676175349932,
-    "downside": 1.0416928634306795,
-    "irrigation": 366.33367699193485,
-    "carbon": -0.12096144484484811,
-    "wind_exposure": 6.0780779211314275,
+    "production": 2.499605650278711,
+    "downside": 1.0417957623054785,
+    "irrigation": 366.30422665746613,
+    "carbon": -0.12098973746483963,
+    "wind_exposure": 6.078183874064891,
     "bare_ground": 0.6332142857142857
    },
    "detail": {
     "crops_per_decade": 10.174821428571429,
-    "evaporation_fraction": 0.4310106698690209,
+    "evaporation_fraction": 0.4309249686671656,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 902.1695166528243,
-    "nitrogen_leached_kg_ha": 2099.562697609594,
+    "nitrogen_fixed_kg_ha": 902.2398200703418,
+    "nitrogen_leached_kg_ha": 2099.744412323179,
     "seasons_simulated": 39,
     "years": 38.32991101984942
    }
@@ -1390,19 +1390,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.735883776246774,
-    "downside": 1.8101166119991958,
-    "irrigation": 532.0415797404927,
-    "carbon": -0.14423063445523102,
-    "wind_exposure": 5.934136403420629,
+    "production": 2.7358918002261685,
+    "downside": 1.8100951892416268,
+    "irrigation": 531.9900966955452,
+    "carbon": -0.1442567875145157,
+    "wind_exposure": 5.934306825239643,
     "bare_ground": 0.6332142857142857
    },
    "detail": {
     "crops_per_decade": 10.174821428571429,
-    "evaporation_fraction": 0.395005578271011,
+    "evaporation_fraction": 0.3949288085470766,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1492.1222035152018,
-    "nitrogen_leached_kg_ha": 2205.3630272909836,
+    "nitrogen_fixed_kg_ha": 1492.1281047057198,
+    "nitrogen_leached_kg_ha": 2205.5361461772095,
     "seasons_simulated": 39,
     "years": 38.32991101984942
    }
@@ -1456,19 +1456,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.853728651163024,
-    "downside": 2.6190823304141166,
-    "irrigation": 516.7259827002371,
-    "carbon": 0.033055926160458264,
-    "wind_exposure": 3.0748675246732486,
+    "production": 4.853409973297934,
+    "downside": 2.6191844434397713,
+    "irrigation": 516.6962406046074,
+    "carbon": 0.03299061553137219,
+    "wind_exposure": 3.0750253298154684,
     "bare_ground": 0.6202351264695405
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.3763707075223582,
+    "evaporation_fraction": 0.37627130405209025,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2668.86789465068,
+    "nitrogen_leached_kg_ha": 2669.1513304500827,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -1522,19 +1522,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.1418822033174134,
-    "downside": 2.570874887604732,
-    "irrigation": 366.3424700245054,
-    "carbon": -0.005505391223755998,
-    "wind_exposure": 2.9219040752653536,
+    "production": 3.14194934898732,
+    "downside": 2.5709974972134764,
+    "irrigation": 366.31300619528923,
+    "carbon": -0.005530837830205091,
+    "wind_exposure": 2.9218464630114536,
     "bare_ground": 0.6378571428571429
    },
    "detail": {
     "crops_per_decade": 10.174821428571429,
-    "evaporation_fraction": 0.4237641504762193,
+    "evaporation_fraction": 0.4236804947267707,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2135.3848566513443,
+    "nitrogen_leached_kg_ha": 2135.574854859837,
     "seasons_simulated": 39,
     "years": 38.32991101984942
    }
@@ -1599,19 +1599,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.059616090854675,
-    "downside": 2.5894801987950657,
-    "irrigation": 743.5367744626765,
-    "carbon": -0.07599419259568108,
-    "wind_exposure": 2.7235282504355958,
+    "production": 3.0595777413925305,
+    "downside": 2.5894722663559726,
+    "irrigation": 743.4773871323399,
+    "carbon": -0.07606089901673796,
+    "wind_exposure": 2.7238928005148466,
     "bare_ground": 0.5496428571428571
    },
    "detail": {
     "crops_per_decade": 13.56642857142857,
-    "evaporation_fraction": 0.3309394605846405,
+    "evaporation_fraction": 0.33088490696484385,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3657.614865484953,
+    "nitrogen_leached_kg_ha": 3657.684570102874,
     "seasons_simulated": 52,
     "years": 38.32991101984942
    }
@@ -1676,19 +1676,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.294231593382342,
-    "downside": 0.8863958715017706,
-    "irrigation": 743.795520109041,
-    "carbon": -0.1709599488981222,
-    "wind_exposure": 6.829470526847311,
+    "production": 2.294154502684151,
+    "downside": 0.8865540345589493,
+    "irrigation": 743.73519308652,
+    "carbon": -0.17103493793126856,
+    "wind_exposure": 6.829734769472573,
     "bare_ground": 0.5462962962962963
    },
    "detail": {
     "crops_per_decade": 13.527777777777779,
-    "evaporation_fraction": 0.3438833741454173,
+    "evaporation_fraction": 0.34383193832342296,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 897.4733006854818,
-    "nitrogen_leached_kg_ha": 3712.193036933155,
+    "nitrogen_fixed_kg_ha": 897.5386203202262,
+    "nitrogen_leached_kg_ha": 3712.2433635698426,
     "seasons_simulated": 52,
     "years": 38.4394250513347
    }
@@ -1753,19 +1753,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.5380496250822184,
-    "downside": 1.7392357733952188,
-    "irrigation": 923.3771872196245,
-    "carbon": -0.19046319689008517,
-    "wind_exposure": 6.099275281656881,
+    "production": 2.537941628891587,
+    "downside": 1.7393347092838587,
+    "irrigation": 923.2970209253534,
+    "carbon": -0.19053769733538192,
+    "wind_exposure": 6.0994342362042255,
     "bare_ground": 0.5462962962962963
    },
    "detail": {
     "crops_per_decade": 13.527777777777779,
-    "evaporation_fraction": 0.32085507353696013,
+    "evaporation_fraction": 0.3208105902493204,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 1491.8171768878055,
-    "nitrogen_leached_kg_ha": 3790.955345632568,
+    "nitrogen_fixed_kg_ha": 1491.8224583875751,
+    "nitrogen_leached_kg_ha": 3791.0116408789595,
     "seasons_simulated": 52,
     "years": 38.4394250513347
    }
@@ -1830,19 +1830,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.767987707916581,
-    "downside": 2.8500345232065145,
-    "irrigation": 893.6837750198567,
-    "carbon": 0.0010180595229532807,
-    "wind_exposure": 5.473719596314053,
+    "production": 4.767890399321182,
+    "downside": 2.849801179492509,
+    "irrigation": 893.6250810004623,
+    "carbon": 0.0009523907212874776,
+    "wind_exposure": 5.475905896492186,
     "bare_ground": 0.5357142857142857
    },
    "detail": {
     "crops_per_decade": 13.432107496463932,
-    "evaporation_fraction": 0.3040598291350905,
+    "evaporation_fraction": 0.30400740527716763,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 4166.198763365259,
+    "nitrogen_leached_kg_ha": 4166.316975624155,
     "seasons_simulated": 52,
     "years": 38.71321013004791
    }
@@ -1907,19 +1907,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.0170776682891995,
-    "downside": 2.602403466173513,
-    "irrigation": 737.7455198819965,
-    "carbon": -0.05224164154632543,
-    "wind_exposure": 5.782567777649691,
+    "production": 3.017028831084103,
+    "downside": 2.6023010604259804,
+    "irrigation": 737.6865870305772,
+    "carbon": -0.052296988330229534,
+    "wind_exposure": 5.784703868748273,
     "bare_ground": 0.5531537916371367
    },
    "detail": {
     "crops_per_decade": 13.46066619418852,
-    "evaporation_fraction": 0.3380410877753147,
+    "evaporation_fraction": 0.33798761446555,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3664.7440557373416,
+    "nitrogen_leached_kg_ha": 3664.8030407303486,
     "seasons_simulated": 52,
     "years": 38.63107460643395
    }
@@ -1995,19 +1995,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.880027526679704,
-    "downside": 2.407029094835135,
-    "irrigation": 1101.4442734072936,
-    "carbon": -0.10307717120053311,
-    "wind_exposure": 4.672090912351091,
+    "production": 2.8798429309861566,
+    "downside": 2.4069436745348334,
+    "irrigation": 1101.3556295406174,
+    "carbon": -0.1031780159397571,
+    "wind_exposure": 4.674355296320596,
     "bare_ground": 0.46638358103326255
    },
    "detail": {
     "crops_per_decade": 16.802016985138003,
-    "evaporation_fraction": 0.2635100493050705,
+    "evaporation_fraction": 0.2634748943070748,
     "nitrogen_limited_seasons": 39,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 5194.783631134361,
+    "nitrogen_leached_kg_ha": 5194.756464683711,
     "seasons_simulated": 65,
     "years": 38.68583162217659
    }
@@ -2061,19 +2061,19 @@
     "12 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 5.826587797956962,
-    "downside": 1.4476754785091361,
+    "production": 5.826275739947377,
+    "downside": 1.4474697196582382,
     "irrigation": 314.55693950177937,
-    "carbon": 0.10258295217698327,
-    "wind_exposure": 6.817751707174976,
+    "carbon": 0.10248097984028863,
+    "wind_exposure": 6.817998524509419,
     "bare_ground": 0.6113879003558719
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.4302485725398156,
+    "evaporation_fraction": 0.43020077475315177,
     "nitrogen_limited_seasons": 12,
-    "nitrogen_fixed_kg_ha": 908.6362853977178,
-    "nitrogen_leached_kg_ha": 1536.1348726308563,
+    "nitrogen_fixed_kg_ha": 908.7078938024879,
+    "nitrogen_leached_kg_ha": 1536.7011992623682,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -2127,19 +2127,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.160261253289388,
-    "downside": 1.2330448715899975,
+    "production": 4.160306123893164,
+    "downside": 1.2328836248805082,
     "irrigation": 161.1779359430605,
-    "carbon": 0.052958224705878826,
-    "wind_exposure": 6.797450180208642,
+    "carbon": 0.05291229390117908,
+    "wind_exposure": 6.797474190144235,
     "bare_ground": 0.6298932384341637
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.48453211171094207,
+    "evaporation_fraction": 0.4844490991099807,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 910.277663612848,
-    "nitrogen_leached_kg_ha": 1051.4794724985854,
+    "nitrogen_fixed_kg_ha": 910.3520991401022,
+    "nitrogen_leached_kg_ha": 1051.941933325186,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -2204,19 +2204,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.189078952114011,
-    "downside": 0.9735178856447559,
-    "irrigation": 536.9714717871794,
-    "carbon": -0.012752050081739142,
-    "wind_exposure": 6.639238891545336,
+    "production": 4.189039118699489,
+    "downside": 0.9737167364828618,
+    "irrigation": 536.9417611869353,
+    "carbon": -0.012839531856576821,
+    "wind_exposure": 6.639472919809556,
     "bare_ground": 0.5419928825622776
    },
    "detail": {
     "crops_per_decade": 13.518149466192172,
-    "evaporation_fraction": 0.3849669393333005,
+    "evaporation_fraction": 0.38491549643907697,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 897.4746759804316,
-    "nitrogen_leached_kg_ha": 2684.947683925993,
+    "nitrogen_fixed_kg_ha": 897.5399944663938,
+    "nitrogen_leached_kg_ha": 2685.0816428894245,
     "seasons_simulated": 52,
     "years": 38.46680355920602
    }
@@ -2270,19 +2270,19 @@
     "11 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.184069997652862,
-    "downside": 1.3356444481452177,
+    "production": 4.183836896266729,
+    "downside": 1.3354844198999958,
     "irrigation": 143.13323833273958,
-    "carbon": 0.0327017289214347,
-    "wind_exposure": 5.737626673654962,
+    "carbon": 0.03263130996208672,
+    "wind_exposure": 5.737646958581786,
     "bare_ground": 0.6294976843605272
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.4817284409520206,
+    "evaporation_fraction": 0.48165376736821164,
     "nitrogen_limited_seasons": 11,
-    "nitrogen_fixed_kg_ha": 900.5838704527324,
-    "nitrogen_leached_kg_ha": 978.2245737816294,
+    "nitrogen_fixed_kg_ha": 900.648311989202,
+    "nitrogen_leached_kg_ha": 978.6873042654089,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -2336,19 +2336,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.4727994912475233,
-    "downside": 1.1635019524538888,
+    "production": 2.472890520402132,
+    "downside": 1.1632452768540824,
     "irrigation": 0.0,
-    "carbon": -0.0001924818478276847,
-    "wind_exposure": 7.169503354600761,
+    "carbon": -0.00022321757884505295,
+    "wind_exposure": 7.16946172949445,
     "bare_ground": 0.6476462196861626
    },
    "detail": {
     "crops_per_decade": 10.160306704707562,
-    "evaporation_fraction": 0.549619865564182,
+    "evaporation_fraction": 0.549532997231584,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 910.2919938335684,
-    "nitrogen_leached_kg_ha": 584.1507490811011,
+    "nitrogen_fixed_kg_ha": 910.366426267736,
+    "nitrogen_leached_kg_ha": 584.4726940888631,
     "seasons_simulated": 39,
     "years": 38.38466803559206
    }
@@ -2413,19 +2413,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.4424366602359764,
-    "downside": 0.9323698246604579,
-    "irrigation": 376.6640777745312,
-    "carbon": -0.07044433624694722,
-    "wind_exposure": 6.884287371459777,
+    "production": 2.4424365222711364,
+    "downside": 0.9325522507456724,
+    "irrigation": 376.63418966084555,
+    "carbon": -0.07051892515422954,
+    "wind_exposure": 6.884529475241255,
     "bare_ground": 0.5595577746077033
    },
    "detail": {
     "crops_per_decade": 13.54707560627675,
-    "evaporation_fraction": 0.4293457901445885,
+    "evaporation_fraction": 0.4292934466801868,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 897.474165133925,
-    "nitrogen_leached_kg_ha": 2198.961996020503,
+    "nitrogen_fixed_kg_ha": 897.5394824946505,
+    "nitrogen_leached_kg_ha": 2199.0394726871004,
     "seasons_simulated": 52,
     "years": 38.38466803559206
    }
@@ -2490,19 +2490,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.232811141705569,
-    "downside": 1.2521111266441638,
-    "irrigation": 520.2775304950992,
-    "carbon": 0.011255841111627599,
-    "wind_exposure": 8.013942167314893,
+    "production": 4.232743280145071,
+    "downside": 1.2520120935470787,
+    "irrigation": 520.2483773401121,
+    "carbon": 0.011179040060481546,
+    "wind_exposure": 8.015965683579786,
     "bare_ground": 0.5449080622347949
    },
    "detail": {
     "crops_per_decade": 13.432107496463932,
-    "evaporation_fraction": 0.37721036738290725,
+    "evaporation_fraction": 0.3771540602670635,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 900.5702859623123,
-    "nitrogen_leached_kg_ha": 2530.505081916486,
+    "nitrogen_fixed_kg_ha": 900.6386168433165,
+    "nitrogen_leached_kg_ha": 2530.728728339562,
     "seasons_simulated": 52,
     "years": 38.71321013004791
    }
@@ -2567,19 +2567,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.502691346624745,
-    "downside": 1.0561884267472816,
-    "irrigation": 363.47786628347984,
-    "carbon": -0.0444943806641061,
-    "wind_exposure": 8.22311853854132,
+    "production": 2.502671512887809,
+    "downside": 1.0561982914138373,
+    "irrigation": 363.44865600560337,
+    "carbon": -0.04455998419799417,
+    "wind_exposure": 8.22509095098452,
     "bare_ground": 0.5623671155209071
    },
    "detail": {
     "crops_per_decade": 13.46066619418852,
-    "evaporation_fraction": 0.4226656615078275,
+    "evaporation_fraction": 0.42260818284060614,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 901.8438476275508,
-    "nitrogen_leached_kg_ha": 2119.655759280667,
+    "nitrogen_fixed_kg_ha": 901.9138572287331,
+    "nitrogen_leached_kg_ha": 2119.768666260902,
     "seasons_simulated": 52,
     "years": 38.63107460643395
    }
@@ -2655,19 +2655,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.3617479161837465,
-    "downside": 0.9149485826857882,
-    "irrigation": 743.9538743216403,
-    "carbon": -0.12718082350606386,
-    "wind_exposure": 6.797938150605329,
+    "production": 2.3616115698556537,
+    "downside": 0.9150911456258196,
+    "irrigation": 743.8932386540253,
+    "carbon": -0.12729561652857488,
+    "wind_exposure": 6.798257706049131,
     "bare_ground": 0.4722222222222222
    },
    "detail": {
     "crops_per_decade": 16.90972222222222,
-    "evaporation_fraction": 0.33232805104614255,
+    "evaporation_fraction": 0.33229639772683794,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 897.4736015509809,
-    "nitrogen_leached_kg_ha": 3741.644202934764,
+    "nitrogen_fixed_kg_ha": 897.5389209342327,
+    "nitrogen_leached_kg_ha": 3741.6200188252383,
     "seasons_simulated": 65,
     "years": 38.4394250513347
    }
@@ -2721,19 +2721,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 6.089667261990933,
-    "downside": 2.324144173139978,
-    "irrigation": 489.0105524988837,
-    "carbon": 0.06588420893410943,
-    "wind_exposure": 6.100577838270255,
+    "production": 6.089544402443342,
+    "downside": 2.3238599685325365,
+    "irrigation": 489.14558708876234,
+    "carbon": 0.06509768139356926,
+    "wind_exposure": 6.100753206716474,
     "bare_ground": 0.6113879003558719
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.3966963560303876,
+    "evaporation_fraction": 0.39662817972086045,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1491.919718044678,
-    "nitrogen_leached_kg_ha": 1605.1256431619317,
+    "nitrogen_fixed_kg_ha": 1491.9032514958062,
+    "nitrogen_leached_kg_ha": 1607.6683538848986,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -2787,19 +2787,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.418598056699622,
-    "downside": 2.1742979567359693,
-    "irrigation": 334.64620721321313,
-    "carbon": 0.010366688273075825,
-    "wind_exposure": 6.068212266025295,
+    "production": 4.419616356723217,
+    "downside": 2.174264339845261,
+    "irrigation": 334.79951295828573,
+    "carbon": 0.009513964368198851,
+    "wind_exposure": 6.0682274839217,
     "bare_ground": 0.6298932384341637
    },
    "detail": {
     "crops_per_decade": 10.13861209964413,
-    "evaporation_fraction": 0.4430765326300503,
+    "evaporation_fraction": 0.44296956831228534,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1491.7328244138712,
-    "nitrogen_leached_kg_ha": 1126.0167424785934,
+    "nitrogen_fixed_kg_ha": 1491.6774994686825,
+    "nitrogen_leached_kg_ha": 1126.2700606246883,
     "seasons_simulated": 39,
     "years": 38.46680355920602
    }
@@ -2864,19 +2864,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.4376615649505,
-    "downside": 1.87871308223751,
-    "irrigation": 717.0089364021206,
-    "carbon": -0.04214405296934164,
-    "wind_exposure": 5.8312301628133465,
+    "production": 4.437591712378705,
+    "downside": 1.8788420105628099,
+    "irrigation": 716.9588725000407,
+    "carbon": -0.04223165362669362,
+    "wind_exposure": 5.83132426216718,
     "bare_ground": 0.5419928825622776
    },
    "detail": {
     "crops_per_decade": 13.518149466192172,
-    "evaporation_fraction": 0.35740835696789286,
+    "evaporation_fraction": 0.35736373962103496,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1491.817274532215,
-    "nitrogen_leached_kg_ha": 2757.091713607421,
+    "nitrogen_fixed_kg_ha": 1491.8225559865311,
+    "nitrogen_leached_kg_ha": 2757.231391218616,
     "seasons_simulated": 52,
     "years": 38.46680355920602
    }
@@ -2930,19 +2930,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.440675049581507,
-    "downside": 2.115972211354451,
-    "irrigation": 310.8136294379638,
-    "carbon": -0.0023346892031585508,
-    "wind_exposure": 5.625399567880395,
+    "production": 4.440536174615666,
+    "downside": 2.1158796217346114,
+    "irrigation": 310.79319742518436,
+    "carbon": -0.002391386247538384,
+    "wind_exposure": 5.625469376694104,
     "bare_ground": 0.6294976843605272
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.4390236010456648,
+    "evaporation_fraction": 0.43895201055739075,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1492.0134780738188,
-    "nitrogen_leached_kg_ha": 1095.3983962510454,
+    "nitrogen_fixed_kg_ha": 1492.0190186297389,
+    "nitrogen_leached_kg_ha": 1095.8493843001659,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -2996,19 +2996,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.7270357918038237,
-    "downside": 2.045938639393299,
-    "irrigation": 174.0117331030622,
-    "carbon": -0.04026639546256101,
-    "wind_exposure": 6.550363579220757,
+    "production": 2.72709830028102,
+    "downside": 2.045724044671809,
+    "irrigation": 173.98777967647592,
+    "carbon": -0.04029393351572231,
+    "wind_exposure": 6.55028183219282,
     "bare_ground": 0.6476462196861626
    },
    "detail": {
     "crops_per_decade": 10.160306704707562,
-    "evaporation_fraction": 0.49713209050746754,
+    "evaporation_fraction": 0.49705465146785355,
     "nitrogen_limited_seasons": 13,
-    "nitrogen_fixed_kg_ha": 1491.672591134748,
-    "nitrogen_leached_kg_ha": 664.9889969700383,
+    "nitrogen_fixed_kg_ha": 1491.6791055079668,
+    "nitrogen_leached_kg_ha": 665.2917163177269,
     "seasons_simulated": 39,
     "years": 38.38466803559206
    }
@@ -3073,19 +3073,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.6887304002686316,
-    "downside": 1.8192161097913242,
-    "irrigation": 557.0872131729078,
-    "carbon": -0.0967819072659102,
-    "wind_exposure": 6.2207107241699555,
+    "production": 2.688702563395822,
+    "downside": 1.8193427983781076,
+    "irrigation": 557.0369285025828,
+    "carbon": -0.09685690782691753,
+    "wind_exposure": 6.220845527738285,
     "bare_ground": 0.5595577746077033
    },
    "detail": {
     "crops_per_decade": 13.54707560627675,
-    "evaporation_fraction": 0.3952672200704109,
+    "evaporation_fraction": 0.39522235747524465,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1491.8172331975707,
-    "nitrogen_leached_kg_ha": 2276.189430529808,
+    "nitrogen_fixed_kg_ha": 1491.822514575569,
+    "nitrogen_leached_kg_ha": 2276.2689721293114,
     "seasons_simulated": 52,
     "years": 38.38466803559206
    }
@@ -3150,19 +3150,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.465822304953812,
-    "downside": 2.0676382813316576,
-    "irrigation": 686.7201316362368,
-    "carbon": -0.019246184394190395,
-    "wind_exposure": 7.885563413118345,
+    "production": 4.465720487651714,
+    "downside": 2.067713972975272,
+    "irrigation": 686.6703226472971,
+    "carbon": -0.0193172074611257,
+    "wind_exposure": 7.887663194352962,
     "bare_ground": 0.5449080622347949
    },
    "detail": {
     "crops_per_decade": 13.432107496463932,
-    "evaporation_fraction": 0.3491055074813949,
+    "evaporation_fraction": 0.3490553749845716,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1492.0124801380666,
-    "nitrogen_leached_kg_ha": 2645.4535804787847,
+    "nitrogen_fixed_kg_ha": 1492.0181037656764,
+    "nitrogen_leached_kg_ha": 2645.670646307148,
     "seasons_simulated": 52,
     "years": 38.71321013004791
    }
@@ -3227,19 +3227,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.73799102704268,
-    "downside": 1.8771496244870642,
-    "irrigation": 528.0194534223158,
-    "carbon": -0.06981027956174403,
-    "wind_exposure": 8.056056343646949,
+    "production": 2.7379436045083594,
+    "downside": 1.876979233467617,
+    "irrigation": 527.9684109982545,
+    "carbon": -0.06987220764357711,
+    "wind_exposure": 8.058099803711631,
     "bare_ground": 0.5623671155209071
    },
    "detail": {
     "crops_per_decade": 13.46066619418852,
-    "evaporation_fraction": 0.3884494152419913,
+    "evaporation_fraction": 0.3883984148399603,
     "nitrogen_limited_seasons": 26,
-    "nitrogen_fixed_kg_ha": 1492.0620220508458,
-    "nitrogen_leached_kg_ha": 2225.883419979739,
+    "nitrogen_fixed_kg_ha": 1492.0678742342675,
+    "nitrogen_leached_kg_ha": 2225.9848893346184,
     "seasons_simulated": 52,
     "years": 38.63107460643395
    }
@@ -3315,19 +3315,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.606689178265811,
-    "downside": 1.7832186717926228,
-    "irrigation": 923.5393478600151,
-    "carbon": -0.149556075282371,
-    "wind_exposure": 6.059649117197056,
+    "production": 2.606509553304591,
+    "downside": 1.78329852515827,
+    "irrigation": 923.4590104222168,
+    "carbon": -0.1496693090054401,
+    "wind_exposure": 6.059863736258846,
     "bare_ground": 0.4722222222222222
    },
    "detail": {
     "crops_per_decade": 16.90972222222222,
-    "evaporation_fraction": 0.31057750821130137,
+    "evaporation_fraction": 0.3105512196913888,
     "nitrogen_limited_seasons": 39,
-    "nitrogen_fixed_kg_ha": 1491.8171943590794,
-    "nitrogen_leached_kg_ha": 3817.86652555851,
+    "nitrogen_fixed_kg_ha": 1491.82247584352,
+    "nitrogen_leached_kg_ha": 3817.8641285783733,
     "seasons_simulated": 65,
     "years": 38.4394250513347
    }
@@ -3380,19 +3380,19 @@
     "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 7.937500237308679,
-    "downside": 7.801851014813192,
+    "production": 7.9373667890708965,
+    "downside": 7.801962315376328,
     "irrigation": 445.331550802139,
-    "carbon": 0.20800480680912978,
-    "wind_exposure": 2.2568152915542212,
+    "carbon": 0.20790564176477644,
+    "wind_exposure": 2.256776510672905,
     "bare_ground": 0.5967914438502674
    },
    "detail": {
     "crops_per_decade": 10.15668449197861,
-    "evaporation_fraction": 0.3736381057293519,
+    "evaporation_fraction": 0.37355024831154326,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2452.46106465193,
+    "nitrogen_leached_kg_ha": 2453.037995829318,
     "seasons_simulated": 39,
     "years": 38.39835728952772
    }
@@ -3445,19 +3445,19 @@
     "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 6.342681283045599,
-    "downside": 2.819040758455026,
+    "production": 6.3423812441288145,
+    "downside": 2.8191616292419015,
     "irrigation": 294.07374421090134,
-    "carbon": 0.1868264318481744,
-    "wind_exposure": 2.6590049326836107,
+    "carbon": 0.1867177732888185,
+    "wind_exposure": 2.6589095350042915,
     "bare_ground": 0.6156038475240471
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.41578191929272856,
+    "evaporation_fraction": 0.415710366302641,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 1903.2244797365568,
+    "nitrogen_leached_kg_ha": 1903.6940222731591,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -3522,19 +3522,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 6.517302885432505,
-    "downside": 3.5633951210473973,
-    "irrigation": 672.6845272666827,
-    "carbon": 0.16923567729231181,
-    "wind_exposure": 4.940019351085322,
+    "production": 6.5169992267221035,
+    "downside": 3.5627460394531165,
+    "irrigation": 672.6553547033556,
+    "carbon": 0.1691091105625118,
+    "wind_exposure": 4.941977573877404,
     "bare_ground": 0.5311173974540311
    },
    "detail": {
     "crops_per_decade": 13.432107496463932,
-    "evaporation_fraction": 0.33386200602651367,
+    "evaporation_fraction": 0.333811946172804,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3263.766153327899,
+    "nitrogen_leached_kg_ha": 3264.046679749835,
     "seasons_simulated": 52,
     "years": 38.71321013004791
    }
@@ -3587,19 +3587,19 @@
     "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 4.716277701024012,
-    "downside": 2.5152140936859624,
+    "production": 4.716217328628242,
+    "downside": 2.515338546633131,
     "irrigation": 140.53081581759886,
-    "carbon": 0.14518833919606117,
-    "wind_exposure": 2.513202697849102,
+    "carbon": 0.145129191480472,
+    "wind_exposure": 2.51306871189076,
     "bare_ground": 0.6341289633060206
    },
    "detail": {
     "crops_per_decade": 10.149447809048807,
-    "evaporation_fraction": 0.4692336981094902,
+    "evaporation_fraction": 0.4691541990830178,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 1321.6012699487696,
+    "nitrogen_leached_kg_ha": 1321.9637017708633,
     "seasons_simulated": 39,
     "years": 38.42573579739904
    }
@@ -3664,19 +3664,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.827647275456236,
-    "downside": 2.7842305902576823,
-    "irrigation": 520.2842484494771,
-    "carbon": 0.119987922139267,
-    "wind_exposure": 4.885334361086536,
+    "production": 4.827603000734103,
+    "downside": 2.7843194873154915,
+    "irrigation": 520.2550763530608,
+    "carbon": 0.11991241400246808,
+    "wind_exposure": 4.887270273808167,
     "bare_ground": 0.5495049504950495
    },
    "detail": {
     "crops_per_decade": 13.432107496463932,
-    "evaporation_fraction": 0.37187703270944555,
+    "evaporation_fraction": 0.3718226279190388,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2720.6186023041996,
+    "nitrogen_leached_kg_ha": 2720.8095271660154,
     "seasons_simulated": 52,
     "years": 38.71321013004791
    }
@@ -3741,19 +3741,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.867845091876948,
-    "downside": 2.6180991102214293,
-    "irrigation": 519.3284055325751,
-    "carbon": 0.08313260385814275,
-    "wind_exposure": 2.2068276235816113,
+    "production": 4.868063364645848,
+    "downside": 2.61779824600945,
+    "irrigation": 516.6962409216562,
+    "carbon": 0.08306366608925908,
+    "wind_exposure": 2.2070544037064135,
     "bare_ground": 0.5461346633416458
    },
    "detail": {
     "crops_per_decade": 13.532597078731742,
-    "evaporation_fraction": 0.36831856881260283,
+    "evaporation_fraction": 0.368286408341034,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2711.270984597889,
+    "nitrogen_leached_kg_ha": 2710.796553755902,
     "seasons_simulated": 52,
     "years": 38.42573579739904
    }
@@ -3829,19 +3829,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 4.821186923468834,
-    "downside": 2.933533731402243,
-    "irrigation": 893.6786813553596,
-    "carbon": 0.0507623198168664,
-    "wind_exposure": 4.55431566006256,
+    "production": 4.821036574679276,
+    "downside": 2.933304446425897,
+    "irrigation": 893.6199950646155,
+    "carbon": 0.05065194117028209,
+    "wind_exposure": 4.556584076792779,
     "bare_ground": 0.46216407355021216
    },
    "detail": {
     "crops_per_decade": 16.790134370579914,
-    "evaporation_fraction": 0.29412002360969064,
+    "evaporation_fraction": 0.29408783693609364,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 4201.960061267514,
+    "nitrogen_leached_kg_ha": 4201.996144998213,
     "seasons_simulated": 65,
     "years": 38.71321013004791
    }
@@ -3894,19 +3894,19 @@
     "carbon pools supplied (25.7 t C/ha), shared across candidates so the comparison measures the rotations rather than differences in their spin-up"
    ],
    "objectives": {
-    "production": 3.112254752154185,
-    "downside": 2.459243073042433,
+    "production": 3.1124023001523646,
+    "downside": 2.4593409218758415,
     "irrigation": 0.0,
-    "carbon": 0.10119605000727035,
-    "wind_exposure": 2.630004216336049,
+    "carbon": 0.10116825448214362,
+    "wind_exposure": 2.6298572099714046,
     "bare_ground": 0.6519100321313817
    },
    "detail": {
     "crops_per_decade": 10.171188861121028,
-    "evaporation_fraction": 0.5319300277878455,
+    "evaporation_fraction": 0.5318407804630613,
     "nitrogen_limited_seasons": 0,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 762.6094376812568,
+    "nitrogen_leached_kg_ha": 762.9042850433675,
     "seasons_simulated": 39,
     "years": 38.34360027378508
    }
@@ -3971,19 +3971,19 @@
     "13 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.13211501060519,
-    "downside": 2.525594512283949,
-    "irrigation": 363.4865065466595,
-    "carbon": 0.07010052797031165,
-    "wind_exposure": 5.043864008090293,
+    "production": 3.1321268902785513,
+    "downside": 2.5256753387986954,
+    "irrigation": 363.457272416544,
+    "carbon": 0.07003713174089986,
+    "wind_exposure": 5.0457764273488035,
     "bare_ground": 0.5669737774627923
    },
    "detail": {
     "crops_per_decade": 13.46066619418852,
-    "evaporation_fraction": 0.4160499671366493,
+    "evaporation_fraction": 0.41599510957032937,
     "nitrogen_limited_seasons": 13,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2184.2048561097076,
+    "nitrogen_leached_kg_ha": 2184.309919596773,
     "seasons_simulated": 52,
     "years": 38.63107460643395
    }
@@ -4059,19 +4059,19 @@
     "26 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 3.0724979294515955,
-    "downside": 2.634143414011083,
-    "irrigation": 737.7404634371048,
-    "carbon": -0.0021376183175516963,
-    "wind_exposure": 4.72348770843943,
+    "production": 3.072394716878903,
+    "downside": 2.6342383955984716,
+    "irrigation": 737.6815393624257,
+    "carbon": -0.002238783463617905,
+    "wind_exposure": 4.7257330062119,
     "bare_ground": 0.47944720056697376
    },
    "detail": {
     "crops_per_decade": 16.82583274273565,
-    "evaporation_fraction": 0.32610397877661934,
+    "evaporation_fraction": 0.3260725495003562,
     "nitrogen_limited_seasons": 26,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 3697.8786824521076,
+    "nitrogen_leached_kg_ha": 3697.854724893242,
     "seasons_simulated": 65,
     "years": 38.63107460643395
    }
@@ -4125,19 +4125,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.1515749637382227,
-    "downside": 1.322842449327745,
+    "production": 2.150749853718731,
+    "downside": 1.3225281590014524,
     "irrigation": 0.0,
-    "carbon": -0.05543965214907397,
-    "wind_exposure": 3.267847636072601,
+    "carbon": -0.055618304292535045,
+    "wind_exposure": 3.2697803128109832,
     "bare_ground": 0.4051081943951756
    },
    "detail": {
     "crops_per_decade": 10.106243348705213,
-    "evaporation_fraction": 0.6901706195212186,
+    "evaporation_fraction": 0.6901775220863746,
     "nitrogen_limited_seasons": 39,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 2712.2244254527754,
+    "nitrogen_leached_kg_ha": 2713.361092845862,
     "seasons_simulated": 39,
     "years": 38.59000684462697
    }
@@ -4224,19 +4224,19 @@
     "39 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.9599867647455675,
-    "downside": 2.4881843381948734,
-    "irrigation": 1101.6065016423702,
-    "carbon": -0.05953713404147547,
-    "wind_exposure": 4.653730749767373,
+    "production": 2.9597310654562152,
+    "downside": 2.4880455375462462,
+    "irrigation": 1101.5175414034695,
+    "carbon": -0.059676901228241284,
+    "wind_exposure": 4.6560345439260615,
     "bare_ground": 0.39278131634819535
    },
    "detail": {
     "crops_per_decade": 20.162420382165603,
-    "evaporation_fraction": 0.2546185504112052,
+    "evaporation_fraction": 0.25459999108565606,
     "nitrogen_limited_seasons": 39,
     "nitrogen_fixed_kg_ha": 0.0,
-    "nitrogen_leached_kg_ha": 5231.917298687226,
+    "nitrogen_leached_kg_ha": 5231.807401333892,
     "seasons_simulated": 78,
     "years": 38.68583162217659
    }
@@ -4279,19 +4279,19 @@
     "40 season(s) were limited by nitrogen rather than water; that calls for a different response than a water constraint does"
    ],
    "objectives": {
-    "production": 2.051236190769478,
-    "downside": 0.8789785317529091,
-    "irrigation": 559.7313565809013,
-    "carbon": -0.21261865210956887,
-    "wind_exposure": 9.321437531594867,
+    "production": 2.051222516439031,
+    "downside": 0.8790172659623511,
+    "irrigation": 559.6879919132006,
+    "carbon": -0.21264401257706572,
+    "wind_exposure": 9.321442929514001,
     "bare_ground": 0.6251301631377993
    },
    "detail": {
     "crops_per_decade": 10.142311697327317,
-    "evaporation_fraction": 0.39444661336162434,
+    "evaporation_fraction": 0.39436559603839083,
     "nitrogen_limited_seasons": 40,
-    "nitrogen_fixed_kg_ha": 1380.7188180663418,
-    "nitrogen_leached_kg_ha": 2960.96526170155,
+    "nitrogen_fixed_kg_ha": 1380.8333688131688,
+    "nitrogen_leached_kg_ha": 2961.112173255471,
     "seasons_simulated": 40,
     "years": 39.43874058863792
    }
